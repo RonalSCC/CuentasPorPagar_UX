@@ -1,6 +1,7 @@
 import type { RouteObject } from "react-router-dom";
 import { useRoutes } from 'react-router-dom';
 import InformacionGeneralDatos from "./Componentes/InformacionGeneral/InformacionGeneralDatos";
+import Contactos from './Componentes/Contactos/Contactos'
 const CambiarTerceroMientras = ()=>{
 
 }
@@ -11,6 +12,10 @@ const RoutesMarcoTerceros:RouteObject[] = [
                 path:"InformacionGeneral",
                 element: <InformacionGeneralDatos />,
                 index:true
+            },
+            {
+                path:"Contactos",
+                element: <Contactos />,
             }
         ]
     }
