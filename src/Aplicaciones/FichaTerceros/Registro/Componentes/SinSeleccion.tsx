@@ -11,15 +11,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select } from '@mui/material';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import AutocompleteTerceros from './Generales/AutocompleteTerceros';
-export default function SinSeleccion(
-    {
-        RegistrarNuevoTercero
-    }:
-    {
-        RegistrarNuevoTercero: Function
-    }
-) {
-
+import { redirect, useNavigate } from 'react-router-dom';
+export default function SinSeleccion() {
+    const navigate = useNavigate();
     const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
 
     const lista_Terceros = [
@@ -63,11 +57,11 @@ export default function SinSeleccion(
             </Stack>
         </Stack>
             
-        <Stack gap={0.5} direction={"column"} display="flex" alignItems={"center"} >
-            <Image src={"Imagenes/Terceros/NuevoTercero.png"} width="20%" alt="Nuevo Tercero" />
+        <Stack gap={1.5} direction={"column"} display="flex" alignItems={"center"} >
+            <Image src={"Imagenes/Terceros/Ilustracion-SinSeleccion.svg"} width="20%" alt="Nuevo Tercero" />
             <Button 
                 variant="contained"
-                onClick={()=> {RegistrarNuevoTercero(true)}}
+                onClick={ ()=> propsTercerosContexto.CambiarEstadoNuevoRegistro(true)}
             >
                 Crear nuevo tercero
             </Button>

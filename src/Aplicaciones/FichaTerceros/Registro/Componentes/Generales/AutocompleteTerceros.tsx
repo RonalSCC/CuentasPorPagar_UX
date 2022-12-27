@@ -26,6 +26,7 @@ export default function AutocompleteTerceros(
             getOptionLabel={ options => {
                 return `[ID]: ${options.ID} - [${options.TipoIdentificacion}]: ${options.Identificacion} - ${options.NombreTercero}`
             }}
+            value={null}
             options={lista_Terceros}
             onChange={(event,select) => {SeleccionarTercero(select)}}
             fullWidth

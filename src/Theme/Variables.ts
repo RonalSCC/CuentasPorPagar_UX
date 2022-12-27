@@ -164,7 +164,7 @@ export const light: ThemeOptions = {
       light: "#5A8FD3"
     },
     secondary: {
-      main: "rgba(16, 24, 64, 0.6)",
+      main: "#0CBBE2",
       dark: "#008BB0",
       light: "#67EEFF",
       contrastText:"#FFFFFF"
