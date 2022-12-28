@@ -2,7 +2,7 @@ import { Add } from '@mui/icons-material'
 import { Fab, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import React, { useState } from 'react'
-import FormularioNuevoContacto from '../Contactos/FormularioNuevoContacto'
+import FormularioContacto from './FormularioContacto'
 import CardContact from './CardContact'
 
 const Contactos = (props: any) => {
@@ -33,7 +33,7 @@ const Contactos = (props: any) => {
       </Stack>
       {
         verModalNuevoContacto == true &&
-        <FormularioNuevoContacto estado={verModalNuevoContacto} cambiarEstado={setverModalNuevoContacto} />
+        <FormularioContacto estado={verModalNuevoContacto} cambiarEstado={setverModalNuevoContacto} />
       }
 
     </>
