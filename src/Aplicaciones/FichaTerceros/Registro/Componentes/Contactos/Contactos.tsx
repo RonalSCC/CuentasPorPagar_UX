@@ -33,7 +33,7 @@ const Contactos = (props: any) => {
       </Stack>
       {
         verModalNuevoContacto == true &&
-        <FormularioContacto estado={verModalNuevoContacto} cambiarEstado={setverModalNuevoContacto} />
+        <FormularioContacto estado={verModalNuevoContacto} cambiarEstado={VerModalNuevoContacto} title="Nuevo Contacto" />
       }
 
     </>
