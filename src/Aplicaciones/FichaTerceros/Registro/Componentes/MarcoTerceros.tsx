@@ -45,6 +45,7 @@ export default function InformacionGeneral() {
     <>
         <Stack 
             direction="row" 
+            width="100%"
             paddingX={3} 
             justifyContent="space-between" 
             height="100%"
@@ -55,7 +56,7 @@ export default function InformacionGeneral() {
                 paddingY={3} 
                 alignItems={expandido ? "flex-end" : "center"} 
                 gap={2}
-                top={0}
+                top={"5%"}
                 height={"fit-content"}
                 left={0}
                 width={expandido ? "21%" : "7%"}
@@ -65,7 +66,7 @@ export default function InformacionGeneral() {
 
             <Stack direction="column" width={expandido ? "77%" : "93%"} justifyContent="flex-start" >
                 <Stack 
-                    top={0} 
+                    top={"5%"} 
                     height={"fit-content"} 
                     position="sticky" 
                     justifyContent={!expandido ? "space-between":"flex-end"}

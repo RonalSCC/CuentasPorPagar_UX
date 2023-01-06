@@ -13,7 +13,7 @@ export default function TercerosProveedor(
     const [terceroSeleccionado, setTerceroSeleccionado] = useState<any>(null);
     const [terceroConsulta, setTerceroConsulta] = useState<any>(null);
     const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false);
-
+    const [tituloPageHeader, setTituloPageHeader] = useState("");
     useEffect(() => {
       ConsultarInformacionTercero();
     }, [terceroSeleccionado])
@@ -39,12 +39,19 @@ export default function TercerosProveedor(
         setNuevoRegistro(NuevoEstado);
     }
 
+    const CambiarTituloPageHeader = (titulo:string)=>{
+        if (titulo) {
+            setTituloPageHeader(titulo);
+        }
+    }
     const propsTercerosContexto: Record<string, any> = {
         TerceroSeleccionado: terceroSeleccionado, 
         CambiarTerceroSeleccionado: CambiarTerceroSeleccionado,
         NuevoRegistro: nuevoRegistro, 
         CambiarEstadoNuevoRegistro: CambiarEstadoNuevoRegistro,
-        TerceroConsulta: terceroConsulta
+        TerceroConsulta: terceroConsulta,
+        CambiarTituloPageHeader,
+        TituloPageHeader: tituloPageHeader
     };
 
     return (
