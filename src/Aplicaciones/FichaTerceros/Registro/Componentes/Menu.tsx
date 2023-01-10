@@ -1,6 +1,8 @@
 import { AccountBalanceOutlined, ContentCopy, ContentCut, ContentPaste, ExpandLessRounded, ExpandMoreRounded, GroupOutlined, LocalOfferOutlined, MenuOpenOutlined, MenuOutlined, PercentOutlined, Person, PersonOutlined, ReceiptLongOutlined, SettingsOutlined } from '@mui/icons-material'
-import { Fab, IconButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Menu, MenuItem, MenuList, Paper, Stack, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { Badge, Fab, IconButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Menu, MenuItem, MenuList, Paper, Stack, Typography } from '@mui/material'
+import React, { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { MarcoTerceroContexto } from '../Contextos/MarcoTerceroContexto';
 
 export default function MenuInformacionGeneral(
     {
@@ -14,7 +16,9 @@ export default function MenuInformacionGeneral(
 ) {
     const [configuracionAvanzadaExpandida, setConfiguracionAvanzadaExpandida] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const {propsMarcoTercero}:{propsMarcoTercero:any} = useContext<any>(MarcoTerceroContexto);
     
+    const navigate = useNavigate();
     const AbrirMenuEmergente_ConfigAvanzada = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -50,27 +54,55 @@ export default function MenuInformacionGeneral(
         }
     };
       
+    const CambiarOpcionMenuSeleccionada = (nuevaRuta:string)=>{
+        navigate(nuevaRuta);
+    }
   return (
     <>
-        <Fab 
-            variant='extended' 
-            size='small'
-            color='primary'
-            onClick={()=> { expandirMenu()}}
+        <Stack 
+            direction="row" 
+            justifyContent={expandido ? "space-between" : "center"} 
+            width="100%"
         >
             {
-                expandido ?
-                    <MenuOpenOutlined /> :
-                    <MenuOutlined/>
+                expandido == true &&
+                <Stack direction="column"  width="70%">
+                    <Stack direction="row" alignItems="center" gap={1}>
+                        <Badge variant='dot' color='success'/>
+                        <Typography noWrap variant='subtitle2' color="primary.main">
+                            Ronal Santiago Castaño Chaparro
+                        </Typography>
+                    </Stack>
+                    <Stack>
+                        <Typography variant='caption' color="text.primary">
+                            ID: 1012  C.C.: 1001277214
+                        </Typography>
+                    </Stack>
+                </Stack>   
             }
-        </Fab>
+            
+
+            <Fab 
+                variant='extended' 
+                size='small'
+                color='primary'
+                onClick={()=> { expandirMenu()}}
+            >
+                {
+                    expandido ?
+                        <MenuOpenOutlined /> :
+                        <MenuOutlined/>
+                }
+            </Fab>
+        </Stack>
+        
         <Paper sx={{ width: "100%"}} elevation={0}>
             <MenuList>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
                         <PersonOutlined/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu}>Información general</ListItemText>
+                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("InformacionGeneral")}>Información general</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
@@ -82,7 +114,7 @@ export default function MenuInformacionGeneral(
                     <ListItemIcon {...PropsItemIcon}>
                         <AccountBalanceOutlined />
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu}>Cuentas bancarias</ListItemText>
+                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("CuentasBancarias")}>Cuentas bancarias</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>

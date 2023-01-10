@@ -1,22 +1,23 @@
 import { Button, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, Stack, TextField, Typography } from '@mui/material'
 import { IMaskInput } from 'react-imask';
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 
 
 // Icons
 import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Save } from '@mui/icons-material';
 import FormularioDirecciones from './FormularioDirecciones';
+import TipoPersonaNaturalCampos from './TipoPersonaNaturalCampos';
+import { useNavigate } from 'react-router-dom';
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 
-export default function FormularioInformacionGeneral(
-  {
-    RegistrarNuevoTercero
-  }:
-  {
-    RegistrarNuevoTercero: Function
-  }
-) {
+export default function FormularioInformacionGeneral() {
 
+  const navigate = useNavigate();
+  
+  const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
+  
+  const [tipoPersonaChecked, setTipoPersonaChecked] = useState(1);
   const [verModalDireccion, setVerModalDireccion] = useState(false);
   const propsInputs: Record<string, any> = {
     variant:"outlined", 
@@ -26,6 +27,12 @@ export default function FormularioInformacionGeneral(
 
   const VerFormularioDirecciones = ()=> {
     setVerModalDireccion(!verModalDireccion);
+  }
+
+  const CambioTipoPersona = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event) {
+      setTipoPersonaChecked(Number((event.target as HTMLInputElement).value));
+    }
   }
 
   return (
@@ -51,44 +58,28 @@ export default function FormularioInformacionGeneral(
               <RadioGroup
                 row
                 aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
+                name="TipoPersona"
+                onChange={CambioTipoPersona}
               >
-                <FormControlLabel control={<Radio />} label="Natural" />
-                <FormControlLabel control={<Radio />} label="Jurídica" />
+                <FormControlLabel checked={tipoPersonaChecked == 1} value={1} control={<Radio />} label="Natural" />
+                <FormControlLabel checked={tipoPersonaChecked == 2} value={2} control={<Radio />} label="Jurídica" />
               </RadioGroup>
             </FormControl>
           </Stack>
 
-          {/* Nombre */}
-          <Stack direction="row" gap={1.5}>
-            <TextField 
-              {...propsInputs}
-              id="primerNombre" 
-              label="Primer nombre"
-              placeholder='Prueba pruebita'
-              required
-            />
-            <TextField 
-              {...propsInputs}
-              id="segundoNombre" 
-              label="Segundo nombre" 
-            />
-          </Stack>
-
-          {/* Apellidos */}
-          <Stack direction="row" gap={1.5}>
-            <TextField 
-              {...propsInputs}
-              id="primerApellido" 
-              label="Primer apellido" 
-              required
-            />
-            <TextField 
-              {...propsInputs}
-              id="segundoApellido" 
-              label="Segundo apellido" 
-            />
-          </Stack>
+          {
+              tipoPersonaChecked == 1  ?
+                <TipoPersonaNaturalCampos propsInputs={propsInputs} /> :
+                <Stack direction="row" gap={1.5}>
+                  <TextField 
+                    {...propsInputs}
+                    id="razonSocial" 
+                    label="Razón social"
+                    required
+                  />
+                </Stack>
+          }
+          
 
           {/* Tipo Doc, Numero Ident, DV y Tipo */}
           <Stack direction="row" gap={1.5}>
@@ -244,7 +235,7 @@ export default function FormularioInformacionGeneral(
       >
         
         <Stack direction="row" paddingX={3} gap={1.5}>
-          <Button onClick={() => RegistrarNuevoTercero(false)} size='medium' variant="text">
+          <Button onClick={() => propsTercerosContexto.CambiarEstadoNuevoRegistro(false)} size='medium' variant="text">
               Cancelar
           </Button>
 

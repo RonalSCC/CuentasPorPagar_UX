@@ -1,6 +1,7 @@
 import { Autocomplete, InputAdornment, TextField } from '@mui/material';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
 
 export default function AutocompleteTerceros(
     {
@@ -10,23 +11,42 @@ export default function AutocompleteTerceros(
         SeleccionarTercero:Function
     }
 ) {
-    const lista_Terceros = [
-        { 
-            ID: '163', 
-            TipoIdentificacion: "CC",
-            Identificacion: "1001277214",
-            NombreTercero: "Ronal Santiago Castaño Chaparro"
+    const [ListaTerceros, setListaTerceros] = useState<Array<any>>();
+
+    useEffect(() => {
+        ConsultarTerceros();
+    }, []);
+
+    const  ConsultarTerceros = async () => {
+        let Respuesta= await CrearPeticion({
+            URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
+            Body: {
+                Clave: 1,
+                UsuarioID: 1
+            }
+        });
+
+        if (Respuesta && Array.isArray(Respuesta.Datos)) {
+            setListaTerceros(Respuesta.Datos);
         }
-    ];
+    }
+
   return (
 
     <>
         <Autocomplete
             id="comboTerceros"
             getOptionLabel={ options => {
-                return `[ID]: ${options.ID} - [${options.TipoIdentificacion}]: ${options.Identificacion} - ${options.NombreTercero}`
+                if(options.TerID && options.TerTipoIden && options.TerNit && options.TerNombre){
+                    return `[ID]: ${options.TerID} - [${options.TerTipoIden}]: ${options.TerNit} - ${options.TerNombre}`
+                }else{
+
+                    return "";
+                }
+
             }}
-            options={lista_Terceros}
+            value={null}
+            options={ListaTerceros as Array<any>}
             onChange={(event,select) => {SeleccionarTercero(select)}}
             fullWidth
             renderInput={(params) => {
@@ -38,7 +58,7 @@ export default function AutocompleteTerceros(
                             endAdornment: (
                                 <>
                                     <InputAdornment position="end"> 
-                                        <SearchIcon color='secondary'/> 
+                                        <SearchIcon sx={{color:"text.secondary"}}/> 
                                     </InputAdornment> 
                                 </>
                             ),  

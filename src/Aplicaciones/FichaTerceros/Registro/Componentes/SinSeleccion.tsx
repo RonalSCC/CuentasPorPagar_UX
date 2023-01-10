@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
@@ -11,26 +11,22 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select } from '@mui/material';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import AutocompleteTerceros from './Generales/AutocompleteTerceros';
-export default function SinSeleccion(
-    {
-        RegistrarNuevoTercero
-    }:
-    {
-        RegistrarNuevoTercero: Function
-    }
-) {
+import { redirect, useNavigate } from 'react-router-dom';
+import { CrearPeticion } from '../../../../Consumos/APIManager';
+import IRespuestaGeneral from '../../../../Consumos/IRespuestaGeneral';
+
+
+export default function SinSeleccion() {
+    
 
     const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
 
-    const lista_Terceros = [
-        { 
-            ID: '163', 
-            TipoIdentificacion: "CC",
-            Identificacion: "1001277214",
-            NombreTercero: "Ronal Santiago Castaño Chaparro"
-        }
-    ];
-
+    useEffect(() => {
+        propsTercerosContexto.CambiarTituloPageHeader("Administración de terceros");
+        console.log(process.env.REACT_APP_URL_API);
+        console.log(process.env.NODE_ENV);
+    }, [])
+    
     const CambiarTercero = (seleccion:any) => {
         if (seleccion != null) {
             propsTercerosContexto.CambiarTerceroSeleccionado(seleccion);
@@ -38,8 +34,8 @@ export default function SinSeleccion(
     }
     
   return (
-    <Stack direction="column" paddingX={3} height="100%" gap={12}>
-        <Stack direction="column" height={"40%"} position="relative">
+    <Stack direction="column" paddingX={3} height="100%" gap={3} width="100%">
+        <Stack direction="column" position="relative">
             <Stack height="50%" direction="row" position="absolute" width="100%" style={{backgroundColor:"primary"}}>
                 <Image fit='cover' src={"Imagenes/Terceros/FondoSeleccionarTerceros.png"} alt="" />
             </Stack>
@@ -63,11 +59,11 @@ export default function SinSeleccion(
             </Stack>
         </Stack>
             
-        <Stack gap={0.5} direction={"column"} display="flex" alignItems={"center"} >
-            <Image src={"Imagenes/Terceros/NuevoTercero.png"} width="20%" alt="Nuevo Tercero" />
+        <Stack gap={1.5} direction={"column"} display="flex" alignItems={"center"} >
+            <Image src={"Imagenes/Terceros/Ilustracion-SinSeleccion.svg"} width="20%" alt="Nuevo Tercero" />
             <Button 
                 variant="contained"
-                onClick={()=> {RegistrarNuevoTercero(true)}}
+                onClick={ ()=> propsTercerosContexto.CambiarEstadoNuevoRegistro(true)}
             >
                 Crear nuevo tercero
             </Button>

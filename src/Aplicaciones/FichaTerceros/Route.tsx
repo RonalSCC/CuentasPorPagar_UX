@@ -4,6 +4,7 @@ import MarcoTerceros from "./Registro/Componentes/MarcoTerceros";
 import FormularioRegistroTercero from "./Registro/Componentes/NuevoRegistro/FormularioRegistroTercero";
 import SinSeleccion from "./Registro/Componentes/SinSeleccion";
 import Terceros from "./Registro/Componentes/Terceros";
+import MarcoTerceroProveedor from "./Registro/Contextos/MarcoTercerosProveedor";
 import RoutesMarcoTerceros from "./Registro/Route";
 
 const CambiarTerceroMientras = ()=>{
@@ -14,17 +15,23 @@ const RoutesTerceros:RouteObject[] = [
         children:[
             {
                 path:"MarcoTerceros",
-                element: <MarcoTerceros RegistrarNuevoTercero={CambiarTerceroMientras}/>,
+                element: 
+                    <>
+                        <MarcoTerceroProveedor>
+                            <MarcoTerceros/>
+                        </MarcoTerceroProveedor>
+                    </>
+                ,
                 children: RoutesMarcoTerceros
             },
             {
                 path:"*",
-                element: <SinSeleccion RegistrarNuevoTercero={CambiarTerceroMientras}/>,
+                element: <SinSeleccion/>,
                 index:true
             },
             {
                 path:"FormularioRegistro",
-                element: <FormularioRegistroTercero RegistrarNuevoTercero={CambiarTerceroMientras}/>
+                element: <FormularioRegistroTercero/>
             }
         ]
     }

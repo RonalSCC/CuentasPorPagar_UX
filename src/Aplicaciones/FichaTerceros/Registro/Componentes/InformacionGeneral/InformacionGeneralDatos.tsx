@@ -1,9 +1,19 @@
 import { Add, Edit } from '@mui/icons-material'
 import Search from '@mui/icons-material/Search'
 import { Alert, AlertTitle, Button, Chip, Divider, FormControl, FormControlLabel, Stack, Switch, Typography } from '@mui/material'
-import React from 'react'
+import React, { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { TercerosContexto } from '../../../Contextos/TercerosContexto'
+import CampoValorInfoGeneral from './CampoValorInfoGeneral'
 
 export default function InformacionGeneralDatos(props:any) {
+    const navigate = useNavigate();
+
+    const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
+
+    const EditarInformacionGeneral = ()=> {
+        navigate("EditarInformacionGeneral");
+    }
   return (
     <>
         {/* -------------------------------- */}
@@ -19,6 +29,7 @@ export default function InformacionGeneralDatos(props:any) {
                             size='medium' 
                             variant="outlined"
                             startIcon={ <Edit /> }
+                            onClick={EditarInformacionGeneral}
                         >
                             Editar
                         </Button>
@@ -26,15 +37,10 @@ export default function InformacionGeneralDatos(props:any) {
 
                     <Stack direction="column" gap={1}>
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Tipo de persona:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Natural
-                                </Typography>
-                            </Stack>
-
+                            <CampoValorInfoGeneral
+                                Campo="Tipo de persona:"
+                                Valor="Natural"
+                            />
                             <Stack direction="row" alignItems="center">
                                 <FormControl disabled fullWidth component="fieldset">
                                     <FormControlLabel
@@ -47,154 +53,126 @@ export default function InformacionGeneralDatos(props:any) {
                             </Stack>
                         </Stack>   
 
-                        <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Primer nombre:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Ronal
-                                </Typography>
-                            </Stack>
+                        {
+                            propsTercerosContexto.TerceroConsulta.TipoPersonaID == 1 &&
+                            <>
+                                <Stack direction="row" alignItems="center">
+                                    <CampoValorInfoGeneral
+                                        Campo="Primer nombre:"
+                                        Valor="Ronal"
+                                    />
 
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Segundo nombre:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Castaño
-                                </Typography>
-                            </Stack>
+                                    <CampoValorInfoGeneral
+                                        Campo="Segundo nombre:"
+                                        Valor="Castaño"
+                                    />
+                                </Stack> 
+
+                                <Stack direction="row" alignItems="center">
+
+                                    <CampoValorInfoGeneral
+                                        Campo="Primer apellido:"
+                                        Valor="Castaño"
+                                    />
+
+                                    <CampoValorInfoGeneral
+                                        Campo="Segundo apellido:"
+                                        Valor="Chaparro"
+                                    />
+                                </Stack> 
+                            </>
+                        }       
+
+                        {
+                            propsTercerosContexto.TerceroConsulta.TipoPersonaID != 1 && 
+                            <Stack direction="row" alignItems="center">
+
+                                <CampoValorInfoGeneral
+                                    Campo="Razón social:"
+                                    Valor="Chocolate chips cokies"
+                                    PropsRow={
+                                        {
+                                            width: "100%"
+                                        }
+                                    }
+                                />
+
+                            </Stack> 
+                        }  
+                        
+                        <Stack direction="row" alignItems="center">
+
+                            <CampoValorInfoGeneral
+                                Campo="Número de identificación:"
+                                Valor="C.C.: 1014296897 - 9"
+                            />
+
+                            <CampoValorInfoGeneral
+                                Campo="Forma de pago:"
+                                Valor="Contado"
+                            />
                         </Stack> 
 
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Primer apellido:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Castaño
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Ciudad:"
+                                Valor="Bogotá D.C."
+                            />
 
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Segundo apellido:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Chaparro
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Dirección"
+                                Valor="Carrera 94 i # 84 - 48"
+                            />
                         </Stack> 
 
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Número de identificación:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    C.C.: 1014296897 - 9
-                                </Typography>
-                            </Stack>
 
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Forma de pago:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Contado
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Tipo:"
+                                Valor="Cliente y proveedor"
+                            />
+
+                            <CampoValorInfoGeneral
+                                Campo="Sub-tipo:"
+                                Valor="-"
+                            />
                         </Stack> 
 
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Ciudad:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Bogotá D.C.
-                                </Typography>
-                            </Stack>
 
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Dirección:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Carrera 94 i # 84 - 48
-                                </Typography>
-                            </Stack>
-                        </Stack> 
+                            <CampoValorInfoGeneral
+                                Campo="Actividad económica:"
+                                Valor="-"
+                            />
 
-                        <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Tipo:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Cliente y proveedor
-                                </Typography>
-                            </Stack>
-
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Sub-tipo:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    -
-                                </Typography>
-                            </Stack>
-                        </Stack> 
-
-                        <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Actividad económica:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    -
-                                </Typography>
-                            </Stack>
-
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Correo eléctronico:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    ronal.castano@sinco.com.co
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Correo eléctronico:"
+                                Valor="ronal.castano@sinco.com.co"
+                            />
                         </Stack>
 
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Télefono:
-                                </Typography>
-                                <Chip size='small' label="6789076" />
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Télefono:"
+                                Componente={<Chip size='small' label="6789076" />}
+                            />
 
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Celular:
-                                </Typography>
-                                <Chip size='small' label="3245859050" />
-                                {/* <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    3245859050
-                                </Typography> */}
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Celular:"
+                                Componente={<Chip size='small' label="3245859050" />}
+                            />
                         </Stack>
 
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Observaciones:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Observaciones:"
+                                Valor="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                                PropsRow={
+                                    {
+                                        width:"100%"
+                                    }
+                                }
+                            />
                         </Stack>
 
                     </Stack>
@@ -207,23 +185,15 @@ export default function InformacionGeneralDatos(props:any) {
                         </Typography>
 
                         <Stack direction="row" alignItems="center">
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Nombre:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    Ronal Santiago Castaño Chaparro
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Nombre:"
+                                Valor='Ronal Santiago Castaño Chaparro'
+                            />
 
-                            <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                    Correo eléctronico:
-                                </Typography>
-                                <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                    ronal.castano@sinco.com.co
-                                </Typography>
-                            </Stack>
+                            <CampoValorInfoGeneral
+                                Campo="Correo eléctronico:"
+                                Valor='ronal.castano@sinco.com.co'
+                            />
                         </Stack>
                     </Stack>
 
@@ -236,49 +206,34 @@ export default function InformacionGeneralDatos(props:any) {
 
                         <Stack direction="column" gap={1}>
                             <Stack direction="row" alignItems="center">
-                                <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                    <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                        Nombre:
-                                    </Typography>
-                                    <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                        Ronal Santiago Castaño Chaparro
-                                    </Typography>
-                                </Stack>
+                                <CampoValorInfoGeneral
+                                    Campo="Nombre:"
+                                    Valor='Ronal Santiago Castaño Chaparro'
+                                />
 
-                                <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                    <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                        Número de identificación:
-                                    </Typography>
-                                    <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                        10143566789
-                                    </Typography>
-                                </Stack>
+                                <CampoValorInfoGeneral
+                                    Campo="Número de identificación:"
+                                    Valor='10143566789'
+                                />
                             </Stack>
 
                             <Stack direction="row" alignItems="center">
-                                <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                    <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                        Lugar de expedición:
-                                    </Typography>
-                                    <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                        Bogotá D.C.
-                                    </Typography>
-                                </Stack>
 
-                                <Stack gap={.5} direction="row" width="50%" alignItems="center">
-                                    <Typography textAlign={"center"} variant="subtitle2" color="text.primary">
-                                        Correo eléctronico:
-                                    </Typography>
-                                    <Typography textAlign={"center"} variant="body2" color="text.primary">
-                                        ronal.castano@sinco.com.co
-                                    </Typography>
-                                </Stack>
+                                <CampoValorInfoGeneral
+                                    Campo="Lugar de expedición:"
+                                    Valor='Bogotá D.C.'
+                                />
+
+                                <CampoValorInfoGeneral
+                                    Campo="Correo eléctronico:"
+                                    Valor='ronal.castano@sinco.com.co'
+                                />
                             </Stack>
                         </Stack>
                     </Stack>
 
                     <Alert severity="info">
-                        Estudio de seguridad sin diligenciar
+                        Estudio de seguridad sin diligenciar (SAGRILAFT)
                     </Alert>   
 
                     <Stack direction="column">
@@ -290,12 +245,12 @@ export default function InformacionGeneralDatos(props:any) {
                                 Viviana Contreras Torres - 03/03/2017 08:57:00 a.m.
                             </Typography>
                         </Stack>
-                        <Stack direction="row">
+                        <Stack direction="row" gap={.5}>
                             <Typography textAlign={"center"} variant="caption" color="text.primary">
-                                Última modificación:
+                                Última modificación: 
                             </Typography>
                             <Typography textAlign={"center"} variant="caption" color="text.primary">
-                                Implementación Sincosoft - 03/03/2017 08:57:00 a.m.
+                                 Implementación Sincosoft - 03/03/2017 08:57:00 a.m.
                             </Typography>
                         </Stack>
                     </Stack>
