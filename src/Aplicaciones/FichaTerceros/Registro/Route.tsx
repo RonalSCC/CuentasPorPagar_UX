@@ -3,6 +3,7 @@ import { useRoutes } from 'react-router-dom';
 import Cuentas from "./Componentes/CuentasBancarias/Cuentas";
 import EditarInformacionGeneral from "./Componentes/InformacionGeneral/EditarInformacionGeneral";
 import InformacionGeneralDatos from "./Componentes/InformacionGeneral/InformacionGeneralDatos";
+import Contactos from './Componentes/Contactos/Contactos'
 import MarcoTerceroProveedor from "./Contextos/MarcoTercerosProveedor";
 const CambiarTerceroMientras = ()=>{
 
@@ -14,6 +15,10 @@ const RoutesMarcoTerceros:RouteObject[] = [
                 path:"*",
                 element: <InformacionGeneralDatos />,
                 index:true
+            },
+            {
+                path:"Contactos",
+                element: <Contactos />,
             },
             {
                 path:"EditarInformacionGeneral",
