@@ -49,7 +49,7 @@ const CardContact = () => {
 								<InfoItem title="Telefono" text="-" />
 							</Stack>
 							<Stack>
-								<InfoItem title="Celular" text="-" />
+								<InfoItem title="Celular" text="3211234567" />
 							</Stack>
 						</Stack>
 						<Stack gap={0.5}>

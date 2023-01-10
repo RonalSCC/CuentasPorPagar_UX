@@ -93,7 +93,7 @@ const FormularioContacto = (
                                 </Select>
                             </FormControl>
                         </Stack>
-                        <Stack>
+                        <Stack px={1}>
                             <FormGroup>
                                 <FormControlLabel control={<Checkbox defaultChecked />} label="Contacto principal" />
                             </FormGroup>

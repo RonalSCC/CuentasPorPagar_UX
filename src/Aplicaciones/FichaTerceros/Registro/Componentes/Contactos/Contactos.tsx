@@ -15,7 +15,7 @@ const Contactos = (props: any) => {
 
   return (
     <>
-      <Stack gap={1} direction="row" flexWrap="wrap">
+      <Stack p={3} gap={1.5} direction="row" flexWrap="wrap">
         <CardContact />
         <CardContact />
         <CardContact />
