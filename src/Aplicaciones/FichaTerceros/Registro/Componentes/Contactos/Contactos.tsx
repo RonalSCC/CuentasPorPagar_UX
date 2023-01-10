@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import FormularioContacto from './FormularioContacto'
 import CardContact from './CardContact'
 
-const Contactos = (props: any) => {
+const Contactos = () => {
 
   const [verModalNuevoContacto, setverModalNuevoContacto] = useState(false);
 

@@ -1,22 +1,18 @@
 import { Button, Dialog, DialogActions, DialogTitle, Stack, Typography } from '@mui/material'
 import Image from 'mui-image'
-import React from 'react'
 
-const DeleteContact = (
-  {
-    estado,
-    cambiarEstado
-  }:
-    {
-      estado: boolean,
-      cambiarEstado: any
-    }
-) => {
+export interface DeleteContactProps {
+  estado: boolean,
+  cambiarEstado: Function
+}
+
+
+const DeleteContact = ({estado, cambiarEstado}:DeleteContactProps) => {
   return (
     <>
       <Dialog
         open={estado}
-        onClose={cambiarEstado}
+        onClose={() => cambiarEstado()}
       >
         <Stack p={3} gap={3} maxWidth={444}>
           <Stack maxWidth={211} alignSelf="center">
@@ -32,7 +28,7 @@ const DeleteContact = (
         </Stack>
         <DialogActions>
           <Stack py={1} direction="row" alignItems="center" justifyContent="end">
-            <Button onClick={cambiarEstado}>
+            <Button onClick={() => cambiarEstado()}>
               Cancelar
             </Button>
             <Button variant='outlined' color='error'>

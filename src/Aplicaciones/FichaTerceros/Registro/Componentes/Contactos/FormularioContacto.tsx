@@ -1,19 +1,13 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 import React from 'react'
 
-const FormularioContacto = (
-    {
-        estado,
-        cambiarEstado,
-        title
-    }:
-        {
-            estado: boolean,
-            cambiarEstado: any,
-            title: string
-        }
+export interface FormularioContactoProps {
+    estado: boolean,
+    cambiarEstado: Function,
+    title: string
+  }
 
-) => {
+const FormularioContacto = ({estado, cambiarEstado,title}: FormularioContactoProps) => {
 
     const propsInputs: Record<string, any> = {
         variant: "outlined",
@@ -24,7 +18,7 @@ const FormularioContacto = (
         <>
             <Dialog
                 open={estado}
-                onClose={cambiarEstado}
+                onClose={() => cambiarEstado()}
                 fullWidth
             >
                 <DialogTitle paddingY={2} paddingX={3}>
@@ -103,7 +97,7 @@ const FormularioContacto = (
 
                 <DialogActions>
                     <Stack direction="row" gap={1}>
-                        <Button size='medium' variant="text" onClick={cambiarEstado}>
+                        <Button size='medium' variant="text" onClick={() => cambiarEstado()}>
                             Cancelar
                         </Button>
 

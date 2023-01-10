@@ -1,7 +1,12 @@
 import { Typography } from '@mui/material'
 import React from 'react'
 
-const InfoItem = ({ title, text }:any) => {
+export interface InfoItemPorps {
+  title: string,
+  text: string
+}
+
+const InfoItem = ({ title, text }:InfoItemPorps) => {
   return (
     <>
       <Typography variant="caption">{title}</Typography>
