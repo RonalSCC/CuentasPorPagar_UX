@@ -27,11 +27,11 @@ const RoutesTerceros:RouteObject[] = [
             {
                 path:"*",
                 element: <SinSeleccion/>,
-                index:true
             },
             {
                 path:"FormularioRegistro",
-                element: <FormularioRegistroTercero/>
+                element: <FormularioRegistroTercero/>,
+                index:true
             }
         ]
     }
