@@ -3,10 +3,11 @@ import React from 'react'
 
 export interface FormularioRegistroDeDescuentosProps {
     estado: boolean,
-    cambiarEstado: Function
+    cambiarEstado: Function,
+    title: string
 }
 
-const FormularioRegistroDeDescuentos = ({ estado, cambiarEstado }: FormularioRegistroDeDescuentosProps) => {
+const FormularioRegistroDeDescuentos = ({ estado, cambiarEstado, title }: FormularioRegistroDeDescuentosProps) => {
     return (
         <Dialog open={estado}
             onClose={() => cambiarEstado()}
@@ -14,41 +15,40 @@ const FormularioRegistroDeDescuentos = ({ estado, cambiarEstado }: FormularioReg
         >
             <DialogTitle>
                 <Typography variant='h6'>
-                    Nuevo Descuento
+                    {title}
                 </Typography>
             </DialogTitle>
             <Stack direction="column" p={3} gap={1.5}>
                 <Stack direction="row" gap={1.5}>
                     <FormControl size="small" sx={{ width: "140%" }}>
-                        <InputLabel id="selectDescuento">Descuento</InputLabel>
-                        <Select placeholder="Seleccione una opción"
+
+                        <TextField placeholder="Seleccione una opción"
                             variant="outlined"
                             size="small"
                             id="selectDescuento"
-                            label="Descuentos" >
-                            <MenuItem defaultChecked={true} value="10">Seleccione una opción</MenuItem>
-                            <MenuItem value="20">Twenty</MenuItem>
-                        </Select>
+                            label="Descuentos"
+                            select>
+                            <MenuItem value="Bogotá">Bogotá</MenuItem>
+                            <MenuItem value="Manizales">Medellin</MenuItem>
+                        </TextField>
                     </FormControl>
                     <TextField variant="outlined" size="small" id="select" label="Plazo (Días)"></TextField>
                     <TextField variant="outlined" size="small" id="select" label="%" sx={{ width: "20%" }}></TextField>
                 </Stack>
                 <Stack>
                     <FormControl size="small" fullWidth>
-                        <InputLabel id="selectCiudad">Ciudad</InputLabel>
-                        <Select placeholder="Seleccione una opción"
+                        <TextField placeholder="Seleccione una opción"
                             variant="outlined"
                             size="small"
                             id="selectCiudad"
                             label="Ciudad" >
                             <MenuItem value="Bogotá">Bogotá</MenuItem>
                             <MenuItem value="Manizales">Medellin</MenuItem>
-
-                        </Select>
+                        </TextField>
                     </FormControl>
                 </Stack>
                 <Stack>
-                    <TextField label="Observaciones" rows={3} multiline></TextField>
+                    <TextField label="Observaciones" rows={5} multiline></TextField>
                 </Stack>
             </Stack>
             <DialogActions>

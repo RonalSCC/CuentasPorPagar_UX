@@ -5,13 +5,13 @@ import Image from "mui-image"
 const NotInformation = () => {
     return (
         <Stack
-            direction="column"
             justifyContent="center"
             alignItems="center"
             bgcolor="#FFFFFF"
             border={0.8}
             borderColor="background.default"
-            width="100%">
+            width="100%"
+            >
 
             <Stack py={5} px={3} gap={1.5} direction="column" justifyContent="center" alignItems="center" >
                 <Stack maxWidth={183}>

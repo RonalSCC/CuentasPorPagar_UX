@@ -1,5 +1,10 @@
-import { Card, CardContent, Divider, ListItemSecondaryAction, Typography } from '@mui/material'
+import { EditOutlined, DeleteOutlined } from '@mui/icons-material'
+import { Card, CardContent, Divider, IconButton, ListItemSecondaryAction, Tooltip, Typography } from '@mui/material'
 import { Stack } from '@mui/material'
+import { useState } from 'react'
+import DeleteContact from '../Contactos/DeleteContact'
+import DeleteDescuento from './DeleteDescuento'
+import FormularioRegistroDeDescuentos from './FormularioRegistroDeDescuentos'
 
 export interface DescuentoCardProps {
     tituloDescuento: string
@@ -7,11 +12,23 @@ export interface DescuentoCardProps {
 
 
 const DescuentoCard = ({ tituloDescuento }: DescuentoCardProps) => {
+
+    const [verModalEditDiscount, setverModalEditDiscount] = useState(false);
+    const [verModalDeleteDiscount, setverModalDeleteDiscount] = useState(false);
+
+    const handleEditDiscount = () => {
+        setverModalEditDiscount(!verModalEditDiscount);
+    }
+
+    const handleDeleteDiscount = () => {
+        setverModalDeleteDiscount(!verModalDeleteDiscount);
+    }
+
     return (
         <Stack p={2} gap={1.5} >
             <Card elevation={0}>
                 <CardContent >
-                    <Stack direction="row" gap={1.5} bgcolor={"#FFFFFF"}>
+                    <Stack direction="row" p={2} gap={1.5} bgcolor={"#FFFFFF"} justifyContent="space-between">
                         <Stack gap={1}>
                             <Typography color="primary.main">{tituloDescuento}</Typography>
                             <Stack>
@@ -37,12 +54,31 @@ const DescuentoCard = ({ tituloDescuento }: DescuentoCardProps) => {
                                 </Stack>
                             </Stack>
                         </Stack>
-                        <Stack>
-                            {/* Iconos */}
+
+                        <Stack direction="row" gap={1} alignItems="center">
+                            <Tooltip title="Eliminar" placement="top" arrow >
+                                <IconButton size="small" color="error" onClick={handleDeleteDiscount}>
+                                    <DeleteOutlined fontSize="small"/>
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Editar" placement="top" arrow >
+                                <IconButton size="small" color="primary" onClick={handleEditDiscount}>
+                                    <EditOutlined fontSize="small"/>
+                                </IconButton>
+                            </Tooltip>
                         </Stack>
                     </Stack>
                 </CardContent>
             </Card>
+            {
+                verModalEditDiscount == true &&
+                <FormularioRegistroDeDescuentos estado={verModalEditDiscount} cambiarEstado={handleEditDiscount} title="Editar Descuento" />
+            }
+
+            {
+                verModalDeleteDiscount == true &&
+                <DeleteDescuento estado={verModalDeleteDiscount} cambiarEstado={handleDeleteDiscount}/>
+            }
         </Stack>
     )
 }
