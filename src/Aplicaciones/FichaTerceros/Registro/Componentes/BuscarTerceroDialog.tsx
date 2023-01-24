@@ -16,10 +16,10 @@ export default function BuscarTerceroDialog(
 {
   const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
 
-  const CambiarTercero = (evento:any, seleccion:any) => {
+  const CambiarTercero = (seleccion:any) => {
     if (seleccion != null) {
       propsTercerosContexto.CambiarTerceroSeleccionado(seleccion);
-      CerrarBuscarTercero(true);
+      CerrarBuscarTercero();
     }
   }
 

@@ -93,8 +93,8 @@ const typography: TypographyOptions = {
   h6: {
     fontFamily: "Nunito",
     fontWeight: "600",
-    fontSize: "20px",
-    lineHeight:"32px",
+    fontSize: "16px",
+    lineHeight:"22.4px",
     letterSpacing:"0.15px"
   },
   subtitle1: {
@@ -161,7 +161,8 @@ export const light: ThemeOptions = {
     primary: {
       main: "#1E62A1",
       dark: "#003972",
-      light: "#5A8FD3"
+      light: "#5A8FD3",
+      contrastText: "#FFFFFF"
     },
     secondary: {
       main: "#0CBBE2",
@@ -200,8 +201,8 @@ export const light: ThemeOptions = {
       contrastText: "#FFF",
     },
     background: {
-      paper: "#FBFBFB",
-      default: "#F1F0EE",
+      paper: "#F5F5F5",
+      default: "#F1F0EE"
     },
     blues:{
       main:blue[100],
@@ -227,16 +228,22 @@ export const light: ThemeOptions = {
       styleOverrides:{
         root:{
           textTransform:"none"
+        },
+        sizeSmall:{
+
         }
-      }
+      },
     },
     MuiFab:{
       styleOverrides:{
         root:{
           textTransform:"none"
+        },
+        sizeSmall:{
+          
         }
       }
-    }
+    },
   }
 };
 export const dark: ThemeOptions = {

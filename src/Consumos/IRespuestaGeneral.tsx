@@ -13,7 +13,7 @@ export interface IPaginacion {
 
 export default interface IRespuestaGeneral {
     Codigo: number,
-    Datos: object|Array<any>,
+    Datos: any|Array<any>,
     Descripcion:string,
     Errores?:null|Array<IErrorGeneral>,
     Ok: boolean,

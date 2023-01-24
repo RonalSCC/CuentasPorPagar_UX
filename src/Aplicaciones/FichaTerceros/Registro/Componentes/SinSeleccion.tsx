@@ -10,26 +10,21 @@ import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select } from '@mui/material';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
-import AutocompleteTerceros from './Generales/AutocompleteTerceros';
-import { redirect, useNavigate } from 'react-router-dom';
-import { CrearPeticion } from '../../../../Consumos/APIManager';
-import IRespuestaGeneral from '../../../../Consumos/IRespuestaGeneral';
+import {AutocompletarAYF} from '@ayf/generales';
+import { TerceroSeleccionadoLista } from '../../Contextos/TercerosProveedor';
 
 
 export default function SinSeleccion() {
     
-
     const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
 
     useEffect(() => {
         propsTercerosContexto.CambiarTituloPageHeader("Administración de terceros");
-        console.log(process.env.REACT_APP_URL_API);
-        console.log(process.env.NODE_ENV);
     }, [])
     
-    const CambiarTercero = (seleccion:any) => {
+    const CambiarTercero = (seleccion:TerceroSeleccionadoLista) => {
         if (seleccion != null) {
-            propsTercerosContexto.CambiarTerceroSeleccionado(seleccion);
+            propsTercerosContexto.CambiarTerceroSeleccionadoLista(seleccion);
         }
     }
     
@@ -40,17 +35,52 @@ export default function SinSeleccion() {
                 <Image fit='cover' src={"Imagenes/Terceros/FondoSeleccionarTerceros.png"} alt="" />
             </Stack>
             <Stack paddingTop={7} gap={1.5} zIndex={2} width="100%" direction="row" justifyContent="center">
-                <Card style={{width: "48%"}}>
+                <Card style={{width: "48%", backgroundColor:"#FFFFFF"}}>
                     <CardContent>
                         <Stack gap={3} direction="column" padding={2}>
                             <Stack direction="column">
-                                <Typography textAlign={"center"} variant="h6" color="text.secondary">
+                                <Typography textAlign={"center"} variant="h6" color="text.primary">
                                     Selecciona el tercero que deseas consultar
                                 </Typography>
                             </Stack>
                             <Stack direction="column">
-                                <AutocompleteTerceros
-                                    SeleccionarTercero={CambiarTercero}
+                                <AutocompletarAYF 
+                                    URLServicio={`${process.env.REACT_APP_URL_API_CONFIGURACION}/ConsultasGenerales/ConsultarInformacionListas`}
+                                    Body={{
+                                        Clave: 1,
+                                        UsuarioID: 1,
+                                    }}
+                                    Paginado={true}
+                                    PropsAutocomplete={{
+                                        id:"ComboTerceros",
+                                        getOptionLabel: options => {
+                                            if(options.TerID && options.TerTipoIden && options.TerNit && options.TerNombre){
+                                                return `[ID]: ${options.TerID} - [${options.TerTipoIden}]: ${options.TerNit} - ${options.TerNombre}`
+                                            }else{
+                                                return "";
+                                            }
+                                        },
+                                        size:"small",
+                                        onChange:(event,select) => {
+                                            CambiarTercero(select)
+                                        },
+                                        renderInput:(params) => {
+                                            return (
+                                                <TextField
+                                                      {...params}
+                                                      InputProps={{ ...params.InputProps, 
+                                                            endAdornment: (
+                                                                <>
+                                                                    <InputAdornment position="end"> 
+                                                                        <SearchIcon sx={{color:"text.secondary"}}/> 
+                                                                    </InputAdornment> 
+                                                                </>
+                                                            ),  
+                                                      }}
+                                                />
+                                            )
+                                        }
+                                    }}
                                 />
                             </Stack>
                         </Stack>

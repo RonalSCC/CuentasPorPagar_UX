@@ -1,20 +1,23 @@
 
 import React, { useContext, useEffect, useState } from 'react'
-import { Divider, Stack, Typography } from '@mui/material';
-import InformacionGeneral from './MarcoTerceros';
-import Menu from './Menu';
+import { Button, Divider, Stack, Typography } from '@mui/material';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
-import SinSeleccion from './SinSeleccion';
-import FormularioInformacionGeneral from './NuevoRegistro/FormularioRegistroTercero';
 import { Link, redirect,Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { RoutesTercerosElement } from '../../Route';
+import { Add, Search } from '@mui/icons-material';
+import BuscarTerceroDialog from './BuscarTerceroDialog';
+import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
 export default function Terceros(props:any) {
   const navigate = useNavigate();
-  const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
+  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+  const [buscarTerceroDialog, setBuscarTerceroDialog] = useState(false);
 
   useEffect(() => {
+    console.log(propsTercerosContexto.TerceroSeleccionadoLista)
+    console.log(propsTercerosContexto.NuevoRegistro)
+
     if (!propsTercerosContexto.NuevoRegistro) {
-      if (propsTercerosContexto.TerceroSeleccionado) {
+      if (propsTercerosContexto.TerceroSeleccionadoLista) {
         navigate("MarcoTerceros");
       }else{
         navigate("SinSeleccion");
@@ -22,7 +25,15 @@ export default function Terceros(props:any) {
     }else{
       navigate("FormularioRegistro");
     }
-  }, [propsTercerosContexto.NuevoRegistro, propsTercerosContexto.TerceroSeleccionado])
+  }, [propsTercerosContexto.NuevoRegistro, propsTercerosContexto.TerceroSeleccionadoLista]);
+
+  const AbrirDialogBuscarTercero= (estado:boolean) => {
+    setBuscarTerceroDialog(estado);
+  }
+
+  const CerrarDialogBuscarTercero = ()=>{
+    setBuscarTerceroDialog(false);
+}
   
   return (
     <>
@@ -36,16 +47,50 @@ export default function Terceros(props:any) {
           top={0}
           flexWrap="wrap"
         >
-          <Stack direction="row" pt={2} paddingX={3} pb={1} >
-            <Typography variant="h6" color="text.primary">
-              {propsTercerosContexto.TituloPageHeader}
-            </Typography>
+          <Stack direction="row" width="100%" paddingY={1.5} paddingX={3} justifyContent="space-between">
+            <Stack direction="row" alignItems={"center"}>
+              <Typography variant="h6" color="text.primary">
+                {propsTercerosContexto.TituloPageHeader}
+              </Typography>
+            </Stack>
+            
+            <Stack direction="row" gap={1}>
+              <Button 
+                  variant="outlined"
+                  startIcon={ <Search /> }
+                  size="small"
+                  sx={{
+                      zIndex: 1,
+                      backgroundColor: "white",
+                      visibility: propsTercerosContexto.TerceroSeleccionadoLista != null && !propsTercerosContexto.NuevoRegistro ? "visible": "hidden"
+                  }}
+                  onClick={()=> AbrirDialogBuscarTercero(true)}
+              >
+                  Buscar tercero
+              </Button>
+
+              <Button 
+                  variant="contained"
+                  startIcon={ <Add /> }
+                  size="small"
+                  onClick={()=> propsTercerosContexto.CambiarEstadoNuevoRegistro(true)}
+                  sx={{
+                    visibility: propsTercerosContexto.TerceroSeleccionadoLista != null && !propsTercerosContexto.NuevoRegistro ? "visible": "hidden"
+                  }}
+              >
+                  Crear tercero
+              </Button>
+            </Stack>
           </Stack>
           <Divider sx={{width:"100%"}}/>
         </Stack>
         <Stack  direction="row" width="100%" height="93%">
           { <RoutesTercerosElement/>}
         </Stack>
+        <BuscarTerceroDialog
+            DialogAbierto={buscarTerceroDialog}
+            CerrarBuscarTercero={CerrarDialogBuscarTercero}
+        />
       </Stack>
     </>
   )

@@ -33,7 +33,7 @@ export default function FormularioDirecciones(
             fullWidth
         >
         <DialogTitle paddingY={2} paddingX={3}>
-            Generador de direcciones
+            Ubicación
         </DialogTitle>
         <DialogContent sx={{padding:"0px"}}>
             <Stack gap={2} paddingY={1.5} paddingX={3}>

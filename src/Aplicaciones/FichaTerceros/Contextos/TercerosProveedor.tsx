@@ -1,7 +1,26 @@
+import { Alert, Collapse, Fade, Stack } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { TercerosContexto } from './TercerosContexto'
 
+export interface TerceroSeleccionadoLista{
+    TerDVNit:string,
+    TerID:string,
+    TerNit:string,
+    TerNombre:string,
+    TerTipoIden:string,
+    TerNatJur: string
+}
 
+export interface PropsTerceroContexto {
+    TerceroSeleccionadoLista: TerceroSeleccionadoLista | null, 
+    NuevoRegistro: boolean, 
+    TituloPageHeader: string
+    CambiarEstadoNuevoRegistro: Function,
+    CambiarTituloPageHeader: Function,
+    CambiarTerceroSeleccionadoLista: Function,
+    CambiarAlertas:(ListaAlertas: Array<JSX.Element>) => void,
+    CerrarAlertas: Function
+}
 export default function TercerosProveedor(
     {
         children
@@ -10,29 +29,13 @@ export default function TercerosProveedor(
         children: any
     }
 ){
-    const [terceroSeleccionado, setTerceroSeleccionado] = useState<any>(null);
-    const [terceroConsulta, setTerceroConsulta] = useState<any>(null);
+    const [terceroSeleccionadoLista, setTerceroSeleccionadoLista] = useState<TerceroSeleccionadoLista|null>(null);
     const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false);
     const [tituloPageHeader, setTituloPageHeader] = useState("");
-    useEffect(() => {
-      ConsultarInformacionTercero();
-    }, [terceroSeleccionado])
+    const [listaAlertas, setListaAlertas] = useState<Array<JSX.Element>>();
 
-    const ConsultarInformacionTercero = ()=> {
-        setTerceroConsulta(
-            { 
-                ID: '163', 
-                TipoIdentificacion: "CC",
-                Identificacion: "1001277214",
-                NombreTercero: "Ronal Santiago Castaño Chaparro",
-                TipoPersonaID: 1,
-                Ciudad: "Bogotá D.C"
-            }
-        );
-    }
-
-    const CambiarTerceroSeleccionado = (TerceroNuevo:number) => {
-        setTerceroSeleccionado(TerceroNuevo);
+    const CambiarTerceroSeleccionadoLista = (TerceroNuevo:TerceroSeleccionadoLista) => {
+        setTerceroSeleccionadoLista(TerceroNuevo);
     }
 
     const CambiarEstadoNuevoRegistro = (NuevoEstado:boolean) => {
@@ -44,19 +47,38 @@ export default function TercerosProveedor(
             setTituloPageHeader(titulo);
         }
     }
-    const propsTercerosContexto: Record<string, any> = {
-        TerceroSeleccionado: terceroSeleccionado, 
-        CambiarTerceroSeleccionado: CambiarTerceroSeleccionado,
+
+    const CambiarAlertas=(ListaAlertas:Array<JSX.Element>)=> {
+        if (ListaAlertas && ListaAlertas.length > 0) {
+            setListaAlertas(ListaAlertas);
+        }
+    }
+
+    const CerrarAlertas = ()=>{
+        setListaAlertas(undefined);
+    }
+    const propsTercerosContexto:PropsTerceroContexto = {
+        TerceroSeleccionadoLista: terceroSeleccionadoLista, 
+        CambiarTerceroSeleccionadoLista: CambiarTerceroSeleccionadoLista,
         NuevoRegistro: nuevoRegistro, 
         CambiarEstadoNuevoRegistro: CambiarEstadoNuevoRegistro,
-        TerceroConsulta: terceroConsulta,
         CambiarTituloPageHeader,
-        TituloPageHeader: tituloPageHeader
+        TituloPageHeader: tituloPageHeader,
+        CambiarAlertas,
+        CerrarAlertas
     };
 
     return (
         <TercerosContexto.Provider value={{propsTercerosContexto}}>
             {children}
+            <Fade in={listaAlertas != null && listaAlertas.length > 0} timeout={{enter: 500}}>
+                <Stack gap={1} sx={{position:"fixed", top:"15%", right:"3%"}} >
+                    {
+                        listaAlertas
+                    }
+                </Stack>
+            </Fade>
+
         </TercerosContexto.Provider>
     )
 }
