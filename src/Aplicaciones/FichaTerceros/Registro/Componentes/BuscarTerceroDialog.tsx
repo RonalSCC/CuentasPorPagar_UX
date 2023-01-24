@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import AutocompleteTerceros from './Generales/AutocompleteTerceros'
 import Image from 'mui-image';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
 export default function BuscarTerceroDialog(
   {
     DialogAbierto,
@@ -14,11 +15,11 @@ export default function BuscarTerceroDialog(
   }
 ) 
 {
-  const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
+  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
 
   const CambiarTercero = (seleccion:any) => {
     if (seleccion != null) {
-      propsTercerosContexto.CambiarTerceroSeleccionado(seleccion);
+      propsTercerosContexto.CambiarTerceroSeleccionadoLista(seleccion);
       CerrarBuscarTercero();
     }
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ThemeProvider } from "@mui/material/styles";
-import { SincoTheme } from "./Theme/Index";
+import { SincoTheme } from "./Theme/SincoTheme";
 import "./Estilos/index.css";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";

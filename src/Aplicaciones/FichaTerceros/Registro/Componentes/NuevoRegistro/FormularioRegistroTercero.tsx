@@ -1,5 +1,5 @@
 import { Button, Card, Divider, FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, OutlinedInput, Radio, RadioGroup, Select, Stack, TextField, Typography } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 
 // Icons
@@ -18,6 +18,11 @@ export default function FormularioInformacionGeneral() {
   
   const [tipoPersonaChecked, setTipoPersonaChecked] = useState(1);
   const [verModalDireccion, setVerModalDireccion] = useState(false);
+
+  useEffect(() => {
+    propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
+  }, [])
+
   const propsInputs: Record<string, any> = {
     variant:"outlined", 
     size:'small',
@@ -33,6 +38,8 @@ export default function FormularioInformacionGeneral() {
       setTipoPersonaChecked(Number((event.target as HTMLInputElement).value));
     }
   }
+
+  
 
   return (
     <>

@@ -244,6 +244,14 @@ export const light: ThemeOptions = {
         }
       }
     },
+    MuiCard:{
+      styleOverrides:{
+        root:{
+          backgroundColor: "white",
+          overflow:"initial"
+        }
+      }
+    }
   }
 };
 export const dark: ThemeOptions = {

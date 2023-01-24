@@ -11,6 +11,7 @@ const NotInformation = () => {
             border={0.8}
             borderColor="background.default"
             width="100%"
+            height="100%"
             >
 
             <Stack py={5} px={3} gap={1.5} direction="column" justifyContent="center" alignItems="center" >

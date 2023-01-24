@@ -18,11 +18,8 @@ export default function Cuentas() {
     }
   return (
     <>
-    <Stack direction="column" height="100%">
-
-    </Stack>
         {
-            (!ListCuentasBancarias || ListCuentasBancarias.length == 0) ?
+            (!ListCuentasBancarias || ListCuentasBancarias.length == 1) ?
             <SinCuentas />:
             <VisualizacionCuentas />
         }

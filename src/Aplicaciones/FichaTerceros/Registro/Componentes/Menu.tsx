@@ -2,6 +2,8 @@ import { AccountBalanceOutlined, ContentCopy, ContentCut, ContentPaste, ExpandLe
 import { Badge, Fab, IconButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Menu, MenuItem, MenuList, Paper, Stack, Typography } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { TercerosContexto } from '../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
 import { MarcoTerceroContexto } from '../Contextos/MarcoTerceroContexto';
 
 export default function MenuInformacionGeneral(
@@ -17,6 +19,8 @@ export default function MenuInformacionGeneral(
     const [configuracionAvanzadaExpandida, setConfiguracionAvanzadaExpandida] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const {propsMarcoTercero}:{propsMarcoTercero:any} = useContext<any>(MarcoTerceroContexto);
+    const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+
     
     const navigate = useNavigate();
     const AbrirMenuEmergente_ConfigAvanzada = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -80,12 +84,13 @@ export default function MenuInformacionGeneral(
                     <Stack direction="row" alignItems="center" gap={1} width="100%">
                         <Badge variant='dot' color='success'/>
                         <Typography overflow="hidden" noWrap textOverflow={"ellipsis"} variant='subtitle2' color="primary.main">
-                            Ronal Santiago Castaño Chaparro
+                            {propsTercerosContexto.TerceroSeleccionadoLista?.TerNombre}
                         </Typography>
                     </Stack>
                     <Stack width="100%">
                         <Typography overflow="hidden" noWrap textOverflow={"ellipsis"} variant='caption' color="text.primary">
-                            ID: 1012  C.C.: 1001277214
+                            {/* ID: 1012  C.C.: 1001277214 */}
+                            {`ID: ${propsTercerosContexto.TerceroSeleccionadoLista?.TerID} ${propsTercerosContexto.TerceroSeleccionadoLista?.TerTipoIden}: ${propsTercerosContexto.TerceroSeleccionadoLista?.TerNit}` }
                         </Typography>
                     </Stack>
                 </Stack>   
@@ -121,7 +126,7 @@ export default function MenuInformacionGeneral(
                     <ListItemIcon {...PropsItemIcon}>
                         <GroupOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu}>Contactos</ListItemText>
+                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("Contactos")}>Contactos</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
@@ -133,13 +138,13 @@ export default function MenuInformacionGeneral(
                     <ListItemIcon {...PropsItemIcon}>
                         <PercentOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu}>Configuración tributaría</ListItemText>
+                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("ConfiguracionTributaria")}>Configuración tributaría</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
                         <LocalOfferOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu}>Registro de descuentos</ListItemText>
+                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("RegistroDeDescuentos")}>Registro de descuentos</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>

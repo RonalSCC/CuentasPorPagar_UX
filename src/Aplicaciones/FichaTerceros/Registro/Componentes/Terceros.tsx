@@ -37,7 +37,7 @@ export default function Terceros(props:any) {
   
   return (
     <>
-      <Stack direction="column" alignItems="flex-end" width="100%">
+      <Stack direction="column" alignItems="flex-end" width="100%" height={"100%"}>
         <Stack 
           direction="row" 
           width="100%" 
@@ -60,7 +60,7 @@ export default function Terceros(props:any) {
                   startIcon={ <Search /> }
                   size="small"
                   sx={{
-                      zIndex: 1,
+                      zIndex: 10,
                       backgroundColor: "white",
                       visibility: propsTercerosContexto.TerceroSeleccionadoLista != null && !propsTercerosContexto.NuevoRegistro ? "visible": "hidden"
                   }}

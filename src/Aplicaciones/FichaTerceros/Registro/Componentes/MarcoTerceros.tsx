@@ -10,23 +10,20 @@ import InformacionGeneralDatos from './InformacionGeneral/InformacionGeneralDato
 import { TercerosContexto } from '../../Contextos/TercerosContexto'
 import { MarcoTerceroContexto } from '../Contextos/MarcoTerceroContexto'
 import { RoutesMarcoTerceroElement } from '../Route'
+import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor'
 
 export default function InformacionGeneral() {
     const [expandido, setExpandido] = useState(true);
     const [terceroConsultado, setterceroConsultado] = useState({});
-    const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
+    const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const {propsMarcoTercero}:{propsMarcoTercero:any} = useContext<any>(MarcoTerceroContexto);
 
+    useEffect(() => {
+        propsTercerosContexto.CambiarTituloPageHeader("Administración de tercero");
+      }, [])
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        BuscarTerceroAPI(propsTercerosContexto.terceroIDSeleccionado)
-    }, [propsTercerosContexto.terceroIDSeleccionado])
-    
-    const BuscarTerceroAPI = (IDtercero: number)=> {
-        
-    }
     const ExpandirMenu = ()=>{
         setExpandido(!expandido);
     }
@@ -41,7 +38,7 @@ export default function InformacionGeneral() {
         >
             <Stack 
                 direction="column" 
-                position={"sticky"}
+                position={"fixed"}
                 alignItems={expandido ? "flex-end" : "center"} 
                 gap={2}
                 top={"10%"}
@@ -73,11 +70,11 @@ export default function InformacionGeneral() {
 
                             </Badge>
                             <Typography variant='subtitle2' color="primary.main">
-                                Ronal Santiago Castaño Chaparro
+                            {propsTercerosContexto.TerceroSeleccionadoLista?.TerNombre}
                             </Typography>
 
                             <Typography variant='caption' color="text.primary">
-                                ID: 1012 C.C.: 1001277214
+                                {`ID: ${propsTercerosContexto.TerceroSeleccionadoLista?.TerID} ${propsTercerosContexto.TerceroSeleccionadoLista?.TerTipoIden}: ${propsTercerosContexto.TerceroSeleccionadoLista?.TerNit}` }
                             </Typography>
                         </Stack>
                     </Stack>

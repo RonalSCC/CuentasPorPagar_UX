@@ -12,6 +12,7 @@ import { Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import {AutocompletarAYF} from '@ayf/generales';
 import { TerceroSeleccionadoLista } from '../../Contextos/TercerosProveedor';
+import AutocompleteTerceros from './Generales/AutocompleteTerceros';
 
 
 export default function SinSeleccion() {
@@ -44,44 +45,7 @@ export default function SinSeleccion() {
                                 </Typography>
                             </Stack>
                             <Stack direction="column">
-                                <AutocompletarAYF 
-                                    URLServicio={`${process.env.REACT_APP_URL_API_CONFIGURACION}/ConsultasGenerales/ConsultarInformacionListas`}
-                                    Body={{
-                                        Clave: 1,
-                                        UsuarioID: 1,
-                                    }}
-                                    Paginado={true}
-                                    PropsAutocomplete={{
-                                        id:"ComboTerceros",
-                                        getOptionLabel: options => {
-                                            if(options.TerID && options.TerTipoIden && options.TerNit && options.TerNombre){
-                                                return `[ID]: ${options.TerID} - [${options.TerTipoIden}]: ${options.TerNit} - ${options.TerNombre}`
-                                            }else{
-                                                return "";
-                                            }
-                                        },
-                                        size:"small",
-                                        onChange:(event,select) => {
-                                            CambiarTercero(select)
-                                        },
-                                        renderInput:(params) => {
-                                            return (
-                                                <TextField
-                                                      {...params}
-                                                      InputProps={{ ...params.InputProps, 
-                                                            endAdornment: (
-                                                                <>
-                                                                    <InputAdornment position="end"> 
-                                                                        <SearchIcon sx={{color:"text.secondary"}}/> 
-                                                                    </InputAdornment> 
-                                                                </>
-                                                            ),  
-                                                      }}
-                                                />
-                                            )
-                                        }
-                                    }}
-                                />
+                                <AutocompleteTerceros SeleccionarTercero={CambiarTercero} />
                             </Stack>
                         </Stack>
                     </CardContent>

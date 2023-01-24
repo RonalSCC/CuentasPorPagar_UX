@@ -46,7 +46,7 @@ export default function InformacionGeneralDatos(props:any) {
     const [InfoTercero, setInfoTercero] = useState<IInfoUsuario|undefined>();
     useEffect(() => {
       ConsultarInformacionTercero();
-    }, [])
+    }, [propsTercerosContexto.TerceroSeleccionadoLista])
     
     const EditarInformacionGeneral = async()=> {
         navigate("EditarInformacionGeneral");
