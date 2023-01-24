@@ -1,16 +1,19 @@
-import { Typography } from '@mui/material'
-import React from 'react'
+import { Tooltip, Typography } from '@mui/material'
+import { useState } from 'react'
 
 export interface InfoItemPorps {
   title: string,
-  text: string
+  text: string,
+  showTooltip?: boolean
 }
 
-const InfoItem = ({ title, text }:InfoItemPorps) => {
+const InfoItem = ({ title, text, showTooltip }: InfoItemPorps) => {
   return (
     <>
       <Typography variant="caption">{title}</Typography>
-      <Typography variant='body2' color="text.secondary">{text}</Typography>
+      <Tooltip title={ showTooltip != undefined ? text : ""} placement="top" arrow>
+        <Typography variant='body2' noWrap color="text.secondary">{text}</Typography>
+      </Tooltip>
     </>
   )
 }

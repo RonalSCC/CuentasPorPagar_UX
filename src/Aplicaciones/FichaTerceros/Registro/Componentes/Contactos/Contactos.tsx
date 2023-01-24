@@ -13,6 +13,16 @@ const Contactos = () => {
     setverModalNuevoContacto(!verModalNuevoContacto);
   }
 
+  const contactos = [{
+    "Nombre documento" :1012422532,
+    "Telefono": 3213353173,
+    "Tipo": "Financiero y Administrativo",
+    "Celular": 3213353173,
+    "Ciudad": "Bogotá D.C",
+    "Email":"cristian.perez@sinco.com.co"
+  }
+]
+
   return (
     <>
       <Stack p={3} gap={1.5} direction="row" flexWrap="wrap">

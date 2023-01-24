@@ -5,6 +5,8 @@ import EditarInformacionGeneral from "./Componentes/InformacionGeneral/EditarInf
 import InformacionGeneralDatos from "./Componentes/InformacionGeneral/InformacionGeneralDatos";
 import Contactos from './Componentes/Contactos/Contactos'
 import MarcoTerceroProveedor from "./Contextos/MarcoTercerosProveedor";
+import ConfiguracionTributaria from "./Componentes/ConfiguracionTributaria/ConfiguracionTributaria";
+import RegistroDeDescuentos from './Componentes/RegistroDeDescuentos/RegistroDeDescuentos';
 const CambiarTerceroMientras = ()=>{
 
 }
@@ -14,7 +16,6 @@ const RoutesMarcoTerceros:RouteObject[] = [
             {
                 path:"*",
                 element: <InformacionGeneralDatos />,
-                index:true
             },
             {
                 path:"Contactos",
@@ -23,11 +24,19 @@ const RoutesMarcoTerceros:RouteObject[] = [
             {
                 path:"EditarInformacionGeneral",
                 element: <EditarInformacionGeneral />,
-                index:true
             },
             {
                 path:"CuentasBancarias",
                 element: <Cuentas />
+            },
+            {
+                path:'ConfiguracionTributaria',
+                element: <ConfiguracionTributaria/>,
+            },
+            {
+                path:"RegistroDeDescuentos",
+                element:<RegistroDeDescuentos />,
+                index:true
             }
         ]
     }
