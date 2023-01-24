@@ -1,3 +1,4 @@
+import { Tune } from "@mui/icons-material";
 import { ThemeOptions } from "@mui/material/styles";
 
 export const themeOptions: ThemeOptions = {
@@ -162,11 +163,37 @@ export const themeOptions: ThemeOptions = {
       },
     },
     MuiInputBase: {
+      styleOverrides: {
+        sizeSmall: {
+          "& .MuiOutlinedInput-input": {
+            padding: "7px 13px",
+          },
+        },
+      },
       defaultProps: {
         margin: "dense",
       },
     },
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          "&.label#demo-multiple-name-label": {
+            top: 3.5,
+          },
+        },
+      },
+    },
     MuiInputLabel: {
+      styleOverrides: {
+        sizeSmall: {
+          lineHeight: "14px",
+        },
+        outlined: {
+          "&.Mui-focused ": {
+            top: 4.5,
+          },
+        },
+      },
       defaultProps: {
         margin: "dense",
       },
@@ -183,7 +210,7 @@ export const themeOptions: ThemeOptions = {
     },
     MuiTextField: {
       defaultProps: {
-        margin: "dense",
+        margin: "none",
         size: "small",
       },
     },
