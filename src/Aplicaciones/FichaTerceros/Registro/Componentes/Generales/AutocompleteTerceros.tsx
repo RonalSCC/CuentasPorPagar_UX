@@ -11,28 +11,56 @@ export default function AutocompleteTerceros(
         SeleccionarTercero:Function
     }
 ) {
-    const [ListaTerceros, setListaTerceros] = useState<Array<any>>();
-
-    useEffect(() => {
-        ConsultarTerceros();
-    }, []);
-
-    const  ConsultarTerceros = async () => {
-        let Respuesta= await CrearPeticion({
-            URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
-            Body: {
-                Clave: 1,
-                UsuarioID: 1
-            }
-        });
-
-        if (Respuesta && Array.isArray(Respuesta.Datos)) {
-            setListaTerceros(Respuesta.Datos);
+    const [ListaTerceros, setListaTerceros] = useState<Array<any>>([
+        {
+            TerID: "0",
+            TerNombre: "MUROS Y TECHOS SAS.",
+            TerTipoIden: "NIT",
+            TerNit: "000000000",
+            TerDVNit: "0"
+        },
+        {
+            TerID: "1",
+            TerNombre: "GARCIA  ANDREA M ",
+            TerTipoIden: "TI",
+            TerNit: "800312546",
+            TerDVNit: ""
+        },
+        {
+            TerID: "2",
+            TerNombre: "UNDEFINED UNDEFINED UNDEFINED UNDEFINED",
+            TerTipoIden: "TI",
+            TerNit: "800240247",
+            TerDVNit: ""
+        },
+        {
+            TerID: "5",
+            TerNombre: "CHAVES ROCHA CARLOS ANDRÉS",
+            TerTipoIden: "CC",
+            TerNit: "80093286",
+            TerDVNit: ""
         }
-    }
+    ]);
+
+    // useEffect(() => {
+    //     ConsultarTerceros();
+    // }, []);
+
+    // const  ConsultarTerceros = async () => {
+    //     let Respuesta= await CrearPeticion({
+    //         URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
+    //         Body: {
+    //             Clave: 1,
+    //             UsuarioID: 1
+    //         }
+    //     });
+
+    //     if (Respuesta && Array.isArray(Respuesta.Datos)) {
+    //         setListaTerceros(Respuesta.Datos);
+    //     }
+    // }
 
   return (
-
     <>
         <Autocomplete
             id="comboTerceros"
@@ -45,6 +73,7 @@ export default function AutocompleteTerceros(
                 }
 
             }}
+            size="small"
             value={null}
             options={ListaTerceros as Array<any>}
             onChange={(event,select) => {SeleccionarTercero(select)}}

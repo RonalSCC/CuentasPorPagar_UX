@@ -28,7 +28,11 @@ export default function MenuInformacionGeneral(
     const open = Boolean(anchorEl);
     const PropsMenu: Record<string, any> = {
         sx:{
-            padding:"8px 16px",
+            paddingTop:.5,
+            paddingRight:1.5,
+            paddingBottom:.5,
+            paddingLeft:3,
+
             display:"flex",
             justifyContent: "center"
         }
@@ -37,12 +41,16 @@ export default function MenuInformacionGeneral(
     const PropsTextMenu: Record<string, any> = {
         primaryTypographyProps:{
             variant:"body1", 
-            color:"text.secondary"
+            color:"text.primary"
         },
         sx:{
             paddingY: "4px"
         },
         hidden: !expandido
+    };
+
+    const PropsIconMenu : Record<string, any> = {
+        fontSize:"small"
     };
 
     const PropsItemIcon: Record<string, any> = {
@@ -61,76 +69,81 @@ export default function MenuInformacionGeneral(
     <>
         <Stack 
             direction="row" 
-            justifyContent={expandido ? "space-between" : "center"} 
+            paddingY={3} 
+            justifyContent={"center"} 
             width="100%"
         >
+            <Stack flexWrap={'wrap'} direction="row" paddingRight={1.5} paddingLeft={3} width="100%">
             {
                 expandido == true &&
-                <Stack direction="column"  width="70%">
-                    <Stack direction="row" alignItems="center" gap={1}>
+                <Stack flexWrap={'wrap'} direction="column" width={"80%"}>
+                    <Stack direction="row" alignItems="center" gap={1} width="100%">
                         <Badge variant='dot' color='success'/>
-                        <Typography noWrap variant='subtitle2' color="primary.main">
+                        <Typography overflow="hidden" noWrap textOverflow={"ellipsis"} variant='subtitle2' color="primary.main">
                             Ronal Santiago Castaño Chaparro
                         </Typography>
                     </Stack>
-                    <Stack>
-                        <Typography variant='caption' color="text.primary">
+                    <Stack width="100%">
+                        <Typography overflow="hidden" noWrap textOverflow={"ellipsis"} variant='caption' color="text.primary">
                             ID: 1012  C.C.: 1001277214
                         </Typography>
                     </Stack>
                 </Stack>   
             }
-            
+                
 
-            <Fab 
-                variant='extended' 
-                size='small'
-                color='primary'
-                onClick={()=> { expandirMenu()}}
-            >
-                {
-                    expandido ?
-                        <MenuOpenOutlined /> :
-                        <MenuOutlined/>
-                }
-            </Fab>
+                <Fab 
+                    variant='extended' 
+                    size='small'
+                    color='primary'
+                    onClick={()=> { expandirMenu()}}
+                    sx={{width: expandido ? "20%": "100%"}}
+                >
+                    {
+                        expandido ?
+                            <MenuOpenOutlined /> :
+                            <MenuOutlined/>
+                    }
+                </Fab>
+            </Stack>
+            
         </Stack>
         
         <Paper sx={{ width: "100%"}} elevation={0}>
             <MenuList>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
-                        <PersonOutlined/>
+                        <PersonOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("InformacionGeneral")}>Información general</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
-                        <GroupOutlined />
+                        <GroupOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu}>Contactos</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
-                        <AccountBalanceOutlined />
+                        <AccountBalanceOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("CuentasBancarias")}>Cuentas bancarias</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
-                        <PercentOutlined />
+                        <PercentOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu}>Configuración tributaría</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
-                        <LocalOfferOutlined />
+                        <LocalOfferOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu}>Registro de descuentos</ListItemText>
                 </MenuItem>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
-                        <ReceiptLongOutlined />
+                        <ReceiptLongOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu}>Constitución</ListItemText>
                 </MenuItem>
@@ -147,7 +160,7 @@ export default function MenuInformacionGeneral(
                     }  
                 >
                     <ListItemIcon {...PropsItemIcon}>
-                        <SettingsOutlined/>
+                        <SettingsOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu}>Configuración <br /> avanzada</ListItemText>
                     {
