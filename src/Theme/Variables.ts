@@ -112,13 +112,6 @@ export const themeOptions: ThemeOptions = {
   },
   spacing: 4,
   components: {
-    MuiTypography: {
-      styleOverrides: {
-        root: {
-          fontSize: 12,
-        },
-      },
-    },
     MuiButton: {
       defaultProps: {
         size: "small",
