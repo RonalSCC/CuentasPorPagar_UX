@@ -74,7 +74,7 @@ const Typography: TypographyOptions = {
     fontSize: "13px",
     fontWeight: "400",
     lineHeight: "15.6px",
-    letterSpacing: "0.17ox",
+    letterSpacing: "0.17px",
   },
   caption: {
     fontFamily: "Roboto",

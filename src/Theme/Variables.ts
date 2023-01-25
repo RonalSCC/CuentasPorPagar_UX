@@ -114,15 +114,15 @@ const typography: TypographyOptions = {
   body1: {
     fontFamily: "Roboto",
     fontWeight: "400",
-    fontSize: "16px",
+    fontSize: "14px",
     lineHeight:"24px",
     letterSpacing:"0.15px"
   },
   body2: {
     fontFamily: "Roboto",
     fontWeight: "400",
-    fontSize: "14px",
-    lineHeight:"20.02px",
+    fontSize: "13px",
+    lineHeight:"15.6px",
     letterSpacing:"0.17px"
   },
   button: {

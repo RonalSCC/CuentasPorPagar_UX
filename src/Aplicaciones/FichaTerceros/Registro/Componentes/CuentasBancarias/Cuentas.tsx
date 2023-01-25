@@ -1,8 +1,8 @@
 import { Add } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, Fab, Stack, Typography } from '@mui/material';
-import React, { useState } from 'react'
+import { Fab } from '@mui/material';
+import { useState } from 'react'
+import SinInformacion from '../Generales/SinInformacion';
 import FormNuevaCuenta from './FormNuevaCuenta';
-import SinCuentas from './SinCuentas';
 import VisualizacionCuentas from './VisualizacionCuentas';
 
 export default function Cuentas() {
@@ -16,34 +16,37 @@ export default function Cuentas() {
     const AbrirDialogNuevaCuenta = () => {
         setDialogNuevaCuentaAbierta(true);
     }
-  return (
-    <>
-        {
-            (!ListCuentasBancarias || ListCuentasBancarias.length == 1) ?
-            <SinCuentas />:
-            <VisualizacionCuentas />
-        }
+    return (
+        <>
+            {
+                (!ListCuentasBancarias || ListCuentasBancarias.length == 1) ?
+                    <SinInformacion
+                        message="Crea una cuenta bancaria para realizar pagos al tercero"
+                    />
+                    :
+                    <VisualizacionCuentas />
+            }
 
-        <Fab  
-            onClick={AbrirDialogNuevaCuenta}
-            variant='extended' 
-            size='medium' 
-            sx={{
-                backgroundColor:"secondary.main",
-                position:"fixed",
-                bottom: "24px",
-                right: "24px"
-            }} 
-            color="secondary"
-        >
-            <Add sx={{color:'secondary.contrast'}}/>
-            Nueva cuenta bancaria   
-        </Fab>
+            <Fab
+                onClick={AbrirDialogNuevaCuenta}
+                variant='extended'
+                size='medium'
+                sx={{
+                    backgroundColor: "secondary.main",
+                    position: "fixed",
+                    bottom: "24px",
+                    right: "24px"
+                }}
+                color="secondary"
+            >
+                <Add sx={{ color: 'secondary.contrast' }} />
+                Nueva cuenta bancaria
+            </Fab>
 
-        <FormNuevaCuenta 
-            DialogAbierto={dialogNuevaCuentaAbierta} 
-            CerrarDialog={CerrarDialogNuevaCuenta} 
-        />
-    </>
-  )
+            <FormNuevaCuenta
+                DialogAbierto={dialogNuevaCuentaAbierta}
+                CerrarDialog={CerrarDialogNuevaCuenta}
+            />
+        </>
+    )
 }

@@ -23,52 +23,55 @@ const CardContact = () => {
 		<>
 			<Stack width={422}>
 				<Card variant="outlined" sx={{ borderColor: "secondary.main" }}>
-					<Stack direction="row" alignItems="center" px={1.5} py={2} justifyContent="space-between">
+					<Stack direction="row" alignItems="center" px={2} py={1.5} justifyContent="space-between">
 						<Stack direction="row" alignItems="center">
 							<Stack paddingRight={2}>
-								<Avatar >
-									<Person sx={{ color: '#FFFFFF' }} />
+								<Avatar sx={{ width: 32, height: 32 }} >
+									<Person fontSize="small" sx={{ color: '#FFFFFF' }} />
 								</Avatar >
 							</Stack>
-							<Typography variant='body1'>
-								Cristian Pérez
-							</Typography>
+							<Stack>
+								<Typography variant='h6'>
+									Cristian Pérez
+								</Typography>
+								<Typography color="text.secondary" variant='body1'>
+									Product Designer
+								</Typography>
+							</Stack>
 						</Stack>
 						<Stack>
 							<Chip label={"Contacto Principal"} color="secondary" size="small" />
 						</Stack>
 					</Stack>
-					<Stack py={1.5} px={2}>
-						<Stack direction="row" divider={<Divider orientation="vertical" flexItem />} gap={3}>
-							<Stack overflow="hidden">
+						<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={1.5}>
+							<Stack overflow="hidden" gap={1.5} width="50%">
 								<InfoItem title="Nombre documento" text="1012422532" />
 								<InfoItem title="Telefono" text="3213353173" />
 								<InfoItem title="Tipo" text="Financiero y Administrativo" showTooltip={false}></InfoItem>
 							</Stack>
-							<Stack overflow="hidden">
+							<Stack overflow="hidden" gap={1.5} width="50%">
 								<InfoItem title="Celular" text="3211234567" />
 								<InfoItem title="Ciudad" text="Bogotá D.C"></InfoItem>
-								<InfoItem title="Email" text="cristian.perez@sinco.com.co" showTooltip={false}></InfoItem>
+								<InfoItem title="Email" text="viviana.contreras@sinco.com.co" showTooltip={false}></InfoItem>
 							</Stack>
 						</Stack>
-					</Stack>
 					<CardActions sx={{ padding: "0px" }}>
-						<Stack px={2} py={1} direction="row" justifyContent="space-between" width="100%">
-							<Stack direction="row">
+						<Stack px={2} py={1} direction="row" justifyContent="space-between" alignItems="center" width="100%">
+							<Stack direction="row" gap={1}>
 								<Tooltip title="Editar" placement="top" arrow >
-									<IconButton color="primary" onClick={handleEditContact}>
-										<EditOutlined />
+									<IconButton size="small" color="primary" onClick={handleEditContact}>
+										<EditOutlined fontSize="small" />
 									</IconButton>
 								</Tooltip>
 								<Tooltip title="Eliminar" placement="top" arrow >
-									<IconButton color="error" onClick={handleDeleteContact}>
-										<DeleteOutlined />
+									<IconButton size="small" color="error" onClick={handleDeleteContact}>
+										<DeleteOutlined fontSize="small"/>
 									</IconButton>
 								</Tooltip>
 							</Stack>
 							<Stack direction="row">
 								<FormGroup>
-									<FormControlLabel control={<Switch defaultChecked />} label="Activo" sx={{ marginRight: "0px" }} />
+									<FormControlLabel control={<Switch size="small" defaultChecked />} label="Activo" sx={{ marginRight: "0px" }} />
 								</FormGroup>
 							</Stack>
 						</Stack>
