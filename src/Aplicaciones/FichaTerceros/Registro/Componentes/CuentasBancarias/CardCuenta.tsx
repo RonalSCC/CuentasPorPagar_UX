@@ -18,12 +18,12 @@ export default function CardCuenta(
   return (
     <>
         <Card>
-            <CardContent sx={{padding:"0px !important"}}>
-                <Stack direction="column" paddingY={1.5} paddingX={4} gap={1==1 ? 1.5 : 0}>
+            <Stack paddingX={2}>
+                <Stack direction="column" padding={2}>
                     <Stack direction="row" gap={1.5}>
                         <Stack direction="column" gap={1} width="95%">
                             {/* Contenido */}
-                            <Stack direction="column" gap={1}>
+                            <Stack direction="column">
                                 <Stack direction="row" gap={1.5}>
                                     <Chip 
                                         size='small' 
@@ -88,7 +88,7 @@ export default function CardCuenta(
                         <InformacionCuentaExpandida_Visualizacion />
                     }
                 </Stack>
-            </CardContent>
+            </Stack>
         </Card>
     </>
   )

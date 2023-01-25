@@ -35,16 +35,16 @@ export default function AutocompleteTerceros({SeleccionarTercero}:AutocompleteTe
             renderInput:(params) => {
                 return (
                     <TextField
-                            {...params}
-                            InputProps={{ ...params.InputProps, 
-                                endAdornment: (
-                                    <>
-                                        <InputAdornment position="end"> 
-                                            <SearchIcon sx={{color:"text.secondary"}}/> 
-                                        </InputAdornment> 
-                                    </>
-                                ),  
-                            }}
+                        {...params}
+                        InputProps={{ ...params.InputProps, 
+                            endAdornment: (
+                                <>
+                                    <InputAdornment position="end"> 
+                                        <SearchIcon sx={{color:"text.secondary"}}/> 
+                                    </InputAdornment> 
+                                </>
+                            ),  
+                        }}
                     />
                 )
             }

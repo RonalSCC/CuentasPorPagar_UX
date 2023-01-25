@@ -19,7 +19,7 @@ export default function Cuentas() {
   return (
     <>
         {
-            (!ListCuentasBancarias || ListCuentasBancarias.length == 1) ?
+            (!ListCuentasBancarias || ListCuentasBancarias.length == 0) ?
             <SinCuentas />:
             <VisualizacionCuentas />
         }
