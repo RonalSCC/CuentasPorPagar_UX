@@ -141,7 +141,7 @@ export const themeOptions: ThemeOptions = {
     },
     MuiFormControl: {
       defaultProps: {
-        margin: "dense",
+        margin: "none",
         size: "small",
       },
     },

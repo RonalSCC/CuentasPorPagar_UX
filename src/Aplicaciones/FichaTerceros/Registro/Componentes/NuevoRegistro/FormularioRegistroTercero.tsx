@@ -91,7 +91,7 @@ export default function FormularioInformacionGeneral() {
                     width: "25%"
                   }}
                 >
-                  <InputLabel required shrink id="demo-multiple-name-label">Tipo</InputLabel>
+                  <InputLabel required id="demo-multiple-name-label">Tipo</InputLabel>
                   <Select
                     labelId="label-tipoDocumento"
                     id="tipoDocumento"
@@ -133,7 +133,7 @@ export default function FormularioInformacionGeneral() {
                 width: "50%"
               }}
             >
-              <InputLabel shrink id="demo-multiple-name-label">* Tipo</InputLabel>
+              <InputLabel id="demo-multiple-name-label">* Tipo</InputLabel>
               <Select
                 labelId="label-tipoDocumento"
                 id="tipoDocumento"
@@ -155,7 +155,7 @@ export default function FormularioInformacionGeneral() {
                   width:"50%"
                 }}
               >
-                <InputLabel required shrink id="demo-multiple-name-label">Ciudad</InputLabel>
+                <InputLabel required id="demo-multiple-name-label">Ciudad</InputLabel>
                 <Select
                   labelId="label-tipoDocumento"
                   id="tipoDocumento"
