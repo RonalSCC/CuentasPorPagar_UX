@@ -45,6 +45,7 @@ export default function InformacionGeneral() {
                 height={"fit-content"}
                 left={0}
                 width={expandido ? "21%" : "7%"}
+                py={3}
             >
                 <Menu expandido={expandido} expandirMenu={ExpandirMenu}/>
                 <Divider orientation='vertical'/>
@@ -81,7 +82,7 @@ export default function InformacionGeneral() {
                 }
                 
                 
-                <Stack height="100%" direction="row"  paddingY={expandido ? 2 : 0} paddingX={2}>
+                <Stack height="100%" direction="row"  paddingY={expandido ? 1.5 : 2} paddingX={1.5}>
                     <RoutesMarcoTerceroElement />
                 </Stack>
             </Stack>

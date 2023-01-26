@@ -73,7 +73,6 @@ export default function MenuInformacionGeneral(
     <>
         <Stack 
             direction="row" 
-            paddingY={3} 
             justifyContent={"center"} 
             width="100%"
         >

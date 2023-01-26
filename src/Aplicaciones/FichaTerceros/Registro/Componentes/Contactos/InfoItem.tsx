@@ -1,5 +1,4 @@
-import { Tooltip, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Stack, Tooltip, Typography } from '@mui/material'
 
 export interface InfoItemPorps {
   title: string,
@@ -9,12 +8,14 @@ export interface InfoItemPorps {
 
 const InfoItem = ({ title, text, showTooltip }: InfoItemPorps) => {
   return (
-    <>
-      <Typography variant="caption">{title}</Typography>
+    
+    <Stack>
+      <Typography color="text.primary" variant="caption">{title}</Typography>
       <Tooltip title={ showTooltip != undefined ? text : ""} placement="top" arrow>
-        <Typography variant='body2' noWrap color="text.secondary">{text}</Typography>
+        <Typography variant='body2' noWrap color="text.secondary">{(text == null || text =="") ? "-":text }</Typography>
       </Tooltip>
-    </>
+    </Stack>
+    
   )
 }
 
