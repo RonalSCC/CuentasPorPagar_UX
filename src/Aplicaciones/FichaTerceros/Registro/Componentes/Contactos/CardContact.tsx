@@ -5,8 +5,22 @@ import React, { useState } from 'react'
 import InfoItem from './InfoItem';
 import FormularioContacto from './FormularioContacto';
 import DeleteContact from './DeleteContact';
+import { IContactos } from './Contactos';
 
-const CardContact = () => {
+
+const CardContact = (contact: IContactos) => {
+
+	const {
+		ConNombre,
+		ConCelular,
+		ConTelefono,
+		ConCargo,
+		ConCiudad,
+		ConTipo,
+		ConEmail,
+		ConPrincipal,
+		ConNumeroDocumento,
+	} = contact
 
 	const [verModalEditContact, setverModalEditContact] = useState(false);
 	const [verModalDeleteContact, setVerModalDeleteContact] = useState(false);
@@ -32,29 +46,31 @@ const CardContact = () => {
 							</Stack>
 							<Stack>
 								<Typography variant='h6'>
-									Cristian Pérez
+									{ConNombre}
 								</Typography>
 								<Typography color="text.secondary" variant='body1'>
-									Product Designer
+									{
+										(ConCargo == null || ConCargo == "") ? "Desconocido" : ConCargo
+									}
 								</Typography>
 							</Stack>
 						</Stack>
 						<Stack>
-							<Chip label={"Contacto Principal"} color="secondary" size="small" />
+							{ConPrincipal && <Chip label="Contacto Principal" color="secondary" size="small" />}
 						</Stack>
 					</Stack>
-						<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={1.5}>
-							<Stack overflow="hidden" gap={1.5} width="50%">
-								<InfoItem title="Nombre documento" text="1012422532" />
-								<InfoItem title="Telefono" text="3213353173" />
-								<InfoItem title="Tipo" text="Financiero y Administrativo" showTooltip={false}></InfoItem>
-							</Stack>
-							<Stack overflow="hidden" gap={1.5} width="50%">
-								<InfoItem title="Celular" text="3211234567" />
-								<InfoItem title="Ciudad" text="Bogotá D.C"></InfoItem>
-								<InfoItem title="Email" text="viviana.contreras@sinco.com.co" showTooltip={false}></InfoItem>
-							</Stack>
+					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={1.5}>
+						<Stack overflow="hidden" gap={1.5} width="50%">
+							<InfoItem title="Número documento" text={ConNumeroDocumento} />
+							<InfoItem title="Teléfono" text={ConTelefono} />
+							<InfoItem title="Tipo" text={ConTipo} showTooltip={false}></InfoItem>
 						</Stack>
+						<Stack overflow="hidden" gap={1.5} width="50%">
+							<InfoItem title="Celular" text={ConCelular} />
+							<InfoItem title="Ciudad" text={ConCiudad}></InfoItem>
+							<InfoItem title="Email" text={ConEmail} showTooltip={false}></InfoItem>
+						</Stack>
+					</Stack>
 					<CardActions sx={{ padding: "0px" }}>
 						<Stack px={2} py={1} direction="row" justifyContent="space-between" alignItems="center" width="100%">
 							<Stack direction="row" gap={1}>
@@ -63,11 +79,14 @@ const CardContact = () => {
 										<EditOutlined fontSize="small" />
 									</IconButton>
 								</Tooltip>
-								<Tooltip title="Eliminar" placement="top" arrow >
-									<IconButton size="small" color="error" onClick={handleDeleteContact}>
-										<DeleteOutlined fontSize="small"/>
-									</IconButton>
-								</Tooltip>
+								{
+									!ConPrincipal &&
+									<Tooltip title="Eliminar" placement="top" arrow >
+										<IconButton size="small" color="error" onClick={handleDeleteContact}>
+											<DeleteOutlined fontSize="small" />
+										</IconButton>
+									</Tooltip>
+								}
 							</Stack>
 							<Stack direction="row">
 								<FormGroup>
