@@ -12,7 +12,7 @@ const ConfiguracionTributaria = () => {
     };
 
     return (
-        <Stack p={3} gap={1.5} width="100%" >
+        <Stack gap={1.5} width="100%" >
             <Card>
                 <Stack gap={1.5} p={2}>
                     <Stack gap={1.5}>

@@ -1,57 +1,106 @@
 import { Add } from '@mui/icons-material'
-import { Fab, Typography } from '@mui/material'
+import { Alert, AlertTitle, Fab, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
-import React, { useState,useEffect, useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import FormularioContacto from './FormularioContacto'
 import CardContact from './CardContact'
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
 import { TercerosContexto } from '../../../Contextos/TercerosContexto'
+import { CrearPeticion } from '../../../../../Consumos/APIManager'
+
+export interface IContactos {
+    conId: number,
+    conNombre: string,
+    conCelular: string,
+    conTelefono: string,
+    conCargo: string,
+    conCiudadId: number,
+    conCiudad: string,
+    conTipoId: number,
+    conTipo: string,
+    conEmail: string,
+    conPrincipal: boolean,
+    conNumeroDocumento: string
+}
+
 
 export default function Contactos() {
-  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
 
-  const [verModalNuevoContacto, setverModalNuevoContacto] = useState(false);
+    const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const [verModalNuevoContacto, setverModalNuevoContacto] = useState(false);
 
-  const VerModalNuevoContacto = () => {
-    setverModalNuevoContacto(!verModalNuevoContacto);
-  }
+    const [contactosList, setContactosList] = useState<IContactos[]>([]);
 
-  const contactos = [{
-    "Nombre documento" :1012422532,
-    "Telefono": 3213353173,
-    "Tipo": "Financiero y Administrativo",
-    "Celular": 3213353173,
-    "Ciudad": "Bogotá D.C",
-    "Email":"cristian.perez@sinco.com.co"
-  }];
-  useEffect(() => {
-    console.log(propsTercerosContexto.TerceroSeleccionadoLista?.TerID);
-  }, [])
+    const ConsultarListaContactos = async () => {
+        //if(true){
+        const response = await CrearPeticion({
+            API: "CUENTASPORPAGAR",
+            URLServicio: "/AdministracionTerceros/Consultar_ContactosTerceros",
+            Type: "POST",
+            Body: {
+                usuarioId: 1,
+                TerId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID
+            }
+        });
 
-  return (
-    <>
-      <Stack p={3} gap={1.5} direction="row" flexWrap="wrap">
-        <CardContact />
-        <CardContact />
-        <CardContact />
-        <Fab color="secondary" variant="extended" onClick={VerModalNuevoContacto}
-          sx={{
-            position: "fixed",
-            bottom: (theme) => theme.spacing(3),
-            right: (theme) => theme.spacing(3)
-          }} >
-          <Add></Add>
-          <Typography>
-            Nuevo Contacto
-          </Typography>
-        </Fab>
-      </Stack>
-      {
-        verModalNuevoContacto == true &&
-        <FormularioContacto estado={verModalNuevoContacto} cambiarEstado={VerModalNuevoContacto} title="Nuevo Contacto" />
-      }
+        if (response != null) {
+            if (response.ok) {
+                setContactosList(response.datos)
+            }
+            else if (response.errores && response.errores.length > 0) {
+                propsTercerosContexto.CambiarAlertas(
+                    response.errores.map(x=> {
+                        return <>
+                        <Alert 
+                            key={x.descripcion} 
+                            severity="warning"
+                            onClose={()=> propsTercerosContexto.CerrarAlertas()}
+                        >
+                            <AlertTitle>Error</AlertTitle>
+                            {x.descripcion}
+                        </Alert>
+                        </>;
+                    })
+                );
+            }
+        }
+        //}
+    }
 
-    </>
-  )
+    const VerModalNuevoContacto = () => {
+        setverModalNuevoContacto(!verModalNuevoContacto);
+    }
+
+    useEffect(() => {
+        ConsultarListaContactos();
+    }, [propsTercerosContexto.TerceroSeleccionadoLista])
+
+
+    return (
+        <Stack>
+            <Stack gap={1} direction="row" flexWrap="wrap">
+
+                {
+                    contactosList.map((contact) => <CardContact key={contact.conId} {...contact} />)
+                }
+
+            </Stack>
+            <Fab color="secondary" variant="extended" onClick={VerModalNuevoContacto}
+                sx={{
+                    position: "fixed",
+                    bottom: (theme) => theme.spacing(3),
+                    right: (theme) => theme.spacing(3)
+                }} >
+                <Add></Add>
+                <Typography>
+                    Nuevo Contacto
+                </Typography>
+            </Fab>
+            {
+                verModalNuevoContacto == true &&
+                <FormularioContacto estado={verModalNuevoContacto} cambiarEstado={VerModalNuevoContacto} title="Nuevo Contacto" />
+            }
+        </Stack>
+    )
 }
 

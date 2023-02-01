@@ -24,21 +24,21 @@ export default function Cuentas() {
             <VisualizacionCuentas />
         }
 
-        <Fab  
-            onClick={AbrirDialogNuevaCuenta}
-            variant='extended' 
-            size='medium' 
-            sx={{
-                backgroundColor:"secondary.main",
-                position:"fixed",
-                bottom: "24px",
-                right: "24px"
-            }} 
-            color="secondary"
-        >
-            <Add sx={{color:'secondary.contrast'}}/>
-            Nueva cuenta bancaria   
-        </Fab>
+            <Fab
+                onClick={AbrirDialogNuevaCuenta}
+                variant='extended'
+                size='medium'
+                sx={{
+                    backgroundColor: "secondary.main",
+                    position: "fixed",
+                    bottom: "24px",
+                    right: "24px"
+                }}
+                color="secondary"
+            >
+                <Add sx={{ color: 'secondary.contrast' }} />
+                Nueva cuenta bancaria
+            </Fab>
 
         <ModalFormNuevaCuenta 
             DialogAbierto={dialogNuevaCuentaAbierta} 
