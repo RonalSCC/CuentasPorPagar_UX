@@ -41,10 +41,12 @@ export default function InformacionGeneral() {
                 position={"fixed"}
                 alignItems={expandido ? "flex-end" : "center"} 
                 gap={2}
-                top={"10%"}
+                top={"9%"}
                 height={"fit-content"}
                 left={0}
                 width={expandido ? "21%" : "7%"}
+                paddingY={3} 
+
             >
                 <Menu expandido={expandido} expandirMenu={ExpandirMenu}/>
                 <Divider orientation='vertical'/>
@@ -61,9 +63,6 @@ export default function InformacionGeneral() {
                         paddingY={1.5} 
                         paddingX={3} 
                         gap={1.5}
-                        sx={{
-                            backgroundColor: "background.paper"
-                        }}
                     >
                         <Stack direction="row" alignItems={"center"} gap={1} >
                             <Badge variant='dot' color='success'>

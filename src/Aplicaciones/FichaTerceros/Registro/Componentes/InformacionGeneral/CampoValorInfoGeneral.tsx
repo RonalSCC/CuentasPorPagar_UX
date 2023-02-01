@@ -1,20 +1,24 @@
 import { Stack, Typography } from '@mui/material'
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
+export interface PropsCampoValorInfoGeneral {
+    Campo:string,
+    Valor?:string | null,
+    Componente?:any,
+    PropsRow?:Record<string, any>
+}
 export default function CampoValorInfoGeneral(
     {
         Campo,
-        Valor,
         Componente,
-        PropsRow
-    }:
-    {
-        Campo:string,
-        Valor?:string,
-        Componente?:any,
-        PropsRow?:Record<string, any>
-    }
-) {
+        PropsRow,
+        Valor
+    }:PropsCampoValorInfoGeneral) 
+{
+    useEffect(() => {
+      console.log(Valor)
+    }, []);
+    
   return (
     <>
         <Stack gap={.5} direction="row" width="49%" alignItems="center" {...PropsRow}>
@@ -25,7 +29,7 @@ export default function CampoValorInfoGeneral(
             {
                 Componente == null ?
                     <Typography noWrap variant="body2" color="text.primary">
-                        {Valor}
+                        {(Valor != null && Valor != undefined) ? Valor : ""}
                     </Typography>
                 :
                 Componente

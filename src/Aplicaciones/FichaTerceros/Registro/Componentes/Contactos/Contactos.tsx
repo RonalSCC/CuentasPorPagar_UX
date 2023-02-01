@@ -1,11 +1,14 @@
 import { Add } from '@mui/icons-material'
 import { Fab, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useState,useEffect, useContext } from 'react'
 import FormularioContacto from './FormularioContacto'
 import CardContact from './CardContact'
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
+import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 
-const Contactos = () => {
+export default function Contactos() {
+  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
 
   const [verModalNuevoContacto, setverModalNuevoContacto] = useState(false);
 
@@ -20,8 +23,10 @@ const Contactos = () => {
     "Celular": 3213353173,
     "Ciudad": "Bogotá D.C",
     "Email":"cristian.perez@sinco.com.co"
-  }
-]
+  }];
+  useEffect(() => {
+    console.log(propsTercerosContexto.TerceroSeleccionadoLista?.TerID);
+  }, [])
 
   return (
     <>
@@ -50,4 +55,3 @@ const Contactos = () => {
   )
 }
 
-export default Contactos

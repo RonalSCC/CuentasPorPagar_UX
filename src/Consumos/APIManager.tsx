@@ -7,7 +7,8 @@ import IRespuestaGeneral from './IRespuestaGeneral';
 export interface CrearPeticionAxios {
     API:string,
     URLServicio: string,
-    Body: any
+    Body: any,
+    Type:string,
     Headers?: AxiosRequestHeaders
 }
 export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IRespuestaGeneral>=> {
@@ -18,21 +19,37 @@ export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IR
     }else if(DatosEnvio.API == "CONFIGURACION"){
         URLAPI = process.env.REACT_APP_URL_API_CONFIGURACION;
     }
+
     const axiosRequest = axios.create({
         baseURL: DatosEnvio.API == "CUENTASPORPAGAR" ? process.env.REACT_APP_URL_API_CUENTAS_POR_PAGAR :   process.env.REACT_APP_URL_API_CONFIGURACION
     });
 
-    return await axiosRequest.post(
-        DatosEnvio.URLServicio, 
-        DatosEnvio.Body,
-        {
-            headers:DatosEnvio.Headers != null ? DatosEnvio.Headers : {}
-        }
-    )
-    .then(function({data}:{data:IRespuestaGeneral}){
-        return data;
-    })
-    .catch(function({response}){
-        return response.data;
-    })
+    if (DatosEnvio.Type == "POST") {
+        return await axiosRequest.post(
+            DatosEnvio.URLServicio, 
+            DatosEnvio.Body,
+            {
+                headers:DatosEnvio.Headers != null ? DatosEnvio.Headers : {}
+            }
+        )
+        .then(function({data}:{data:IRespuestaGeneral}){
+            return data;
+        })
+        .catch(function({response}){
+            return response.data;
+        })
+    }else{
+        return await axiosRequest.get(
+            DatosEnvio.URLServicio, 
+            {
+                params:DatosEnvio.Body
+            }
+        )
+        .then(function({data}:{data:IRespuestaGeneral}){
+            return data;
+        })
+        .catch(function(error){
+            console.log(error);
+        });
+    }
 }

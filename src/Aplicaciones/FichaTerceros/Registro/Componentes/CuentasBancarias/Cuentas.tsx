@@ -1,7 +1,7 @@
 import { Add } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Fab, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react'
-import FormNuevaCuenta from './FormNuevaCuenta';
+import ModalFormNuevaCuenta from './_ModalFormNuevaCuenta';
 import SinCuentas from './SinCuentas';
 import VisualizacionCuentas from './VisualizacionCuentas';
 
@@ -40,7 +40,7 @@ export default function Cuentas() {
             Nueva cuenta bancaria   
         </Fab>
 
-        <FormNuevaCuenta 
+        <ModalFormNuevaCuenta 
             DialogAbierto={dialogNuevaCuentaAbierta} 
             CerrarDialog={CerrarDialogNuevaCuenta} 
         />
