@@ -30,12 +30,13 @@ export default function BuscarTerceroDialog(
             open={DialogAbierto}
             onClose={() => CerrarBuscarTercero()}
             fullWidth
+            maxWidth="sm"
         >
           <Card>
-            <CardContent sx={{padding: "0px"}}>
-              <Stack direction="column" padding={1.5} gap={5.5} alignItems="center">
-                <Image width="15%" fit='cover' src={"Imagenes/Terceros/SeleccionarTercero.png"} alt="" />
-                <Stack direction="column" padding={3} gap={3} alignItems="center">
+            <Stack direction="column" padding={3}>
+              <Stack direction="column" padding={2} gap={1.5} alignItems="center">
+                <Image width="20%" fit='cover' src={"Imagenes/Terceros/BuscarTercero.svg"} alt="" />
+                <Stack direction="column" gap={3} alignItems="center" width={"100%"}>
                   <Typography variant="h6" color="primary.main">
                     Selecciona el tercero que deseas consultar
                   </Typography>
@@ -45,7 +46,7 @@ export default function BuscarTerceroDialog(
                   />
                 </Stack>
               </Stack>
-            </CardContent>
+            </Stack>
           </Card>
       </Dialog>
     </>

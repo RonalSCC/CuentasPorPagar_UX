@@ -10,74 +10,72 @@ import CampoValorInfoGeneral from './CampoValorInfoGeneral'
 import CardInformacionGeneral from './_CardInformacionGeneral'
 
 export interface IInfoUsuario{
-    TerId: number,
-    TerTipoPersona?: string,
-    TerEstado: boolean,
-    TerRazonSocial?: string,
-    TerPrimerNombre?: string,
-    TerSegundoNombre?: string,
-    TerPrimerApellido?: string,
-    TerSegundoApellido?: string,
-    TerNumeroIndentificaion?: string,
-    TerTipoIdentificacion?: string,
-    TerDiv?: string,
-    TerFormaPago?: string,
-    TerCiudad?: string,
-    TerDireccion?:string,
-    TerTipo?: string,
-    TerSubTipo?: null,
-    TerActividadEconomica?: string,
-    TerEmail?: string,
-    TerTelefono?: string,
-    TerCelular?: string,
-    TerObservaciones?: string,
-    TerContactoPrincipalNombre?: string,
-    TerContactoPrincipalEmail?: string,
-    TerRepresentanteLNombre?: string,
-    TerRepresentanteLIdentificacion?: string,
-    TerRepresentanteLExpedicion?: string,
-    TerRepresentanteLEmail?: string,
-    TerEstudioSeguridad: boolean
+    terId: number,
+    terTipoPersona?: null | string,
+    terEstado: boolean,
+    terRazonSocial?: null | string,
+    terPrimerNombre?: null | string,
+    terSegundoNombre?: null | string,
+    terPrimerApellido?: null | string,
+    terSegundoApellido?: null | string,
+    terNumeroIndentificaion?: null | string,
+    terTipoIdentificacion?: null | string,
+    terDiv?: null | string,
+    terFormaPago?: null | string,
+    terCiudad?: null | string,
+    terDireccion?:null | string,
+    terTipo?: null | string,
+    terSubTipo?: null | string,
+    terActividadEconomica?: null | string,
+    terEmail?: null | string,
+    terTelefono?: null | string,
+    terCelular?: null | string,
+    terObservaciones?: null | string,
+    terContactoPrincipalNombre?: null | string,
+    terContactoPrincipalEmail?: null | string,
+    terRepresentanteLNombre?: null | string,
+    terRepresentanteLIdentificacion?: null | string,
+    terRepresentanteLExpedicion?: null | string,
+    terRepresentanteLEmail?: null | string,
+    terEstudioSeguridad: boolean
 }
 export default function InformacionGeneralDatos(props:any) {
     const navigate = useNavigate();
 
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
-    const [InfoTercero, setInfoTercero] = useState<IInfoUsuario|undefined>();
+    const [InfoTercero, setInfoTercero] = useState<IInfoUsuario>();
     useEffect(() => {
       ConsultarInformacionTercero();
-    }, [propsTercerosContexto.TerceroSeleccionadoLista])
+    }, [propsTercerosContexto.TerceroSeleccionadoLista]);
     
-    const EditarInformacionGeneral = async()=> {
-        navigate("EditarInformacionGeneral");
-    }
-
     const ConsultarInformacionTercero = async()=> {
         if (propsTercerosContexto.TerceroSeleccionadoLista) {
             let respuesta = await CrearPeticion({
                 API: "CUENTASPORPAGAR",
                 URLServicio: "/AdministracionTerceros/ConsultarTerceroFichaId",
+                Type: "GET",
                 Body:{
                     UsuarioID: 1,
                     TerId: propsTercerosContexto.TerceroSeleccionadoLista.TerID
                 }
             });
 
-            if (respuesta != null) {
-                if(respuesta.Ok){
-                    setInfoTercero(respuesta.Datos);
+            if (respuesta != undefined) {
+                if(respuesta.ok){
+                    setInfoTercero(respuesta.datos);
+                    console.log(respuesta.datos);
                 }
-                else if (respuesta.Errores && respuesta.Errores.length > 0) {
+                else if (respuesta.errores && respuesta.errores.length > 0) {
                     propsTercerosContexto.CambiarAlertas(
-                        respuesta.Errores.map(x=> {
+                        respuesta.errores.map(x=> {
                             return <>
                             <Alert 
-                                key={x.Descripcion} 
+                                key={x.descripcion} 
                                 severity="warning"
                                 onClose={()=> propsTercerosContexto.CerrarAlertas()}
                             >
                                 <AlertTitle>Error</AlertTitle>
-                                {x.Descripcion}
+                                {x.descripcion}
                             </Alert>
                             </>;
                         })
@@ -88,7 +86,11 @@ export default function InformacionGeneralDatos(props:any) {
     }
 
     const EditarTercero = ()=> {
-        navigate("EditarInformacionGeneral");
+        navigate("EditarInformacionGeneral", {
+            state: {
+                InformacionTercero: InfoTercero
+            }
+        });
     }
   return (
     <>
@@ -105,7 +107,7 @@ export default function InformacionGeneralDatos(props:any) {
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Tipo de persona:"
-                            Valor={InfoTercero?.TerTipoPersona}
+                            Valor={InfoTercero?.terTipoPersona}
                         />
                         <Stack direction="row" alignItems="center">
                             <FormControl disabled fullWidth component="fieldset">
@@ -120,17 +122,17 @@ export default function InformacionGeneralDatos(props:any) {
                     </Stack>   
 
                     {
-                        propsTercerosContexto.TerceroSeleccionadoLista?.TerNatJur == "N" &&
+                        InfoTercero?.terTipoPersona == "N" &&
                         <>
                             <Stack direction="row" alignItems="center" gap={3}>
                                 <CampoValorInfoGeneral
                                     Campo="Primer nombre:"
-                                    Valor={InfoTercero?.TerPrimerNombre}
+                                    Valor={InfoTercero?.terPrimerNombre}
                                 />
 
                                 <CampoValorInfoGeneral
                                     Campo="Segundo nombre:"
-                                    Valor={InfoTercero?.TerSegundoNombre}
+                                    Valor={InfoTercero?.terSegundoNombre}
                                 />
                             </Stack> 
 
@@ -138,24 +140,24 @@ export default function InformacionGeneralDatos(props:any) {
 
                                 <CampoValorInfoGeneral
                                     Campo="Primer apellido:"
-                                    Valor={InfoTercero?.TerPrimerApellido}
+                                    Valor={InfoTercero?.terPrimerApellido}
                                 />
 
                                 <CampoValorInfoGeneral
                                     Campo="Segundo apellido:"
-                                    Valor={InfoTercero?.TerSegundoApellido}
+                                    Valor={InfoTercero?.terSegundoApellido}
                                 />
                             </Stack> 
                         </>
                     }       
 
                     {
-                        propsTercerosContexto.TerceroSeleccionadoLista?.TerNatJur  != "N" && 
+                        InfoTercero?.terTipoPersona  != "N" && 
                         <Stack direction="row" alignItems="center" gap={3}>
 
                             <CampoValorInfoGeneral
                                 Campo="Razón social:"
-                                Valor={InfoTercero?.TerRazonSocial}
+                                Valor={InfoTercero?.terRazonSocial}
                                 PropsRow={
                                     {
                                         width: "100%"
@@ -169,24 +171,24 @@ export default function InformacionGeneralDatos(props:any) {
 
                         <CampoValorInfoGeneral
                             Campo="Número de identificación:"
-                            Valor={`${InfoTercero?.TerNumeroIndentificaion}`}
+                            Valor={`${InfoTercero?.terNumeroIndentificaion}`}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Forma de pago:"
-                            Valor={`${InfoTercero?.TerFormaPago}`}
+                            Valor={`${InfoTercero?.terFormaPago}`}
                         />
                     </Stack> 
 
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Ciudad:"
-                            Valor={`${InfoTercero?.TerCiudad}`}
+                            Valor={`${InfoTercero?.terCiudad}`}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Dirección"
-                            Valor={`${InfoTercero?.TerDireccion}`}
+                            Valor={`${InfoTercero?.terDireccion}`}
                         />
                     </Stack> 
 
@@ -194,12 +196,12 @@ export default function InformacionGeneralDatos(props:any) {
 
                         <CampoValorInfoGeneral
                             Campo="Tipo:"
-                            Valor={`${InfoTercero?.TerTipo}`}
+                            Valor={`${InfoTercero?.terTipo}`}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Sub-tipo:"
-                            Valor={`${InfoTercero?.TerSubTipo}`}
+                            Valor={`${InfoTercero?.terSubTipo}`}
                         />
                     </Stack> 
 
@@ -207,24 +209,24 @@ export default function InformacionGeneralDatos(props:any) {
 
                         <CampoValorInfoGeneral
                             Campo="Actividad económica:"
-                            Valor={`${InfoTercero?.TerActividadEconomica}`}
+                            Valor={`${InfoTercero?.terActividadEconomica}`}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Correo eléctronico:"
-                            Valor={`${InfoTercero?.TerEmail}`}
+                            Valor={`${InfoTercero?.terEmail}`}
                         />
                     </Stack>
 
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Télefono:"
-                            Componente={<Chip size='small' label={`${InfoTercero?.TerTelefono}`} />}
+                            Componente={<Chip size='small' label={`${InfoTercero?.terTelefono}`} />}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Celular:"
-                            Componente={<Chip size='small' label={`${InfoTercero?.TerCelular}`} />}
+                            Componente={<Chip size='small' label={`${InfoTercero?.terCelular}`} />}
                         />
                     </Stack>
 
@@ -250,12 +252,12 @@ export default function InformacionGeneralDatos(props:any) {
                <Stack direction="row" alignItems="center" gap={3}>
                     <CampoValorInfoGeneral
                         Campo="Nombre:"
-                        Valor={`${InfoTercero?.TerContactoPrincipalNombre}`}
+                        Valor={`${InfoTercero?.terContactoPrincipalNombre}`}
                     />
 
                     <CampoValorInfoGeneral
                         Campo="Correo eléctronico:"
-                        Valor={`${InfoTercero?.TerContactoPrincipalEmail}`}
+                        Valor={`${InfoTercero?.terContactoPrincipalEmail}`}
                     />
                 </Stack>
             </CardInformacionGeneral>
@@ -268,12 +270,12 @@ export default function InformacionGeneralDatos(props:any) {
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Nombre:"
-                            Valor={`${InfoTercero?.TerRepresentanteLNombre}`}
+                            Valor={`${InfoTercero?.terRepresentanteLNombre}`}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Número de identificación:"
-                            Valor={`${InfoTercero?.TerRepresentanteLIdentificacion}`}
+                            Valor={`${InfoTercero?.terRepresentanteLIdentificacion}`}
                         />
                     </Stack>
 
@@ -281,12 +283,12 @@ export default function InformacionGeneralDatos(props:any) {
 
                         <CampoValorInfoGeneral
                             Campo="Lugar de expedición:"
-                            Valor={`${InfoTercero?.TerRepresentanteLExpedicion}`}
+                            Valor={`${InfoTercero?.terRepresentanteLExpedicion}`}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Correo eléctronico:"
-                            Valor={`${InfoTercero?.TerRepresentanteLEmail}`}
+                            Valor={`${InfoTercero?.terRepresentanteLEmail}`}
                         />
                     </Stack>
                 </Stack>
@@ -294,7 +296,7 @@ export default function InformacionGeneralDatos(props:any) {
 
             <Stack direction="column" gap={3}>
                 {
-                    InfoTercero?.TerEstudioSeguridad == false && 
+                    InfoTercero?.terEstudioSeguridad == false && 
                         <Alert severity="info">
                             Estudio de seguridad sin diligenciar (SAGRILAFT)
                         </Alert>   

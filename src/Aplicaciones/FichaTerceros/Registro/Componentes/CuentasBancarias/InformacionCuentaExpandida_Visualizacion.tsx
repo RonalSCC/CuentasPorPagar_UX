@@ -1,10 +1,33 @@
 import { DeleteOutline, EditOutlined } from '@mui/icons-material'
 import { Button, Checkbox, Divider, FormControlLabel, FormGroup, IconButton, Stack, Switch, Typography } from '@mui/material'
-import React from 'react'
+import React, { useState } from 'react'
 import CuentaPorSucursal_Visualizacion from './CuentaPorSucursal_Visualizacion'
 import Image from 'mui-image';
+import ModalEditarCuentaBancaria from './_ModalEditarCuentaBancaria';
+import ModalEditarSucursales from './_ModalEditarSucursales';
+import ModalEliminar from '../Generales/_ModalEliminar';
 
 export default function InformacionCuentaExpandida_Visualizacion() {
+
+    const [VerModalEditarCuentaBancaria, setVerModalEditarCuentaBancaria] = useState(false);
+    const [VerModalEditarCuentasSucursales, setVerModalEditarCuentasSucursales] = useState(false);
+    const [VerModalEliminarCuenta, setVerModalEliminarCuenta] = useState(false);
+
+
+    const EditarCuentaBancaria = (estado:boolean)=>{
+        setVerModalEditarCuentaBancaria(estado);
+    }
+
+    const EditarCuentasSucursales = (estado:boolean)=>{
+        setVerModalEditarCuentasSucursales(estado);
+    }
+
+    const CambiarEstadoModalEliminar = (estado:boolean)=>{
+        setVerModalEliminarCuenta(estado);
+    }
+
+    const EliminarCuenta = ()=>{
+    }
   return (
     <>
         <Divider sx={{width:"100%"}} orientation='horizontal'/>
@@ -50,7 +73,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                             </Stack>
 
                             <FormGroup sx={{width:"50%"}}>
-                                <FormControlLabel disabled control={<Checkbox size='small'/>} label="Pago por NIT" />
+                                <FormControlLabel control={<Checkbox size='small'/>} label="Pago por NIT" />
                             </FormGroup>
                         </Stack>
 
@@ -60,6 +83,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                 <Button 
                     variant='text'
                     startIcon={<EditOutlined />}
+                    onClick={()=> EditarCuentaBancaria(true)}
                 >
                     Editar
                 </Button>
@@ -86,6 +110,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                 <Button 
                     variant='text'
                     startIcon={<EditOutlined />}
+                    onClick={()=> EditarCuentasSucursales(true)}
                 >
                     Editar
                 </Button>
@@ -93,14 +118,37 @@ export default function InformacionCuentaExpandida_Visualizacion() {
         </Stack>
 
         <Stack direction="row" padding={1} justifyContent="space-between">
-            <IconButton size='small'>
+            <IconButton onClick={()=> CambiarEstadoModalEliminar(true)} size='small'>
                 <DeleteOutline fontSize='small' color='error' />
             </IconButton>
 
             <FormGroup>
-                <FormControlLabel sx={{mr:"0px"}} control={<Switch checked size='small'/>} label="Cuenta activa" />
+                <FormControlLabel sx={{mr:"0px"}} control={<Switch checked size='small'/>} label="Activa" />
             </FormGroup>
         </Stack>
+
+        {
+            VerModalEditarCuentaBancaria == true &&
+            <ModalEditarCuentaBancaria CerrarModal={EditarCuentaBancaria}/>
+
+        }
+
+        {
+            VerModalEditarCuentasSucursales == true &&
+            <ModalEditarSucursales CerrarModal={EditarCuentasSucursales} />
+        }
+
+        {
+            VerModalEliminarCuenta == true &&
+            <ModalEliminar 
+                Titulo='Eliminar cuenta'
+                Texto='Recuerde que toda la información bancaria suministrada será borrada totalmente'
+                ImageSRC="Imagenes/Terceros/EliminarCuenta.svg"
+                FunCerrarModal={() => CambiarEstadoModalEliminar(false)}
+                FunEliminarRegistro={() => EliminarCuenta()}
+            />
+        }
     </>
   )
 }
+

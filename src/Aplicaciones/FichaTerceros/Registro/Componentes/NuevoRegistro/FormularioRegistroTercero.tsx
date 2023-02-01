@@ -9,18 +9,22 @@ import FormularioDirecciones from './FormularioDirecciones';
 import TipoPersonaNaturalCampos from './TipoPersonaNaturalCampos';
 import { useNavigate } from 'react-router-dom';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import ITipoTercero from '../../../Interfaces/Generales/ITipoTercero';
+import ITipoDocumento from '../../../Interfaces/Generales/ITipoDocumento';
 
 export default function FormularioInformacionGeneral() {
-
   const navigate = useNavigate();
   
   const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
-  
   const [tipoPersonaChecked, setTipoPersonaChecked] = useState(1);
   const [verModalDireccion, setVerModalDireccion] = useState(false);
+  const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
+  const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
 
   useEffect(() => {
     propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
+    ConsultarListas();
   }, [])
 
   const propsInputs: Record<string, any> = {
@@ -29,6 +33,40 @@ export default function FormularioInformacionGeneral() {
     fullWidth:true,
   };
 
+  const ConsultarListas = async ()=> {
+    let PropsDefaultRequest = {
+      API: "CONFIGURACION",
+      URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
+      Type:"GET"
+    };
+
+    // ---- Tipos Terceros
+    await CrearPeticion({
+      ...PropsDefaultRequest,
+      Body:{
+          UsuarioID: 1,
+          Clave: 'TipoTerceros'
+      }
+    }).then((respuesta)=> {
+      if (respuesta != null && respuesta.ok == true) {
+          setListaTipoTercero(respuesta.datos);
+      }
+    });
+
+    // ---- Tipos Documento
+    await CrearPeticion({
+      ...PropsDefaultRequest,
+      Body:{
+          UsuarioID: 1,
+          Clave: 'TiposDocumento'
+      }
+    }).then((respuesta)=> {
+      if (respuesta != null && respuesta.ok == true) {
+          setListaTipoDocumento(respuesta.datos);
+      }
+    });
+
+  }
   const VerFormularioDirecciones = ()=> {
     setVerModalDireccion(!verModalDireccion);
   }
@@ -90,18 +128,20 @@ export default function FormularioInformacionGeneral() {
                       width: "25%"
                     }}
                   >
-                    <InputLabel required shrink id="demo-multiple-name-label">Tipo</InputLabel>
-                    <Select
-                      labelId="label-tipoDocumento"
-                      id="tipoDocumento"
-                      label="* Tipo"
+                    <TextField
+                      id="TipoTercero"
+                      label="Tipo"
                       size='small'
-                      notched
+                      placeholder='Seleccione'
+                      select
+                      required
                     >
-                      <MenuItem value={10}>1</MenuItem>
-                      <MenuItem value={20}>2</MenuItem>
-                      <MenuItem value={30}>3</MenuItem>
-                    </Select>
+                      {
+                        ListaTipoDocumento.map(data => {
+                          return <MenuItem key={data.TipoID} value={data.TipoID}>{data.TipoID}</MenuItem>
+                        })
+                      }
+                    </TextField>
                   </FormControl>
 
                   <TextField 
@@ -133,18 +173,20 @@ export default function FormularioInformacionGeneral() {
                   width: "50%"
                 }}
               >
-                <InputLabel shrink id="demo-multiple-name-label">* Tipo</InputLabel>
-                <Select
-                  labelId="label-tipoDocumento"
-                  id="tipoDocumento"
-                  label="* Tipo"
-                  size='small'
-                  notched
+                <TextField
+                    id="TipoTercero"
+                    label="Tipo"
+                    size='small'
+                    placeholder='Seleccione'
+                    select
+                    required
                 >
-                  <MenuItem dense value={10}>1</MenuItem>
-                  <MenuItem dense value={20}>2</MenuItem>
-                  <MenuItem dense value={30}>3</MenuItem>
-                </Select>
+                  {
+                    ListaTipoTercero.map(data => {
+                      return <MenuItem key={data.TpTID} value={data.TpTID}>{data.TpTDesc}</MenuItem>
+                    })
+                  }
+                </TextField>
               </FormControl>
             </Stack>
 
@@ -156,7 +198,7 @@ export default function FormularioInformacionGeneral() {
                   }}
                   size='small'
                 >
-                  <InputLabel required shrink id="demo-multiple-name-label">Ciudad</InputLabel>
+                  <InputLabel required  id="demo-multiple-name-label">Ciudad</InputLabel>
                   <Select
                     labelId="label-tipoDocumento"
                     id="tipoDocumento"

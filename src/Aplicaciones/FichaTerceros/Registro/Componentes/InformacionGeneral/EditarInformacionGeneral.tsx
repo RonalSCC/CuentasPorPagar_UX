@@ -1,9 +1,27 @@
 import { Edit } from '@mui/icons-material';
 import { Button, Card, CardActions, Chip, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, Switch, TextField, Typography } from '@mui/material'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import ContenedorBotonesEditarInfo from './_ContenedorBotonesEditarInfo';
+import { useLocation, useNavigate } from 'react-router-dom'
+import ObtenerConfigs from '../../../../../Consumos/ObtenerConfigs';
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { IInfoUsuario } from './InformacionGeneralDatos';
+export interface PropsEditarInformacionGeneral{
+  InformacionTercero?: IInfoUsuario
+};
+export default function EditarInformacionGeneral(
+  {
+    InformacionTercero  
+  }:PropsEditarInformacionGeneral
+) {
 
-export default function EditarInformacionGeneral() {
+  const location = useLocation();
+
+  const [InfoTercero, setInfoTercero] = useState<IInfoUsuario>(location.state.InformacionTercero);
+  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+
+  const navigate = useNavigate();
 
   const propsInputs: Record<string, any> = {
     variant:"outlined", 
@@ -16,8 +34,13 @@ export default function EditarInformacionGeneral() {
   }
 
   const CancelarEdicion = ()=>{
-    
+    navigate("InformacionGeneralDatos");
   }
+
+  const CambioNaturaleza = (event: React.ChangeEvent<HTMLInputElement>)=> {
+    console.log(event.target.value);
+  }
+  
   return (
     <>
       <Stack direction="column" width="100%" gap={1.5}>
@@ -36,9 +59,10 @@ export default function EditarInformacionGeneral() {
                     <RadioGroup
                       row
                       name="TipoPersona"
+                      value={InfoTercero.terTipoPersona}
                     >
-                      <FormControlLabel value={1} control={<Radio />} label="Natural" />
-                      <FormControlLabel value={2} control={<Radio />} label="Jurídica" />
+                      <FormControlLabel value={"N"} control={<Radio onChange={CambioNaturaleza}/>} label="Natural" />
+                      <FormControlLabel value={"J"} control={<Radio onChange={CambioNaturaleza}/>} label="Jurídica" />
                     </RadioGroup>
                 </FormControl>
               </Stack>
@@ -53,9 +77,10 @@ export default function EditarInformacionGeneral() {
                 id="razonSocial" 
                 label="Razón social"
                 required
+                value={InfoTercero.terRazonSocial}
             />
 
-            <Stack direction="row" gap={1.5}>
+            <Stack direction="row" gap={.5}>
               <Stack direction="row" gap={1.5} width={"50%"}>
                 <FormControl
                  fullWidth
@@ -108,7 +133,7 @@ export default function EditarInformacionGeneral() {
               </FormControl>
             </Stack>
 
-            <Stack direction="row" gap={1.5}>
+            <Stack direction="row" gap={.5}>
               <FormControl
                 sx={{width: "50%"}}
               >
@@ -138,7 +163,7 @@ export default function EditarInformacionGeneral() {
               </Stack>
             </Stack>
 
-            <Stack direction={"row"} gap={1.5}>
+            <Stack direction={"row"} gap={.5}>
               <FormControl
                 sx={{width: "50%"}}
               >
@@ -170,7 +195,7 @@ export default function EditarInformacionGeneral() {
               </FormControl>
             </Stack>
 
-            <Stack direction={"row"} gap={1.5}>
+            <Stack direction={"row"} gap={.5}>
               <FormControl
                 fullWidth
               >
@@ -193,8 +218,8 @@ export default function EditarInformacionGeneral() {
               />
             </Stack>
 
-            <Stack direction={"row"} gap={1.5} >
-              <Stack direction={"column"} gap={1.5} width="50%">
+            <Stack direction={"row"} gap={.5} >
+              <Stack direction={"column"} gap={.5} width="50%">
                 <TextField 
                   {...propsInputs}
                   id="Telefono fijo" 
@@ -231,6 +256,24 @@ export default function EditarInformacionGeneral() {
                 rows={2}
                 label="Observaciones" 
             />
+
+            <Typography variant='subtitle2' color="primary.light">
+                  Contacto principal
+            </Typography>
+
+            <Stack direction="row" gap={.5}>
+                <TextField 
+                  {...propsInputs}
+                  id="NombreCP" 
+                  label="Nombre" 
+                />
+
+                <TextField 
+                  {...propsInputs}
+                  id="CorreoElectronicoCP" 
+                  label="Contacto principal" 
+                />
+            </Stack>
           </Stack>
 
           <ContenedorBotonesEditarInfo 
@@ -247,7 +290,7 @@ export default function EditarInformacionGeneral() {
                   Representante legal
                 </Typography>
 
-                <Stack direction={"row"} gap={1.5}>
+                <Stack direction={"row"} gap={.5}>
                   <TextField
                       {...propsInputs}
                       id="NombreRL" 
@@ -258,7 +301,7 @@ export default function EditarInformacionGeneral() {
                       }}
                   />
 
-                  <Stack direction={"row"} gap={1.5} width="50%">
+                  <Stack direction={"row"} gap={.5} width="50%">
                     <FormControl
                         fullWidth
                         sx={{
@@ -287,7 +330,7 @@ export default function EditarInformacionGeneral() {
                   </Stack>
                 </Stack>
 
-                <Stack direction={"row"} gap={1.5}>
+                <Stack direction={"row"} gap={.5}>
                   <TextField
                     {...propsInputs}
                     id="LugarExpedicionRL" 
