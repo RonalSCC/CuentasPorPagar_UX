@@ -6,7 +6,6 @@ export interface DeleteContactProps {
   cambiarEstado: Function
 }
 
-
 const DeleteContact = ({estado, cambiarEstado}:DeleteContactProps) => {
   return (
     <>

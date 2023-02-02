@@ -1,4 +1,4 @@
-import { Avatar, Card, CardActions, CardContent, CardHeader, Chip, Divider, FormControlLabel, FormGroup, Icon, IconButton, Switch, Tooltip, Typography } from '@mui/material'
+import { Avatar, Card, CardActions, Chip, Divider, FormControlLabel, FormGroup, Icon, IconButton, Switch, Tooltip, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import { DeleteOutlined, EditOutlined, Person } from '@mui/icons-material';
 import React, { useState } from 'react'
@@ -24,6 +24,7 @@ const CardContact = (contact: IContactos) => {
 
 	const [verModalEditContact, setverModalEditContact] = useState(false);
 	const [verModalDeleteContact, setVerModalDeleteContact] = useState(false);
+	const [checked, setChecked] = useState(true);
 
 	const handleEditContact = () => {
 		setverModalEditContact(!verModalEditContact);
@@ -33,10 +34,14 @@ const CardContact = (contact: IContactos) => {
 		setVerModalDeleteContact(!verModalDeleteContact);
 	}
 
+	const handleChange = (event:any) => {
+		setChecked(event.target.checked);
+	};
+
 	return (
 		<>
-			<Stack width={422}>
-				<Card variant="outlined" sx={{ borderColor: "secondary.main" }}>
+			<Stack width={444}>
+				<Card>
 					<Stack direction="row" alignItems="center" px={2} py={1.5} justifyContent="space-between">
 						<Stack direction="row" alignItems="center">
 							<Stack paddingRight={2}>
@@ -59,13 +64,13 @@ const CardContact = (contact: IContactos) => {
 							{ConPrincipal && <Chip label="Contacto Principal" color="secondary" size="small" />}
 						</Stack>
 					</Stack>
-					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={1.5}>
-						<Stack overflow="hidden" gap={1.5} width="50%">
+					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={0.5}>
+						<Stack overflow="hidden" gap={0.5} width="50%">
 							<InfoItem title="Número documento" text={ConNumeroDocumento} />
 							<InfoItem title="Teléfono" text={ConTelefono} />
 							<InfoItem title="Tipo" text={ConTipo} showTooltip={false}></InfoItem>
 						</Stack>
-						<Stack overflow="hidden" gap={1.5} width="50%">
+						<Stack overflow="hidden" gap={0.5} width="50%">
 							<InfoItem title="Celular" text={ConCelular} />
 							<InfoItem title="Ciudad" text={ConCiudad}></InfoItem>
 							<InfoItem title="Email" text={ConEmail} showTooltip={false}></InfoItem>
@@ -90,7 +95,12 @@ const CardContact = (contact: IContactos) => {
 							</Stack>
 							<Stack direction="row">
 								<FormGroup>
-									<FormControlLabel control={<Switch size="small" defaultChecked />} label="Activo" sx={{ marginRight: "0px" }} />
+									<FormControlLabel 
+										control={<Switch size="small" />} 
+										label="Activo"  
+										checked={checked}
+										onChange={handleChange}
+										sx={{ marginRight: "0px" }} />
 								</FormGroup>
 							</Stack>
 						</Stack>
