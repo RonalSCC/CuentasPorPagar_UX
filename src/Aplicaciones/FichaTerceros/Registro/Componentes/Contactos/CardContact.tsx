@@ -64,13 +64,13 @@ export const CardContact = (contact: IContactos) => {
 							{conPrincipal && <Chip label="Contacto Principal" color="secondary" size="small" />}
 						</Stack>
 					</Stack>
-					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={1.5}>
-						<Stack overflow="hidden" gap={1.5} width="50%">
+					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={0.5}>
+						<Stack overflow="hidden" gap={0.5} width="50%">
 							<InfoItem title="Número documento" text={conNumeroDocumento} />
 							<InfoItem title="Teléfono" text={conTelefono} />
 							<InfoItem title="Tipo" text={conTipo} showTooltip={false}></InfoItem>
 						</Stack>
-						<Stack overflow="hidden" gap={1.5} width="50%">
+						<Stack overflow="hidden" gap={0.5} width="50%">
 							<InfoItem title="Celular" text={conCelular} />
 							<InfoItem title="Ciudad" text={conCiudad}></InfoItem>
 							<InfoItem title="Email" text={conEmail} showTooltip={false}></InfoItem>

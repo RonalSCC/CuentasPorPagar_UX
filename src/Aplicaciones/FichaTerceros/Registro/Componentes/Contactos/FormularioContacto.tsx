@@ -24,8 +24,8 @@ const FormularioContacto = ({ estado, cambiarEstado, title }: FormularioContacto
                     <Typography variant="h6">{title}</Typography>
                 </DialogTitle>
 
-                <DialogContent sx={{ padding: "0px" }}>
-                    <Stack gap={0.5} py={2} px={3} direction="column">
+                <DialogContent >
+                    <Stack gap={0.5} direction="column">
                         <Stack direction="row" gap={0.5}>
                             <TextField
                                 {...propsInputs}
@@ -98,7 +98,7 @@ const FormularioContacto = ({ estado, cambiarEstado, title }: FormularioContacto
                 </DialogContent>
 
                 <DialogActions>
-                    <Stack direction="row" gap={1}>
+                    <Stack direction="row" gap={1} p={1}>
                         <Button size='medium' variant="text" onClick={() => cambiarEstado()}>
                             Cancelar
                         </Button>
