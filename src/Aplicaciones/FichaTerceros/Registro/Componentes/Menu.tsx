@@ -113,7 +113,7 @@ export default function MenuInformacionGeneral(
             
         </Stack>
         
-        <Paper sx={{ width: "100%"}} elevation={0}>
+        <Stack direction={"column"} sx={{ width: "100%"}} >
             <MenuList>
                 <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
@@ -230,9 +230,7 @@ export default function MenuInformacionGeneral(
                     </Menu>
                 }
             </MenuList>
-
-            
-        </Paper>
+        </Stack>
     </>
   )
 }

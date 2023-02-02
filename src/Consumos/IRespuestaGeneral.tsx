@@ -1,22 +1,22 @@
 export interface IErrorGeneral {
-    Codigo:string,
-    Descripcion:string
+    codigo:string,
+    descripcion:string
 }
 
 export interface IPaginacion {
-    Siguiente:string,
-    Anteriror:string,
-    Primera:string,
-    Ultima:string,
-    TotalRegistros:number
+    siguiente:string,
+    anteriror:string,
+    primera:string,
+    ultima:string,
+    totalRegistros:number
 }
 
 export default interface IRespuestaGeneral {
-    Codigo: number,
-    Datos: any|Array<any>,
-    Descripcion:string,
-    Errores?:null|Array<IErrorGeneral>,
-    Ok: boolean,
-    Paginacion?:IPaginacion
+    codigo: number,
+    datos: any|Array<any>,
+    descripcion:string,
+    errores?:null|Array<IErrorGeneral>,
+    ok: boolean,
+    paginacion?:IPaginacion
 };
 

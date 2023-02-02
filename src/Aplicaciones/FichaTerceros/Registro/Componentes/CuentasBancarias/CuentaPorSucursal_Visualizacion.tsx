@@ -12,7 +12,7 @@ export default function CuentaPorSucursal_Visualizacion(
 ) {
   return (
     <>
-        <Stack direction="row" gap={1}>
+        <Stack direction="row" gap={1} alignItems="center">
             <LabelImportant color='primary'/>
 
             <Stack direction="column">

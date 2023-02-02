@@ -1,5 +1,6 @@
-import { Alert, Collapse, Fade, Stack } from '@mui/material'
+import { Alert, AlertTitle, Collapse, Fade, Stack } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import ObtenerConfigs from '../../../Consumos/ObtenerConfigs'
 import { TercerosContexto } from './TercerosContexto'
 
 export interface TerceroSeleccionadoLista{
@@ -19,7 +20,8 @@ export interface PropsTerceroContexto {
     CambiarTituloPageHeader: Function,
     CambiarTerceroSeleccionadoLista: Function,
     CambiarAlertas:(ListaAlertas: Array<JSX.Element>) => void,
-    CerrarAlertas: Function
+    CerrarAlertas: Function,
+    ObjConfigs:any
 }
 export default function TercerosProveedor(
     {
@@ -33,7 +35,39 @@ export default function TercerosProveedor(
     const [nuevoRegistro, setNuevoRegistro] = useState<boolean>(false);
     const [tituloPageHeader, setTituloPageHeader] = useState("");
     const [listaAlertas, setListaAlertas] = useState<Array<JSX.Element>>();
+    const [ObjConfigs, setObjConfigs] = useState<any>({});
+    useEffect(() => {
+        ConsultarConfigs();
+    }, [])
 
+    const ConsultarConfigs = async ()=> {
+        const Config = await ObtenerConfigs({
+            UsuarioID: 1,
+            ListaConfigs: [{
+              ConfigID: "TER_CAMBIANATJUR",
+            }]
+        });
+        if(Config?.ObjConfigs){
+            setObjConfigs(Config?.ObjConfigs)
+        }
+        if (Config.Errores && Config?.Errores.length > 0 ) {
+            CambiarAlertas(
+                Config.Errores.map(x=> {
+                    return <>
+                    <Alert 
+                        key={x.descripcion} 
+                        severity="warning"
+                        onClose={()=> propsTercerosContexto.CerrarAlertas()}
+                    >
+                        <AlertTitle>Error</AlertTitle>
+                        {x.descripcion}
+                    </Alert>
+                    </>;
+                })
+            );
+        }
+        
+    }
     const CambiarTerceroSeleccionadoLista = (TerceroNuevo:TerceroSeleccionadoLista) => {
         setTerceroSeleccionadoLista(TerceroNuevo);
     }
@@ -65,7 +99,8 @@ export default function TercerosProveedor(
         CambiarTituloPageHeader,
         TituloPageHeader: tituloPageHeader,
         CambiarAlertas,
-        CerrarAlertas
+        CerrarAlertas,
+        ObjConfigs
     };
 
     return (

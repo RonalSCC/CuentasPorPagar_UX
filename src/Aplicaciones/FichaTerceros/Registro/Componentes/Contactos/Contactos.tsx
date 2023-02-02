@@ -3,24 +3,24 @@ import { Alert, AlertTitle, Fab, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import { useContext, useEffect, useState } from 'react'
 import FormularioContacto from './FormularioContacto'
-import CardContact from './CardContact'
+import { CardContact } from './CardContact'
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
 import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 import { CrearPeticion } from '../../../../../Consumos/APIManager'
 
 export interface IContactos {
-    ConId: number,
-    ConNombre: string,
-    ConCelular: string,
-    ConTelefono: string,
-    ConCargo: string,
-    ConCiudadId: number,
-    ConCiudad: string,
-    ConTipoId: number,
-    ConTipo: string,
-    ConEmail: string,
-    ConPrincipal: boolean,
-    ConNumeroDocumento: string
+    conId: number,
+    conNombre: string,
+    conCelular: string,
+    conTelefono: string,
+    conCargo: string,
+    conCiudadId: number,
+    conCiudad: string,
+    conTipoId: number,
+    conTipo: string,
+    conEmail: string,
+    conPrincipal: boolean,
+    conNumeroDocumento: string
 }
 
 
@@ -36,6 +36,7 @@ export default function Contactos() {
         const response = await CrearPeticion({
             API: "CUENTASPORPAGAR",
             URLServicio: "/AdministracionTerceros/Consultar_ContactosTerceros",
+            Type: "POST",
             Body: {
                 usuarioId: 1,
                 TerId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID
@@ -43,20 +44,20 @@ export default function Contactos() {
         });
 
         if (response != null) {
-            if (response.Ok) {
-                setContactosList(response.Datos)
+            if (response.ok) {
+                setContactosList(response.datos)
             }
-            else if (response.Errores && response.Errores.length > 0) {
+            else if (response.errores && response.errores.length > 0) {
                 propsTercerosContexto.CambiarAlertas(
-                    response.Errores.map(x=> {
+                    response.errores.map(x=> {
                         return <>
                         <Alert 
-                            key={x.Descripcion} 
+                            key={x.descripcion} 
                             severity="warning"
                             onClose={()=> propsTercerosContexto.CerrarAlertas()}
                         >
                             <AlertTitle>Error</AlertTitle>
-                            {x.Descripcion}
+                            {x.descripcion}
                         </Alert>
                         </>;
                     })
@@ -80,7 +81,7 @@ export default function Contactos() {
             <Stack gap={1} direction="row" flexWrap="wrap">
 
                 {
-                    contactosList.map((contact) => <CardContact key={contact.ConId} {...contact} />)
+                    contactosList.map((contact) => <CardContact key={contact.conId} {...contact} />)
                 }
 
             </Stack>

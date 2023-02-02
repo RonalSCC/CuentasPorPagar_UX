@@ -8,18 +8,18 @@ import DeleteContact from './DeleteContact';
 import { IContactos } from './Contactos';
 
 
-const CardContact = (contact: IContactos) => {
+export const CardContact = (contact: IContactos) => {
 
 	const {
-		ConNombre,
-		ConCelular,
-		ConTelefono,
-		ConCargo,
-		ConCiudad,
-		ConTipo,
-		ConEmail,
-		ConPrincipal,
-		ConNumeroDocumento,
+		conNombre,
+		conCelular,
+		conTelefono,
+		conCargo,
+		conCiudad,
+		conTipo,
+		conEmail,
+		conPrincipal,
+		conNumeroDocumento,
 	} = contact
 
 	const [verModalEditContact, setverModalEditContact] = useState(false);
@@ -34,7 +34,7 @@ const CardContact = (contact: IContactos) => {
 		setVerModalDeleteContact(!verModalDeleteContact);
 	}
 
-	const handleChange = (event:any) => {
+	const handleChange = (event: any) => {
 		setChecked(event.target.checked);
 	};
 
@@ -51,29 +51,29 @@ const CardContact = (contact: IContactos) => {
 							</Stack>
 							<Stack>
 								<Typography variant='h6'>
-									{ConNombre}
+									{conNombre}
 								</Typography>
 								<Typography color="text.secondary" variant='body1'>
 									{
-										(ConCargo == null || ConCargo == "") ? "Desconocido" : ConCargo
+										(conCargo == null || conCargo == "") ? "Desconocido" : conCargo
 									}
 								</Typography>
 							</Stack>
 						</Stack>
 						<Stack>
-							{ConPrincipal && <Chip label="Contacto Principal" color="secondary" size="small" />}
+							{conPrincipal && <Chip label="Contacto Principal" color="secondary" size="small" />}
 						</Stack>
 					</Stack>
-					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={0.5}>
-						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem title="Número documento" text={ConNumeroDocumento} />
-							<InfoItem title="Teléfono" text={ConTelefono} />
-							<InfoItem title="Tipo" text={ConTipo} showTooltip={false}></InfoItem>
+					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={1.5}>
+						<Stack overflow="hidden" gap={1.5} width="50%">
+							<InfoItem title="Número documento" text={conNumeroDocumento} />
+							<InfoItem title="Teléfono" text={conTelefono} />
+							<InfoItem title="Tipo" text={conTipo} showTooltip={false}></InfoItem>
 						</Stack>
-						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem title="Celular" text={ConCelular} />
-							<InfoItem title="Ciudad" text={ConCiudad}></InfoItem>
-							<InfoItem title="Email" text={ConEmail} showTooltip={false}></InfoItem>
+						<Stack overflow="hidden" gap={1.5} width="50%">
+							<InfoItem title="Celular" text={conCelular} />
+							<InfoItem title="Ciudad" text={conCiudad}></InfoItem>
+							<InfoItem title="Email" text={conEmail} showTooltip={false}></InfoItem>
 						</Stack>
 					</Stack>
 					<CardActions sx={{ padding: "0px" }}>
@@ -85,7 +85,7 @@ const CardContact = (contact: IContactos) => {
 									</IconButton>
 								</Tooltip>
 								{
-									!ConPrincipal &&
+									!conPrincipal &&
 									<Tooltip title="Eliminar" placement="top" arrow >
 										<IconButton size="small" color="error" onClick={handleDeleteContact}>
 											<DeleteOutlined fontSize="small" />
@@ -95,9 +95,9 @@ const CardContact = (contact: IContactos) => {
 							</Stack>
 							<Stack direction="row">
 								<FormGroup>
-									<FormControlLabel 
-										control={<Switch size="small" />} 
-										label="Activo"  
+									<FormControlLabel
+										control={<Switch size="small" />}
+										label="Activo"
 										checked={checked}
 										onChange={handleChange}
 										sx={{ marginRight: "0px" }} />
@@ -120,5 +120,3 @@ const CardContact = (contact: IContactos) => {
 		</>
 	)
 }
-
-export default CardContact
