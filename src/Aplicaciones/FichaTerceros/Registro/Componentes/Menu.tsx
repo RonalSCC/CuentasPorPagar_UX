@@ -192,7 +192,8 @@ export default function MenuInformacionGeneral(
                             <ListItemText 
                                 {...PropsTextMenu}
                                 disableTypography
-                                primary={<Typography variant="body2" color={"text.secondary"}>Documentos de tercero</Typography>}
+                                primary={<Typography variant="body2" color={"text.secondary"}
+                                onClick={() => CambiarOpcionMenuSeleccionada("DocumentosDeTerceros")}>Documentos de tercero</Typography>}
                             >
                             </ListItemText>
                         </MenuItem>
@@ -202,7 +203,9 @@ export default function MenuInformacionGeneral(
                             <ListItemText 
                                 {...PropsTextMenu}
                                 disableTypography
-                                primary={<Typography variant="body2" color={"text.secondary"}>Embargo / Endoso</Typography>}
+                                primary={<Typography variant="body2" color={"text.secondary"}
+                                onClick={() => CambiarOpcionMenuSeleccionada("EmbargoEndoso")}
+                                >Embargo / Endoso</Typography>}
                             >
                             </ListItemText>
                         </MenuItem>

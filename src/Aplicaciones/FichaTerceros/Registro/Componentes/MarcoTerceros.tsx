@@ -80,7 +80,7 @@ export default function InformacionGeneral() {
                 }
                 
                 
-                <Stack height="100%" direction="row"  paddingY={expandido ? 1.5 : 2} paddingX={1.5}>
+                <Stack height="100%" direction="row" paddingY={expandido ? 1.5 : 2} paddingX={1.5}>
                     <RoutesMarcoTerceroElement />
                 </Stack>
             </Stack>

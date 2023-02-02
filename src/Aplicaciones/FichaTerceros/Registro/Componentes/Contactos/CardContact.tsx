@@ -1,4 +1,4 @@
-import { Avatar, Card, CardActions, CardContent, CardHeader, Chip, Divider, FormControlLabel, FormGroup, Icon, IconButton, Switch, Tooltip, Typography } from '@mui/material'
+import { Avatar, Card, CardActions, Chip, Divider, FormControlLabel, FormGroup, Icon, IconButton, Switch, Tooltip, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import { DeleteOutlined, EditOutlined, Person } from '@mui/icons-material';
 import React, { useState } from 'react'
@@ -8,7 +8,7 @@ import DeleteContact from './DeleteContact';
 import { IContactos } from './Contactos';
 
 
-const CardContact = (contact: IContactos) => {
+export const CardContact = (contact: IContactos) => {
 
 	const {
 		conNombre,
@@ -24,6 +24,7 @@ const CardContact = (contact: IContactos) => {
 
 	const [verModalEditContact, setverModalEditContact] = useState(false);
 	const [verModalDeleteContact, setVerModalDeleteContact] = useState(false);
+	const [checked, setChecked] = useState(true);
 
 	const handleEditContact = () => {
 		setverModalEditContact(!verModalEditContact);
@@ -33,10 +34,14 @@ const CardContact = (contact: IContactos) => {
 		setVerModalDeleteContact(!verModalDeleteContact);
 	}
 
+	const handleChange = (event: any) => {
+		setChecked(event.target.checked);
+	};
+
 	return (
 		<>
-			<Stack width={422}>
-				<Card variant="outlined" sx={{ borderColor: "secondary.main" }}>
+			<Stack width={444}>
+				<Card>
 					<Stack direction="row" alignItems="center" px={2} py={1.5} justifyContent="space-between">
 						<Stack direction="row" alignItems="center">
 							<Stack paddingRight={2}>
@@ -90,7 +95,12 @@ const CardContact = (contact: IContactos) => {
 							</Stack>
 							<Stack direction="row">
 								<FormGroup>
-									<FormControlLabel control={<Switch size="small" defaultChecked />} label="Activo" sx={{ marginRight: "0px" }} />
+									<FormControlLabel
+										control={<Switch size="small" />}
+										label="Activo"
+										checked={checked}
+										onChange={handleChange}
+										sx={{ marginRight: "0px" }} />
 								</FormGroup>
 							</Stack>
 						</Stack>
@@ -110,5 +120,3 @@ const CardContact = (contact: IContactos) => {
 		</>
 	)
 }
-
-export default CardContact

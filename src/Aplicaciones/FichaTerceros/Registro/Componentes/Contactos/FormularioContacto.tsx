@@ -1,13 +1,12 @@
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormGroup, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
-import React from 'react'
-
+import React, { useState } from 'react'
 export interface FormularioContactoProps {
     estado: boolean,
     cambiarEstado: Function,
     title: string
 }
 
-const FormularioContacto = ({ estado, cambiarEstado, title }: FormularioContactoProps) => {
+const FormularioContacto = ({ estado, cambiarEstado, title }: FormularioContactoProps) => {  
 
     const propsInputs: Record<string, any> = {
         variant: "outlined",
@@ -26,21 +25,39 @@ const FormularioContacto = ({ estado, cambiarEstado, title }: FormularioContacto
                 </DialogTitle>
 
                 <DialogContent sx={{ padding: "0px" }}>
-                    <Stack gap={1.5} p={3} direction="column">
-                        <Stack direction="row" gap={1.5}>
-                            <TextField fullWidth {...propsInputs} label="Nombre" required></TextField>
+                    <Stack gap={0.5} py={2} px={3} direction="column">
+                        <Stack direction="row" gap={0.5}>
+                            <TextField
+                                {...propsInputs}
+                                label="Nombre"
+                                required
+                                fullWidth
+                            ></TextField>
                         </Stack>
                         <Stack>
-                            <TextField {...propsInputs} label="Email" ></TextField>
+                            <TextField
+                                {...propsInputs}
+                                label="Email"
+                                name="email"
+                            ></TextField>
                         </Stack>
-                        <Stack direction="row" gap={1.5}>
-                            <TextField {...propsInputs} label="Celular" fullWidth />
-                            <Stack direction="row" gap={1.5} sx={{ width: "100%" }}>
-                                <TextField {...propsInputs} label="Telefono" />
+                        <Stack direction="row" gap={0.5}>
+                            <TextField
+                                {...propsInputs} 
+                                label="Celular" 
+                                fullWidth 
+                                
+                                />
+                            <Stack direction="row" gap={0.5} sx={{ width: "100%" }}>
+                                <TextField
+                                    {...propsInputs}
+                                    label="Telefono"
+                                    name=""
+                                />
                                 <TextField {...propsInputs} label="Ext" />
                             </Stack>
                         </Stack>
-                        <Stack direction="row" gap={1.5}>
+                        <Stack direction="row" gap={0.5}>
                             <FormControl fullWidth size="small">
                                 <TextField
                                     id="tipo"

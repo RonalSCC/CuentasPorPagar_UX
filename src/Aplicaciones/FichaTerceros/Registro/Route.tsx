@@ -7,6 +7,8 @@ import Contactos from './Componentes/Contactos/Contactos'
 import MarcoTerceroProveedor from "./Contextos/MarcoTercerosProveedor";
 import ConfiguracionTributaria from "./Componentes/ConfiguracionTributaria/ConfiguracionTributaria";
 import RegistroDeDescuentos from './Componentes/RegistroDeDescuentos/RegistroDeDescuentos';
+import DocumentosDeTerceros from "./Componentes/ConfiguracionAvanzada/DocumentosDeTerceros/DocumentosDeTerceros";
+import EmbargoEndoso from "./Componentes/ConfiguracionAvanzada/EmbargoEndoso/EmbargoEndoso";
 const CambiarTerceroMientras = ()=>{
 
 }
@@ -36,7 +38,14 @@ const RoutesMarcoTerceros:RouteObject[] = [
             {
                 path:"RegistroDeDescuentos",
                 element:<RegistroDeDescuentos />,
-                index:true
+            },
+            {
+                path:"DocumentosDeTerceros",
+                element:<DocumentosDeTerceros />,
+            },
+            {
+                path:"EmbargoEndoso",
+                element:<EmbargoEndoso />,
             }
         ]
     }
