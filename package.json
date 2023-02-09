@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ayf/generales": "^0.0.44",
+    "@hookform/resolvers": "^2.9.10",
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.17",
     "@testing-library/jest-dom": "^5.16.5",
@@ -12,9 +13,11 @@
     "mui-image": "^1.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.0",
     "react-imask": "^6.4.3",
     "react-router-dom": "^6.4.5",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -45,6 +48,7 @@
     "@emotion/styled": "^11.10.5",
     "@fontsource/nunito": "^4.5.11",
     "@fontsource/roboto": "^4.5.8",
+    "@hookform/devtools": "^4.3.0",
     "@types/jest": "^27.5.2",
     "@types/mui-image": "^1.0.1",
     "@types/node": "^16.18.8",
