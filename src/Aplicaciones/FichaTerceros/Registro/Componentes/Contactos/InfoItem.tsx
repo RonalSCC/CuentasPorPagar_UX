@@ -11,7 +11,7 @@ const InfoItem = ({ title, text, showTooltip }: InfoItemPorps) => {
     
     <Stack>
       <Typography color="text.primary" variant="body2">{title}</Typography>
-      <Tooltip title={ showTooltip != undefined ? text : ""} placement="top" arrow>
+      <Tooltip title={ !!showTooltip  ? text : ""} placement="top" arrow>
         <Typography variant='body1' noWrap color="text.secondary">{(text == null || text =="") ? "-":text }</Typography>
       </Tooltip>
     </Stack>

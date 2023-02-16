@@ -1,46 +1,85 @@
 import { Stack, TextField } from '@mui/material'
+import { useFormContext, Controller } from 'react-hook-form'
 import React from 'react'
+
 
 export default function TipoPersonaNaturalCampos(
     {
         propsInputs
     }:
-    {
-        propsInputs:Record<string, any>
-    }
+        {
+            propsInputs: Record<string, any>
+        }
 ) {
-  return (
-    <>
+
+    const { control } = useFormContext();
+    return (
+        <>
             {/* Nombre */}
             <Stack direction="row" gap={1.5}>
-                <TextField 
-                {...propsInputs}
-                id="primerNombre" 
-                label="Primer nombre"
-                placeholder='Prueba pruebita'
-                required
+                <Controller
+                    control={control}
+                    name="terPrimerNombre"
+                    defaultValue=""
+                    render={({ field, formState: { errors } }) => (
+                        <TextField
+                            {...field}
+                            {...propsInputs}
+                            id="terPrimerNombre"
+                            label="Primer nombre"
+                            placeholder='Pimer Nombre'
+                            required
+                            error={!!errors.terPrimerNombre}
+                            helperText={errors.terPrimerNombre && `${errors.terPrimerNombre.message}`}
+                        />
+                    )}
                 />
-                <TextField 
-                {...propsInputs}
-                id="segundoNombre" 
-                label="Segundo nombre" 
+                <Controller
+                    control={control}
+                    name="terSegundoNombre"
+                    defaultValue=""
+                    render={({ field }) => (
+                        <TextField
+                            {...field}
+                            {...propsInputs}
+                            id="terSegundoNombre"
+                            label="Segundo nombre"
+                            placeholder='Segundo Nombre'
+                        />
+                    )}
                 />
             </Stack>
-
-            {/* Apellidos */}
             <Stack direction="row" gap={1.5}>
-                <TextField 
-                {...propsInputs}
-                id="primerApellido" 
-                label="Primer apellido" 
-                required
+                <Controller
+                    control={control}
+                    name="terPrimerApellido"
+                    defaultValue=""
+                    render={({ field, formState:{errors} }) => (
+
+                        <TextField
+                            {...field}
+                            {...propsInputs}
+                            id="terPrimerApellido"
+                            label="Primer apellido"
+                            required
+                            error={!!errors.terPrimerApellido}
+                            helperText={errors.terPrimerApellido && `${errors.terPrimerApellido.message}`}
+                        />
+                    )}
                 />
-                <TextField 
-                {...propsInputs}
-                id="segundoApellido" 
-                label="Segundo apellido" 
+                <Controller
+                    control={control}
+                    name="terSegundoApellido"
+                    render={({ field }) => (
+                        < TextField
+                            {...field}
+                            {...propsInputs}
+                            id="terSegundoApellido"
+                            label="Segundo apellido"
+                        />
+                    )}
                 />
             </Stack>
-    </>
-  )
+        </>
+    )
 }
