@@ -23,93 +23,130 @@ export default function FormularioInformacionGeneral() {
    //const navigate = useNavigate();
 
    const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
-   const [tipoPersonaChecked, setTipoPersonaChecked] = useState(1);
    const [verModalDireccion, setVerModalDireccion] = useState(false);
    const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
    const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
-   const [Configs, setConfigs] = useState<IConfig>();
-   
+   const [Configs, setConfigs] = useState<Record<string, string | number>>({})
+
+   let PROV_TELEFONO = '1';
+   let TER_REQ_REPLEGAL = '1';
+   let TER_REQ_ACTIVECON = '1' // Actividad economica ??
+   let TER_VALIDA_DV = '0'
+   let TER_NOCALCULAR_DV = '0'
+   let TER_FICHA_APIROS = '0'
+   let PROV_CORREO_CTO = '1'
+
    const schema = Yup.object().shape({
-      razonSocial: Yup
-         .string(),   
-      primerNombre: Yup
+      terTipoPersona: Yup
+         .string(),
+      terRazonSocial: Yup
+         .string()
+         .when("terTipoPersona", (terTipoPersona, schema) =>
+            terTipoPersona == 'N' ? schema : schema.required("Debe ingresar una razón social")
+         ),
+      terPrimerNombre: Yup
          .string()
          .required("Debe ingresar el nombre del tercero"),
-      segundoNombre: Yup
+      terSegundoNombre: Yup
          .string(),
-      primerApellido: Yup
+      terPrimerApellido: Yup
          .string()
          .required("Debe ingresar el apellido del tercero"),
-      segundoApellido: Yup
+      terSegundoApellido: Yup
          .string(),
-      tipoIdentificacion: Yup
+      terTipoDocumento: Yup
          .string()
          .required("Debe seleccionar un tipo de identificación"),
-      numeroIdentificacion: Yup
+      terNumeroIndentificaion: Yup
          .number()
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros")
+         .required("Debe ingresar el NIT del tercero")
          .typeError("Solo se aceptan dígitos en este campo")
-         .required("Debe ingresar el NIT del tercero"),
-      digitoVerificacion: Yup
-         .number()
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros")
-         .typeError("Solo se aceptan dígitos en este campo")
-         .required("Debe ingresar el NIT del tercero"),
-      tipoTercero: Yup
-         .string().required("Debe Seleccionar el tipo de tercero"),
-      ciudad: Yup
-         .string()
-         .required("Debe ingresar la ciudad del tercero"),
-      direccion: Yup
-         .string()
-         .required("Debe ingresar la dirección del tercero"),
-      telefono: Yup
-         .number()
-         .typeError("Este campo debe ser númerico")
          .positive("Solo se acepta números positivos")
          .integer("Solo se acepta números enteros"),
-      celular: Yup
+      terDigitoV: Yup
+         .number()
+         .when({
+            is: () => TER_VALIDA_DV == '1' && TER_NOCALCULAR_DV == '0',
+            then: Yup
+               .number()
+               .required("Este campo es requerido")
+               .typeError("El dígito de verificación es incorrecto")
+         })
+         .positive("Solo se acepta números positivos")
+         .integer("Solo se acepta números enteros"),
+      terTipo: Yup
+         .string().required("Debe Seleccionar el tipo de tercero"),
+      terCiudad: Yup
+         .string()
+         .required("Debe ingresar la ciudad del tercero"),
+      terDireccion: Yup
+         .string()
+         .required("Debe ingresar la dirección del tercero"),
+      terTelefono: Yup
+         .number()
+         .when({
+            is: () => PROV_TELEFONO == '1' || TER_REQ_REPLEGAL == '1',
+            then: Yup
+               .number()
+               .required("Debe ingresar un teléfono")
+               .typeError("Solo se aceptan digitos en este campo"),
+            otherwise: Yup
+               .number()
+               .typeError("Solo se aceptan digitos en este campo")
+               .notRequired()
+         })
+         .positive("Solo se acepta números positivos")
+         .integer("Solo se acepta números enteros"),
+      terCelular: Yup
          .number()
          .positive("Solo se acepta números positivos")
          .integer("Solo se acepta números enteros")
          .typeError("Este campo debe ser númerico"),
-      nombreContacto: Yup
+      terContactoPrincipalNombre: Yup
          .string()
          .required("Debe ingresar el nombre del contacto principal"),
-      emailContacto: Yup
+      terContactoPrincipalEmail: Yup
          .string()
          .email("El campo no corresponde a una dirección emal correcta")
-         .required("Debe ingresar el correo electrónico del contacto principal")
+         .when({
+            is: () => TER_FICHA_APIROS != '1' && PROV_CORREO_CTO == '1',
+            then: Yup
+               .string()
+               .required("Debe ingresar el correo electrónico del contacto principal"),
+         })
+
    })
 
    const metodos = useForm({
-      defaultValues:{
-         razonSocial:"",
-         primerNombre:"Cristian",
-         segundoNombre:"Camilo",
-         primerApellido:"Pérez",
-         segundoApellido:"Sandoval",
-         tipoIdentificacion:"",
-         numeroIdentificacion:"2123544",
-         digitoVerificacion:"1",
-         tipoTercero:"",
-         ciudad:"",
-         direccion:"asdas",
-         telefono:"3232",
-         celular:"32155489",
-         nombreContacto:"Ronal",
-         emailContacto:"Ronal@sinco.com.co"
-
+      defaultValues: {
+         terTipoPersona: "N",
+         terRazonSocial: "",
+         terPrimerNombre: "Cristian",
+         terSegundoNombre: "Camilo",
+         terPrimerApellido: "Pérez",
+         terSegundoApellido: "Sandoval",
+         terTipoDocumento: "",
+         terNumeroIndentificaion: undefined,
+         terDigitoV: "1",
+         terTipo: "",
+         terCiudad: "",
+         terDireccion: "asdas",
+         terTelefono: undefined,
+         terCelular: "32155489",
+         terContactoPrincipalNombre: "Ronal",
+         terContactoPrincipalEmail: "Ronal@sinco.com.co"
       },
-      resolver: yupResolver(schema)
+      resolver: yupResolver(schema),
+      mode: 'onSubmit',
    })
 
-   const { control, handleSubmit, formState} = metodos
+   const { control, handleSubmit, watch } = metodos
+   const terTipoPersona = watch("terTipoPersona")
 
-   const onClickSubmit = (data: any) => console.log(data);
+   const VerFormularioDirecciones = () => {
+      setVerModalDireccion(!verModalDireccion);
+   }
 
    useEffect(() => {
       propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
@@ -123,18 +160,18 @@ export default function FormularioInformacionGeneral() {
       fullWidth: true,
    };
 
-   const ConsultarConfigs = async () =>{
+   const ConsultarConfigs = async () => {
       let PropsDefaultRequestConfigs = {
-            API: "CONFIGURACION",
-            URLServicio: "/ConsultasGenerales/ConsultarConfigs",
-            Type: "POST"
-         };
+         API: "CONFIGURACION",
+         URLServicio: "/ConsultasGenerales/ConsultarConfigs",
+         Type: "POST"
+      };
 
       await CrearPeticion({
          ...PropsDefaultRequestConfigs,
-         Body:{
-            usuarioID:1,
-            listaConfigs:[
+         Body: {
+            usuarioID: 1,
+            listaConfigs: [
                {
                   configID: "PROV_TELEFONO"
                },
@@ -144,11 +181,10 @@ export default function FormularioInformacionGeneral() {
             ]
          }
       }).then((respuesta) => {
-         if(respuesta != null && respuesta.ok == true){
+         if (respuesta != null && respuesta.ok == true) {
             setConfigs(respuesta.datos)
          }
       })
-      
    }
 
    const ConsultarListas = async () => {
@@ -197,15 +233,32 @@ export default function FormularioInformacionGeneral() {
       });
 
    }
-   const VerFormularioDirecciones = () => {
-      setVerModalDireccion(!verModalDireccion);
-   }
 
-   const CambioTipoPersona = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event) {
-         setTipoPersonaChecked(Number((event.target as HTMLInputElement).value));
-      }
-   }
+   const onClickSubmit = async (data: any) => {
+
+      let PropsDefaultRequestConfigs = {
+         API: "CUENTASPORPAGAR",
+         URLServicio: "/AdministracionTerceros/CrearTerceroFicha",
+         Type: "POST"
+      };
+
+      console.log(data)
+
+      await CrearPeticion({
+         ...PropsDefaultRequestConfigs,
+         Body: {
+            usuarioID: 1,
+            terEstado: true,
+            ...data
+         }
+      }).then((response) => {
+         if(response != null && response.ok)
+            alert("Tercero creado con exito")
+      }).catch((error) => {
+         console.log(error)
+      })
+
+   };
 
    return (
       <>
@@ -220,34 +273,41 @@ export default function FormularioInformacionGeneral() {
                            <Typography variant='caption' color="text.secondary" fontWeight={400}>
                               * Tipo de persona
                            </Typography>
-                           <RadioGroup
-                              row
-                              aria-labelledby="demo-row-radio-buttons-group-label"
-                              name="TipoPersona"
-                              onChange={CambioTipoPersona}
-                           >
-                              <FormControlLabel checked={tipoPersonaChecked == 1} value={1} control={<Radio />} label="Natural" />
-                              <FormControlLabel checked={tipoPersonaChecked == 2} value={2} control={<Radio />} label="Jurídica" />
-                           </RadioGroup>
+                           <Controller
+                              control={control}
+                              name="terTipoPersona"
+                              defaultValue=""
+                              render={({ field: { onChange, value } }) => (
+                                 <RadioGroup
+                                    row
+                                    aria-labelledby="demo-row-radio-buttons-group-label"
+                                    name="terTipoPersona"
+                                    onChange={onChange}
+                                 >
+                                    <FormControlLabel checked={value == 'N'} value={'N'} control={<Radio />} label="Natural" />
+                                    <FormControlLabel checked={value == 'J'} value={'J'} control={<Radio />} label="Jurídica" />
+                                 </RadioGroup>
+                              )}
+                           />
                         </FormControl>
                      </Stack>
 
                      {
-                        tipoPersonaChecked == 1 ?
+                        terTipoPersona == 'N' ?
                            <TipoPersonaNaturalCampos propsInputs={propsInputs} /> :
                            <Stack direction="row" gap={1.5}>
                               <Controller
                                  control={metodos.control}
-                                 name="razonSocial"
-                                 render={({ field, formState:{errors} }) => (
+                                 name="terRazonSocial"
+                                 render={({ field, formState: { errors } }) => (
                                     <TextField
                                        {...field}
                                        {...propsInputs}
                                        type="text"
                                        fullWidth
                                        label="Razón Social"
-                                       error={!!errors.razonSocial}
-                                       helperText={errors.razonSocial && `${errors.razonSocial.message}`}
+                                       error={!!errors.terRazonSocial}
+                                       helperText={errors.terRazonSocial && `${errors.terRazonSocial.message}`}
                                     />
                                  )}
                               />
@@ -267,7 +327,7 @@ export default function FormularioInformacionGeneral() {
                               >
                                  <Controller
                                     control={control}
-                                    name="tipoIdentificacion"
+                                    name="terTipoDocumento"
                                     render={({ field, formState: { errors } }) => (
                                        <TextField
                                           {...field}
@@ -277,8 +337,8 @@ export default function FormularioInformacionGeneral() {
                                           placeholder='Seleccione'
                                           select
                                           required
-                                          error={!!errors.tipoIdentificacion}
-                                          helperText={errors.tipoIdentificacion && `${errors.tipoIdentificacion.message}`}
+                                          error={!!errors.terTipoDocumento}
+                                          helperText={errors.terTipoDocumento && `${errors.terTipoDocumento.message}`}
                                        >
                                           {
                                              ListaTipoDocumento.map(data => {
@@ -292,16 +352,16 @@ export default function FormularioInformacionGeneral() {
 
                               <Controller
                                  control={control}
-                                 name="numeroIdentificacion"
+                                 name="terNumeroIndentificaion"
                                  render={({ field, formState: { errors } }) => (
                                     <TextField
                                        {...propsInputs}
                                        {...field}
-                                       id="numeroIdentificacion"
+                                       id="terNumeroIndentificaion"
                                        label="Número de identificación"
                                        type="text"
-                                       error={!!errors.numeroIdentificacion}
-                                       helperText={errors.numeroIdentificacion && `${errors.numeroIdentificacion.message}`}
+                                       error={!!errors.terNumeroIndentificaion}
+                                       helperText={errors.terNumeroIndentificaion && `${errors.terNumeroIndentificaion.message}`}
                                        sx={{
                                           width: "60%",
                                           fontSize: 10
@@ -312,14 +372,16 @@ export default function FormularioInformacionGeneral() {
                               />
                               <Controller
                                  control={control}
-                                 name="digitoVerificacion"
-                                 render={({ field }) => (
+                                 name="terDigitoV"
+                                 render={({ field, formState: { errors } }) => (
                                     <TextField
                                        {...field}
                                        {...propsInputs}
-                                       id="digitoVerificacion"
+                                       id="terDigitoV"
                                        label="DV"
                                        type="text"
+                                       error={!!errors.terDigitoV}
+                                       helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
                                        sx={{
                                           width: "15%"
                                        }}
@@ -336,7 +398,7 @@ export default function FormularioInformacionGeneral() {
                         >
                            <Controller
                               control={control}
-                              name="tipoTercero"
+                              name="terTipo"
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
@@ -345,8 +407,8 @@ export default function FormularioInformacionGeneral() {
                                     size='small'
                                     placeholder='Seleccione'
                                     select
-                                    error={!!errors.tipoTercero}
-                                    helperText={errors.tipoTercero && `${errors.tipoTercero.message}`}
+                                    error={!!errors.terTipo}
+                                    helperText={errors.terTipo && `${errors.terTipo.message}`}
 
                                  >
                                     {
@@ -370,7 +432,7 @@ export default function FormularioInformacionGeneral() {
                         >
                            <Controller
                               control={control}
-                              name="ciudad"
+                              name="terCiudad"
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
@@ -378,13 +440,13 @@ export default function FormularioInformacionGeneral() {
                                     label="Ciudad"
                                     size='small'
                                     select
-                                    error={!!errors.ciudad}
-                                    helperText={errors.ciudad && `${errors.ciudad.message}`}
+                                    error={!!errors.terCiudad}
+                                    helperText={errors.terCiudad && `${errors.terCiudad.message}`}
                                  >
                                     {
-                                       ListaCiudades.map(ciudad =>{
+                                       ListaCiudades.map(ciudad => {
                                           return <MenuItem key={ciudad.CiuID} value={ciudad.CiuID}>{ciudad.CiuNombre}</MenuItem>
-                                       }) 
+                                       })
                                     }
                                  </TextField>
                               )}
@@ -395,17 +457,17 @@ export default function FormularioInformacionGeneral() {
 
                            <Controller
                               control={control}
-                              name="direccion"
+                              name="terDireccion"
                               render={({ field, formState: { errors } }) => (
 
                                  <TextField
                                     {...field}
                                     {...propsInputs}
                                     required
-                                    id="direccion"
+                                    id="terDireccion"
                                     label="Dirección"
-                                    error={!!errors.direccion}
-                                    helperText={errors.direccion && `${errors.direccion.message}`}
+                                    error={!!errors.terDireccion}
+                                    helperText={errors.terDireccion && `${errors.terDireccion.message}`}
                                  />
                               )}
                            />
@@ -417,35 +479,33 @@ export default function FormularioInformacionGeneral() {
                            }
                         </Stack>
                      </Stack>
-
-                     {/* Telefono fijo y celular */}
                      <Stack direction="row" gap={1.5}>
                         <Controller
                            control={control}
-                           name="telefono"
+                           name="terTelefono"
                            render={({ field, formState: { errors } }) => (
                               <TextField
                                  {...field}
                                  {...propsInputs}
-                                 id="telefono"
+                                 id="terTelefono"
                                  label="Télefono fijo"
-                                 error={!!errors.telefono}
-                                 helperText={errors.telefono && `${errors.telefono.message}`}
+                                 error={!!errors.terTelefono}
+                                 helperText={errors.terTelefono && `${errors.terTelefono.message}`}
                               />
                            )}
                         />
                         <Controller
                            control={control}
-                           name="celular"
+                           name="terCelular"
                            render={({ field, formState: { errors } }) => (
 
                               <TextField
                                  {...field}
                                  {...propsInputs}
-                                 id="celular"
+                                 id="terCelular"
                                  label="Celular"
-                                 error={!!errors.celular}
-                                 helperText={errors.celular && `${errors.celular.message}`}
+                                 error={!!errors.terCelular}
+                                 helperText={errors.terCelular && `${errors.terCelular.message}`}
                               />
                            )}
                         />
@@ -463,31 +523,31 @@ export default function FormularioInformacionGeneral() {
                      <Stack direction="row" gap={1.5}>
                         <Controller
                            control={control}
-                           name="nombreContacto"
+                           name="terContactoPrincipalNombre"
                            render={({ field, formState: { errors } }) => (
 
                               <TextField
                                  {...field}
                                  {...propsInputs}
-                                 id="nombreContacto"
+                                 id="terContactoPrincipalNombre"
                                  label="Nombre"
-                                 error={!!errors.nombreContacto}
-                                 helperText={errors.nombreContacto && `${errors.nombreContacto.message}`}
+                                 error={!!errors.terContactoPrincipalNombre}
+                                 helperText={errors.terContactoPrincipalNombre && `${errors.terContactoPrincipalNombre.message}`}
                               />
                            )}
                         />
                         <Controller
                            control={control}
-                           name="emailContacto"
+                           name="terContactoPrincipalEmail"
                            render={({ field, formState: { errors } }) => (
 
                               <TextField
                                  {...field}
                                  {...propsInputs}
-                                 id="emailContacto"
+                                 id="terContactoPrincipalEmail"
                                  label="Email"
-                                 error={!!errors.emailContacto}
-                                 helperText={errors.emailContacto && `${errors.emailContacto.message}`}
+                                 error={!!errors.terContactoPrincipalEmail}
+                                 helperText={errors.terContactoPrincipalEmail && `${errors.terContactoPrincipalEmail.message}`}
                               />
                            )}
                         />

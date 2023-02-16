@@ -20,11 +20,23 @@ export interface ICalle {
     CalleDesc: string
 }
 
+export interface IViaPrincipal {
+    AvPrincipalID: string,
+    AvPrincipalDesc: string
+}
+
+export interface IUndIdentidad {
+    UndIdentidadID: string,
+    UndIdentidadDesc: string
+}
+
 export default function FormularioDirecciones({ estado, cambiarEstado }: FormularioDireccionesProps) {
 
     const [listaCalles, setListaCalles] = useState<Array<ICalle>>([]);
+    const [listaViaPrincipales, setListaViaPrincipales] = useState<Array<IViaPrincipal>>([])
+    const [listaUndIdentidades, setListaUndIdentidades] = useState<Array<IUndIdentidad>>([])
 
-    const { control, setValue } = useFormContext();
+    const { control, setValue, getValues } = useFormContext();
 
     const propsInputs: Record<string, any> = {
         variant: "outlined",
@@ -32,34 +44,89 @@ export default function FormularioDirecciones({ estado, cambiarEstado }: Formula
         fullWidth: true,
     };
 
-    const handleUpdateAddress = () =>{
-        setValue("direccion", 'Calle 2 # 45 - 50')
+    const handleUpdateAddress = () => {
+        
+        const {
+            calle,
+            numeroViaPrincipal,
+            interseccionViaPrincipal,
+            numeroViaSecundaria,
+            interseccionViaSecundaria,
+            numeroComplementoViaSecundaria,
+            unidadIdentidad1,
+            numeroUnidadIdentidad1,
+            unidadIdentidad2,
+            numeroUnidadIdentidad2,
+        } = getValues()
+        
+       let direcciónCompleta = 
+        calle + " " +
+        numeroViaPrincipal + " " + 
+        interseccionViaPrincipal + " " +
+        numeroViaSecundaria + " " +
+        interseccionViaSecundaria + " " +
+        numeroComplementoViaSecundaria + " " +
+        unidadIdentidad1 + " " +
+        numeroUnidadIdentidad1 + " " +
+        unidadIdentidad2 + " " +
+        numeroUnidadIdentidad2;
+
+        direcciónCompleta = direcciónCompleta.trim();
+        direcciónCompleta = direcciónCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
+        
+       setValue("direccion",direcciónCompleta);
+       cambiarEstado();
     }
 
     const ConsultarListas = async () => {
         let PropsDefaultRequest = {
-           API: "CONFIGURACION",
-           URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
-           Type: "GET"
+            API: "CONFIGURACION",
+            URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
+            Type: "GET"
         };
-  
+
         // ---- Calles
         await CrearPeticion({
-           ...PropsDefaultRequest,
-           Body: {
-              UsuarioID: 1,
-              Clave: 'Calles'
-           }
+            ...PropsDefaultRequest,
+            Body: {
+                UsuarioID: 1,
+                Clave: 'Calles'
+            }
         }).then((respuesta) => {
-           if (respuesta != null && respuesta.ok == true) {
-              setListaCalles(respuesta.datos);
-           }
+            if (respuesta != null && respuesta.ok == true) {
+                setListaCalles(respuesta.datos);
+            }
         });
-    }  
+
+        // ---- Avenidas
+        await CrearPeticion({
+            ...PropsDefaultRequest,
+            Body: {
+                UsuarioID: 1,
+                Clave: 'Avenidas'
+            }
+        }).then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+                setListaViaPrincipales(respuesta.datos);
+            }
+        });
+
+        // ---- UnidadesIdentidad
+        await CrearPeticion({
+            ...PropsDefaultRequest,
+            Body: {
+                UsuarioID: 1,
+                Clave: 'UnidadesIdentidad'
+            }
+        }).then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+                setListaUndIdentidades(respuesta.datos);
+            }
+        });
+    }
 
     useEffect(() => {
-      ConsultarListas();
-      console.log(listaCalles)
+        ConsultarListas();
     }, [])
 
 
@@ -94,31 +161,46 @@ export default function FormularioDirecciones({ estado, cambiarEstado }: Formula
                                         placeholder='Seleccione'
                                     >
                                         {
-                                            listaCalles.map(cl => <MenuItem key={cl.CalleID} id={cl.CalleID}>{cl.CalleDesc}</MenuItem>)
+                                            listaCalles.map(cl => <MenuItem key={cl.CalleID} value={cl.CalleID}>{cl.CalleDesc}</MenuItem>)
                                         }
                                     </TextField>
                                 )}
                             />
-                            <TextField
-                                {...propsInputs}
-                                id="numeroViaPrincipal"
-                                label="Número"
-                                required
+                            <Controller
+                                control={control}
+                                name="numeroViaPrincipal"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="numeroViaPrincipal"
+                                        label="Número"
+                                    />
+                                )}
                             />
-
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Intersección</InputLabel>
-                                <Select
-                                    id="interseccionViaPrincipal"
-                                    label="Intersección"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                >
-                                    <MenuItem value={10}>1</MenuItem>
-                                    <MenuItem value={20}>2</MenuItem>
-                                    <MenuItem value={30}>3</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <Controller
+                                control={control}
+                                name="interseccionViaPrincipal"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="interseccionViaPrincipal"
+                                        label="Intersección"
+                                        size='small'
+                                        placeholder='Seleccione'
+                                        select
+                                    >
+                                        {
+                                            listaViaPrincipales.map(AvPrin =>
+                                                <MenuItem key={AvPrin.AvPrincipalID} value={AvPrin.AvPrincipalID}>{AvPrin.AvPrincipalDesc}</MenuItem>
+                                            )
+                                        }
+                                    </TextField>
+                                )}
+                            />
                         </Stack>
 
                         <Typography variant='subtitle2' color="primary.main">
@@ -126,78 +208,135 @@ export default function FormularioDirecciones({ estado, cambiarEstado }: Formula
                         </Typography>
 
                         <Stack direction="row" gap={1.5}>
-                            <TextField
-                                {...propsInputs}
-                                id="numeroViaSecundaria"
-                                label="Número"
-                                required
+                            <Controller
+                                control={control}
+                                name="numeroViaSecundaria"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="numeroViaSecundaria"
+                                        label="Número"
+                                    />
+
+                                )}
                             />
+                            <Controller
+                                control={control}
+                                name="interseccionViaSecundaria"
+                                defaultValue=""
+                                render={({ field }) => (
 
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Intersección</InputLabel>
-                                <Select
-                                    id="interseccionViaSecundaria"
-                                    label="Intersección"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                >
-                                    <MenuItem value={10}>1</MenuItem>
-                                    <MenuItem value={20}>2</MenuItem>
-                                    <MenuItem value={30}>3</MenuItem>
-                                </Select>
-                            </FormControl>
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="interseccionViaSecundaria"
+                                        label="Intersección"
+                                        size='small'
+                                        placeholder='Seleccione'
+                                        select
+                                    >
+                                        {
+                                            listaViaPrincipales.map(AvPrin =>
+                                                <MenuItem key={AvPrin.AvPrincipalID} value={AvPrin.AvPrincipalID}>{AvPrin.AvPrincipalDesc}</MenuItem>
+                                            )
+                                        }
 
-                            <TextField
-                                {...propsInputs}
-                                id="numeroComplementoViaSecundaria"
-                                label="Número"
-                                required
+
+                                    </TextField>
+                                )}
+                            />
+                            <Controller
+                                control={control}
+                                name="numeroComplementoViaSecundaria"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="numeroComplementoViaSecundaria"
+                                        label="Número"
+                                    />
+                                )}
                             />
                         </Stack>
 
                         <Divider />
 
                         <Stack direction="row" gap={1.5}>
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Unidad de identidad 1</InputLabel>
-                                <Select
-                                    id="unidadIdentidad1"
-                                    label="Unidad de identidad 1"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                >
-                                    <MenuItem value={10}>1</MenuItem>
-                                    <MenuItem value={20}>2</MenuItem>
-                                    <MenuItem value={30}>3</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <TextField
-                                {...propsInputs}
-                                id="numeroUnidadIdentidad1"
-                                label="Número"
+                            <Controller
+                                control={control}
+                                name="unidadIdentidad1"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="unidadIdentidad1"
+                                        label="Unidad de identidad 1"
+                                        size='small'
+                                        placeholder='Seleccione'
+                                        select
+                                    >
+                                        {
+                                            listaUndIdentidades.map(und => (
+                                                <MenuItem key={und.UndIdentidadID} value={und.UndIdentidadID}>{und.UndIdentidadDesc }</MenuItem>
+                                            ))
+                                        }
+                                    </TextField>
+                                )}
+                            />
+                            <Controller
+                                control={control}
+                                name="numeroUnidadIdentidad1"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="numeroUnidadIdentidad1"
+                                        label="Número"
+                                    />
+                                )}
                             />
                         </Stack>
 
                         <Stack direction="row" gap={1.5}>
-                            <FormControl fullWidth size="small">
-                                <InputLabel>Unidad de identidad 2</InputLabel>
-                                <Select
-                                    id="unidadIdentidad2"
-                                    label="Unidad de identidad 2"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                >
-                                    <MenuItem value={10}>1</MenuItem>
-                                    <MenuItem value={20}>2</MenuItem>
-                                    <MenuItem value={30}>3</MenuItem>
-                                </Select>
-                            </FormControl>
-
-                            <TextField
-                                {...propsInputs}
-                                id="numeroUnidadIdentidad2"
-                                label="Número"
+                            <Controller
+                                control={control}
+                                name="unidadIdentidad2"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="unidadIdentidad2"
+                                        label="Unidad de identidad 2"
+                                        size='small'
+                                        placeholder='Seleccione'
+                                        select
+                                    >
+                                        {
+                                            listaUndIdentidades.map(und => (
+                                                <MenuItem key={und.UndIdentidadID} value={und.UndIdentidadID}>{und.UndIdentidadDesc }</MenuItem>
+                                            ))
+                                        }
+                                    </TextField>
+                                )}
+                            />
+                            <Controller
+                                control={control}
+                                name="numeroUnidadIdentidad2"
+                                defaultValue=""
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        {...propsInputs}
+                                        id="numeroUnidadIdentidad2"
+                                        label="Número"
+                                    />
+                                )}
                             />
                         </Stack>
                     </Stack>

@@ -19,30 +19,30 @@ export default function TipoPersonaNaturalCampos(
             <Stack direction="row" gap={1.5}>
                 <Controller
                     control={control}
-                    name="primerNombre"
+                    name="terPrimerNombre"
                     defaultValue=""
                     render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
                             {...propsInputs}
-                            id="primerNombre"
+                            id="terPrimerNombre"
                             label="Primer nombre"
                             placeholder='Pimer Nombre'
                             required
-                            error={!!errors.primerNombre}
-                            helperText={errors.primerNombre && `${errors.primerNombre.message}`}
+                            error={!!errors.terPrimerNombre}
+                            helperText={errors.terPrimerNombre && `${errors.terPrimerNombre.message}`}
                         />
                     )}
                 />
                 <Controller
                     control={control}
-                    name="segundoNombre"
+                    name="terSegundoNombre"
                     defaultValue=""
                     render={({ field }) => (
                         <TextField
                             {...field}
                             {...propsInputs}
-                            id="segundoNombre"
+                            id="terSegundoNombre"
                             label="Segundo nombre"
                             placeholder='Segundo Nombre'
                         />
@@ -52,29 +52,29 @@ export default function TipoPersonaNaturalCampos(
             <Stack direction="row" gap={1.5}>
                 <Controller
                     control={control}
-                    name="primerApellido"
+                    name="terPrimerApellido"
                     defaultValue=""
                     render={({ field, formState:{errors} }) => (
 
                         <TextField
                             {...field}
                             {...propsInputs}
-                            id="primerApellido"
+                            id="terPrimerApellido"
                             label="Primer apellido"
                             required
-                            error={!!errors.primerApellido}
-                            helperText={errors.primerApellido && `${errors.primerApellido.message}`}
+                            error={!!errors.terPrimerApellido}
+                            helperText={errors.terPrimerApellido && `${errors.terPrimerApellido.message}`}
                         />
                     )}
                 />
                 <Controller
                     control={control}
-                    name="segundoApellido"
+                    name="terSegundoApellido"
                     render={({ field }) => (
                         < TextField
                             {...field}
                             {...propsInputs}
-                            id="segundoApellido"
+                            id="terSegundoApellido"
                             label="Segundo apellido"
                         />
                     )}

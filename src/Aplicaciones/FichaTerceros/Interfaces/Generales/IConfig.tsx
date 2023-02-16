@@ -1,8 +1,10 @@
 
 export default interface IConfig {
-    confId: number,
-    ConfigValor: number,
-    ConfigObs: string,
-    ConfigDescripcion: string
+    ConfigName: {
+        confId: number,
+        ConfigValor: number,
+        ConfigObs: string,
+        ConfigDescripcion: string
+    }
 
 }
