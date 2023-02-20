@@ -79,11 +79,9 @@ export default function Contactos() {
     return (
         <Stack>
             <Stack gap={1} direction="row" flexWrap="wrap">
-
                 {
                     contactosList.map((contact) => <CardContact key={contact.conId} {...contact} />)
                 }
-
             </Stack>
             <Fab color="secondary" variant="extended" onClick={VerModalNuevoContacto}
                 sx={{

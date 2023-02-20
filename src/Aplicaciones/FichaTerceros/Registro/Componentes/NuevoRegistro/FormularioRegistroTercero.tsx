@@ -1,4 +1,4 @@
-import { Button, Card, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material'
+import { Alert, AlertTitle, Button, Card, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { useForm, FormProvider, Controller } from 'react-hook-form'
 import * as Yup from "yup";
@@ -18,25 +18,43 @@ import TipoPersonaNaturalCampos from './TipoPersonaNaturalCampos';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { CrearPeticion } from '../../../../../Consumos/APIManager';
 import { Save } from '@mui/icons-material';
+import IConfigValues from '../../../Interfaces/Generales/IConfig';
+
+export interface ITercero {
+   terCelular: string,
+   terCiudad: string,
+   terContactoPrincipalEmail: string,
+   terContactoPrincipalNombre: string,
+   terDigitoV: string,
+   terDireccion: string,
+   terNumeroIdentificacion: string,
+   terPrimerApellido: string,
+   terPrimerNombre: string,
+   terRazonSocial: string,
+   terSegundoApellido: string,
+   terSegundoNombre: string,
+   terTelefono: string,
+   terTipo: string,
+   terTipoDocumento: string,
+   terTipoPersona: string,
+}
 
 export default function FormularioInformacionGeneral() {
-   //const navigate = useNavigate();
 
    const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
    const [verModalDireccion, setVerModalDireccion] = useState(false);
    const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
    const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
-   const [Configs, setConfigs] = useState<Record<string, string | number>>({})
+   const [Configs, setConfigs] = useState<any>()
 
-   let PROV_TELEFONO = '1';
-   let TER_REQ_REPLEGAL = '1';
-   let TER_REQ_ACTIVECON = '1' // Actividad economica ??
-   let TER_VALIDA_DV = '0'
-   let TER_NOCALCULAR_DV = '0'
-   let TER_FICHA_APIROS = '0'
-   let PROV_CORREO_CTO = '1'
-
+   const PROV_TELEFONO:IConfigValues = Configs && Configs["PROV_TELEFONO"];
+   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
+   const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
+   const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
+   const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
+   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
+   
    const schema = Yup.object().shape({
       terTipoPersona: Yup
          .string(),
@@ -58,7 +76,7 @@ export default function FormularioInformacionGeneral() {
       terTipoDocumento: Yup
          .string()
          .required("Debe seleccionar un tipo de identificación"),
-      terNumeroIndentificaion: Yup
+      terNumeroIdentificacion: Yup
          .number()
          .required("Debe ingresar el NIT del tercero")
          .typeError("Solo se aceptan dígitos en este campo")
@@ -67,7 +85,7 @@ export default function FormularioInformacionGeneral() {
       terDigitoV: Yup
          .number()
          .when({
-            is: () => TER_VALIDA_DV == '1' && TER_NOCALCULAR_DV == '0',
+            is: () => TER_VALIDA_DV?.configValor == 1 && TER_NOCALCULAR_DV?.configValor == 0,
             then: Yup
                .number()
                .required("Este campo es requerido")
@@ -86,7 +104,7 @@ export default function FormularioInformacionGeneral() {
       terTelefono: Yup
          .number()
          .when({
-            is: () => PROV_TELEFONO == '1' || TER_REQ_REPLEGAL == '1',
+            is: () => PROV_TELEFONO?.configValor == 1 || TER_REQ_REPLEGAL?.configValor == 1,
             then: Yup
                .number()
                .required("Debe ingresar un teléfono")
@@ -110,7 +128,7 @@ export default function FormularioInformacionGeneral() {
          .string()
          .email("El campo no corresponde a una dirección emal correcta")
          .when({
-            is: () => TER_FICHA_APIROS != '1' && PROV_CORREO_CTO == '1',
+            is: () => TER_FICHA_APIROS?.configValor != 1 && PROV_CORREO_CTO?.configValor == 1,
             then: Yup
                .string()
                .required("Debe ingresar el correo electrónico del contacto principal"),
@@ -127,13 +145,13 @@ export default function FormularioInformacionGeneral() {
          terPrimerApellido: "Pérez",
          terSegundoApellido: "Sandoval",
          terTipoDocumento: "",
-         terNumeroIndentificaion: undefined,
-         terDigitoV: "1",
+         terNumeroIdentificacion: "",
+         terDigitoV: "",
          terTipo: "",
          terCiudad: "",
          terDireccion: "asdas",
-         terTelefono: undefined,
-         terCelular: "32155489",
+         terTelefono: "",
+         terCelular:"",
          terContactoPrincipalNombre: "Ronal",
          terContactoPrincipalEmail: "Ronal@sinco.com.co"
       },
@@ -177,11 +195,23 @@ export default function FormularioInformacionGeneral() {
                },
                {
                   configID: "TER_REQ_REPLEGAL"
+               },
+               {
+                  configID: "TER_VALIDA_DV"
+               },
+               {
+                  configID: "TER_NOCALCULAR_DV"
+               },
+               {
+                  configID: "TER_FICHA_APIROS"
+               },
+               {
+                  configID: "PROV_CORREO_CTO"
                }
             ]
          }
       }).then((respuesta) => {
-         if (respuesta != null && respuesta.ok == true) {
+         if (respuesta != null) {
             setConfigs(respuesta.datos)
          }
       })
@@ -234,7 +264,7 @@ export default function FormularioInformacionGeneral() {
 
    }
 
-   const onClickSubmit = async (data: any) => {
+   const onClickSubmit = async (data: ITercero) => {
 
       let PropsDefaultRequestConfigs = {
          API: "CUENTASPORPAGAR",
@@ -242,7 +272,9 @@ export default function FormularioInformacionGeneral() {
          Type: "POST"
       };
 
-      console.log(data)
+      data.terCelular = data.terCelular && data.terCelular.toString();
+      data.terTelefono = data.terCelular && data.terTelefono.toString();
+      data.terNumeroIdentificacion = data.terNumeroIdentificacion && data.terNumeroIdentificacion.toString();
 
       await CrearPeticion({
          ...PropsDefaultRequestConfigs,
@@ -252,12 +284,43 @@ export default function FormularioInformacionGeneral() {
             ...data
          }
       }).then((response) => {
-         if(response != null && response.ok)
-            alert("Tercero creado con exito")
-      }).catch((error) => {
-         console.log(error)
-      })
 
+         if (response != null) {
+            if (response.ok) {
+               propsTercerosContexto.CambiarAlertas(
+                  [1].map(alert => {
+                     return <>
+                        <Alert
+                           key={1}
+                           severity="success"
+                           onClose={() => propsTercerosContexto.CerrarAlertas()}
+                        >
+                           <AlertTitle>!Bien hecho!</AlertTitle>
+                           El tercero ha sido creado con éxito
+                        </Alert>
+                     </>
+                  })
+               )
+
+            }
+            else if (response.errores && response.errores.length > 0) {
+               propsTercerosContexto.CambiarAlertas(
+                  response.errores.map(x => {
+                     return <>
+                        <Alert
+                           key={x.descripcion}
+                           severity="warning"
+                           onClose={() => propsTercerosContexto.CerrarAlertas()}
+                        >
+                           <AlertTitle>Error</AlertTitle>
+                           {x.descripcion}
+                        </Alert>
+                     </>;
+                  })
+               );
+            }
+         }
+      })
    };
 
    return (
@@ -352,16 +415,16 @@ export default function FormularioInformacionGeneral() {
 
                               <Controller
                                  control={control}
-                                 name="terNumeroIndentificaion"
+                                 name="terNumeroIdentificacion"
                                  render={({ field, formState: { errors } }) => (
                                     <TextField
                                        {...propsInputs}
                                        {...field}
-                                       id="terNumeroIndentificaion"
+                                       id="terNumeroIdentificacion"
                                        label="Número de identificación"
                                        type="text"
-                                       error={!!errors.terNumeroIndentificaion}
-                                       helperText={errors.terNumeroIndentificaion && `${errors.terNumeroIndentificaion.message}`}
+                                       error={!!errors.terNumeroIdentificacion}
+                                       helperText={errors.terNumeroIdentificacion && `${errors.terNumeroIdentificacion.message}`}
                                        sx={{
                                           width: "60%",
                                           fontSize: 10
