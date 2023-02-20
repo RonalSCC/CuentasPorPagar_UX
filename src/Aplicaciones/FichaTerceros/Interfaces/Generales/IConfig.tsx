@@ -1,10 +1,12 @@
+export default interface IConfigValues {
+    confiId: number,
+    configDescripcion: string,
+    configObs: string,
+    configValor: number
+}
 
 export default interface IConfig {
-    ConfigName: {
-        confId: number,
-        ConfigValor: number,
-        ConfigObs: string,
-        ConfigDescripcion: string
-    }
+    key: string,
+    value: IConfigValues
 
 }
