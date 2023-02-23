@@ -7,7 +7,6 @@ import { DevTool } from "@hookform/devtools";
 
 // Interfaces
 import ICiudad from '../../../Interfaces/Generales/ICiudad';
-import IConfig from '../../../Interfaces/Generales/IConfig';
 import ITipoTercero from '../../../Interfaces/Generales/ITipoTercero';
 import ITipoDocumento from '../../../Interfaces/Generales/ITipoDocumento';
 

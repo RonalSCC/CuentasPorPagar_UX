@@ -1,14 +1,15 @@
 import { Avatar, Card, CardActions, Chip, Divider, FormControlLabel, FormGroup, Icon, IconButton, Switch, Tooltip, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import { DeleteOutlined, EditOutlined, Person } from '@mui/icons-material';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InfoItem from './InfoItem';
 import FormularioContacto from './FormularioContacto';
 import DeleteContact from './DeleteContact';
-import { IContactos } from './Contactos';
+import { IContacto } from './Contactos';
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
 
 
-export const CardContact = (contact: IContactos) => {
+export const CardContact = (contact: IContacto) => {
 
 	const {
 		conNombre,
@@ -19,12 +20,16 @@ export const CardContact = (contact: IContactos) => {
 		conTipo,
 		conEmail,
 		conPrincipal,
-		conNumeroDocumento,
+		conNumDocumento,
 	} = contact
 
+	const [Configs, setConfigs] = useState<any>();
+	
 	const [verModalEditContact, setverModalEditContact] = useState(false);
 	const [verModalDeleteContact, setVerModalDeleteContact] = useState(false);
 	const [checked, setChecked] = useState(true);
+
+	const OCULTA_CHECK_CPRIN = Configs && Configs["OCULTA_CHECK_CPRIN"] || {};
 
 	const handleEditContact = () => {
 		setverModalEditContact(!verModalEditContact);
@@ -37,6 +42,32 @@ export const CardContact = (contact: IContactos) => {
 	const handleChange = (event: any) => {
 		setChecked(event.target.checked);
 	};
+
+	useEffect(() => {
+		ConsultarConfigs();
+	}, [])
+
+	const ConsultarConfigs =  async() => {
+		
+		await CrearPeticion({
+			API: 'CONFIGURACION' ,
+			URLServicio: '/ConsultasGenerales/ConsultarConfigs',
+			Type:"POST",
+			Body:{
+				usuarioID: 1,
+				listaConfigs:[
+					{
+						configID: "OCULTA_CHECK_CPRIN"
+					}
+				]
+			}
+		}).then(response => {
+			if(response != null)
+				setConfigs(response.datos)
+		})
+		
+	}
+	
 
 	return (
 		<>
@@ -55,18 +86,18 @@ export const CardContact = (contact: IContactos) => {
 								</Typography>
 								<Typography color="text.secondary" variant='body1'>
 									{
-										(conCargo == null || conCargo == "") ? "Desconocido" : conCargo
+										(!!conCargo || conCargo == "") ? "Desconocido" : conCargo
 									}
 								</Typography>
 							</Stack>
 						</Stack>
 						<Stack>
-							{conPrincipal && <Chip label="Contacto Principal" color="secondary" size="small" />}
+							{conPrincipal && (OCULTA_CHECK_CPRIN.configValor == 0) && <Chip label="Contacto Principal" color="secondary" size="small" />}
 						</Stack>
 					</Stack>
 					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={0.5}>
 						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem title="Número documento" text={conNumeroDocumento} />
+							<InfoItem title="Número documento" text={conNumDocumento} />
 							<InfoItem title="Teléfono" text={conTelefono} />
 							<InfoItem title="Tipo" text={conTipo} showTooltip={false}></InfoItem>
 						</Stack>
@@ -85,7 +116,7 @@ export const CardContact = (contact: IContactos) => {
 									</IconButton>
 								</Tooltip>
 								{
-									!conPrincipal &&
+									(!conPrincipal || (OCULTA_CHECK_CPRIN.configValor == 1)) &&
 									<Tooltip title="Eliminar" placement="top" arrow >
 										<IconButton size="small" color="error" onClick={handleDeleteContact}>
 											<DeleteOutlined fontSize="small" />
@@ -110,12 +141,12 @@ export const CardContact = (contact: IContactos) => {
 
 			{
 				verModalEditContact == true &&
-				<FormularioContacto estado={verModalEditContact} cambiarEstado={handleEditContact} title="Editar Contacto" />
+				<FormularioContacto estado={verModalEditContact} cambiarEstado={handleEditContact} contact={contact}/>
 			}
 
 			{
 				verModalDeleteContact == true &&
-				<DeleteContact estado={verModalDeleteContact} cambiarEstado={handleDeleteContact}></DeleteContact>
+				<DeleteContact estado={verModalDeleteContact} cambiarEstado={handleDeleteContact} id={contact.conId}></DeleteContact>
 			}
 		</>
 	)
