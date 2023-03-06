@@ -83,7 +83,7 @@ const DeleteContact = ({ estado, cambiarEstado, id }: DeleteContactProps) => {
       >
         <Stack p={3} gap={3} maxWidth={444}>
           <Stack maxWidth={211} alignSelf="center">
-            <Image fit='cover' src={"Imagenes/Terceros/Contact.svg"} alt="" />
+            <Image fit='cover' src={"Imagenes/Terceros/EliminarContacto.svg"} alt="" />
           </Stack>
           <Stack direction="column" gap={1}>
             <Typography

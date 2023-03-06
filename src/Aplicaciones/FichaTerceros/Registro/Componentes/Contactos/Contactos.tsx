@@ -15,6 +15,7 @@ export interface IContacto {
     conNombre: string,
     conCelular: string,
     conTelefono: string,
+    conExtension: string,
     conCargo: string,
     conCiudadId: number,
     conCiudad: string,
@@ -22,7 +23,8 @@ export interface IContacto {
     conTipo: string,
     conEmail: string,
     conPrincipal: boolean,
-    conNumDocumento: string
+    conNumDocumento: string,
+    conEstado:boolean
 }
 
 export default function Contactos() {
@@ -83,26 +85,19 @@ export default function Contactos() {
 
     return (
         <Stack>
-            <Stack direction="row" p={1}>
-                <Add color="primary"></Add>
-                <Button variant='text'>Agregar Contacto</Button>
+            <Stack py={0.5} direction="row" alignItems="center">
+                <Button 
+                    variant="text"
+                    startIcon={<Add color="primary"></Add>}
+                    onClick={VerModalNuevoContacto}>
+                        Agregar Contacto
+                </Button>
             </Stack>
             <Stack gap={1} direction="row" flexWrap="wrap">
                 {
                     contactosList.map((contact) => <CardContact key={contact.conId} {...contact} />)
                 }
             </Stack>
-            <Fab color="secondary" variant="extended" onClick={VerModalNuevoContacto}
-                sx={{
-                    position: "fixed",
-                    bottom: (theme) => theme.spacing(3),
-                    right: (theme) => theme.spacing(3)
-                }} >
-                <Add />
-                <Typography>
-                    Nuevo Contacto
-                </Typography>
-            </Fab>
             {
                 verModalNuevoContacto == true && (
 

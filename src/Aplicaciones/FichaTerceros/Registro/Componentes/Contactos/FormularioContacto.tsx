@@ -10,7 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { DevTool } from '@hookform/devtools';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { IContacto } from './Contactos';
-import { createRoutesFromChildren, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
 
 export interface FormularioContactoProps {
@@ -28,8 +28,6 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
 
    const OCULTA_CHECK_CPRIN:IConfigValues = Configs && Configs["OCULTA_CHECK_CPRIN"] || {};
    
-   console.log(OCULTA_CHECK_CPRIN)
-
    const navigate = useNavigate();
 
    const schema = Yup.object().shape({
@@ -38,7 +36,8 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
          .required("El nombre del contacto es obligatorio"),
       tcEmail: Yup
          .string()
-         .email("El campo no corresponde a una dirección emal correcta"),
+         .email("El campo no corresponde a una dirección emal correcta")
+         .nullable(),
       tcCelular: Yup.mixed()
          .when({
             is: (tcCelular: string) => tcCelular == "",
@@ -60,17 +59,23 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                .typeError("Este campo debe ser númerico")
          }),
       tcExtension: Yup
-         .number()
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros")
-         .typeError("Este campo debe ser númerico"),
+      .mixed()
+      .when({
+         is: (tcExtension: string) => tcExtension == "",
+         then: Yup.string(),
+         otherwise: Yup.number()
+            .positive("Solo se acepta números positivos")
+            .integer("Solo se acepta números enteros")
+            .typeError("Este campo debe ser númerico"),
+      }),
       tcTipoContacto: Yup
          .string()
          .required("Este campo es obligatorio"),
       tcCargo: Yup
          .string(),
       tcCiudad: Yup
-         .string(),
+         .string()
+         .nullable(),
       tcContactoPrincipal: Yup
          .boolean()
    })
@@ -138,12 +143,19 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
       })
    }
 
+   //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
+   const getRandomInt = (min:number, max:number) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+   //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
+
    const onClickSubmit = async (data: any) => {
       let PropsDefaultRequest = {
          API: "CUENTASPORPAGAR",
          Type: "POST"
       };
-
 
       data.tcCelular = data.tcCelular && data.tcCelular.toString();
       data.tcExtension = data.tcExtension && data.tcExtension.toString();
@@ -159,8 +171,8 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
          Body: {
             tcId: contact?.conId,
             tcTercero: 5,
-            tcTipoDocumento: "CC",
-            tcNumeroIdentificacion: "881235512858",
+            tcTipoDocumento: "CC",//Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
+            tcNumeroIdentificacion: getRandomInt(10,100000).toString(), //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
             ...data
          }
       }).then((response) => {
@@ -176,9 +188,8 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                            severity="success"
                            onClose={() => propsTercerosContexto.CerrarAlertas()}
                         >
-                           <AlertTitle>!Bien hecho!</AlertTitle>
                            {(contact) ?
-                              "El contacto se ha actualizado con éxito"
+                              "Los cambios han sido guardados con éxito"
                               :
                               "El contacto ha sido creado con éxito"
                            }
@@ -221,9 +232,15 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
 
    useEffect(() => {
       if (contact != null) {
+
+         // Extrae Extensión del telefono
+
+         const dataTelefono:Array<string> = contact.conTelefono.split(" - ");        
+
          setValue("tcNombre", contact.conNombre)
          setValue("tcCelular", contact.conCelular)
-         setValue("tcTelefono", contact.conTelefono)
+         setValue("tcTelefono", dataTelefono[0] || "")
+         setValue("tcExtension", dataTelefono[1]|| "")
          setValue("tcCiudad", contact.conCiudadId)
          setValue("tcTipoContacto", contact.conTipoId)
          setValue("tcEmail", contact.conEmail)
@@ -322,7 +339,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                                  label="Ext"
                                  type="number"
                                  error={!!errors.tcExtension}
-                                 helperText={errors.tcCelular && `${errors.tcExtension?.message}`}
+                                 helperText={errors.tcExtension && `${errors.tcExtension?.message}`}
                               />
                            )}
                         />
@@ -333,7 +350,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                         <Controller
                            control={control}
                            name="tcTipoContacto"
-                           defaultValue=""
+                           defaultValue={null}
                            render={({ field, formState: { errors } }) => (
                               <TextField
                                  {...field}
@@ -374,7 +391,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                         <Controller
                            control={control}
                            name="tcCiudad"
-                           defaultValue=""
+                           defaultValue={null}
                            render={({ field, formState: { errors } }) => (
                               <TextField
                                  {...field}
@@ -397,7 +414,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                      </FormControl>
                   </Stack>
                   {
-                     (OCULTA_CHECK_CPRIN.configValor == 0) ?  // 1: Ocultar el Checkbox de Contacto Principal
+                     (OCULTA_CHECK_CPRIN.configValor == 0) &&  // 1: Ocultar el Checkbox de Contacto Principal
                      <Stack px={1}>
                         <FormGroup>
                            <Controller
@@ -406,16 +423,14 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                               render={({ field }) => (
                                  <FormControlLabel
                                     {...field}
-                                    control={<Checkbox />}
+                                    control={<Checkbox defaultChecked={contact?.conPrincipal} />}
                                     label="Contacto principal"
-                                    defaultChecked={false}
                                  />
                               )}
                            />
                         </FormGroup>
                      </Stack>
-                     :
-                     null
+                     
                   }
                </Stack>
             </DialogContent>

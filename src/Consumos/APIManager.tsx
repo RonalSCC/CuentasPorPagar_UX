@@ -49,7 +49,6 @@ export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IR
             return data;
         })
         .catch(function(error){
-            console.log(error);
         })
     } 
     else{
@@ -63,7 +62,6 @@ export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IR
             return data;
         })
         .catch(function(error){
-            console.log(error);
         }) 
     }
 }

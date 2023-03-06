@@ -107,7 +107,7 @@ export default function TercerosProveedor(
         <TercerosContexto.Provider value={{propsTercerosContexto}}>
             {children}
             <Fade in={listaAlertas != null && listaAlertas.length > 0} timeout={{enter: 500}}>
-                <Stack gap={1} sx={{position:"fixed", top:"15%", right:"3%"}} >
+                <Stack gap={1} sx={{position:"fixed", top:"7%", right:"3%"}} >
                     {
                         listaAlertas
                     }

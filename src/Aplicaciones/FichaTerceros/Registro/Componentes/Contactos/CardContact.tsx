@@ -1,33 +1,39 @@
-import { Avatar, Card, CardActions, Chip, Divider, FormControlLabel, FormGroup, Icon, IconButton, Switch, Tooltip, Typography } from '@mui/material'
+import { Alert, AlertTitle, Avatar, Card, CardActions, Chip, Divider, FormControlLabel, FormGroup, IconButton, Switch, Tooltip, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import { DeleteOutlined, EditOutlined, Person } from '@mui/icons-material';
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import InfoItem from './InfoItem';
 import FormularioContacto from './FormularioContacto';
 import DeleteContact from './DeleteContact';
 import { IContacto } from './Contactos';
 import { CrearPeticion } from '../../../../../Consumos/APIManager';
-
+import { Controller, useForm } from 'react-hook-form';
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { useNavigate } from 'react-router-dom';
+import { FieldValues } from 'react-hook-form/dist/types';
 
 export const CardContact = (contact: IContacto) => {
 
 	const {
+		conId,
 		conNombre,
 		conCelular,
 		conTelefono,
 		conCargo,
 		conCiudad,
 		conTipo,
+		conTipoId,
 		conEmail,
 		conPrincipal,
 		conNumDocumento,
+		conEstado,
 	} = contact
 
 	const [Configs, setConfigs] = useState<any>();
-	
+	const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
 	const [verModalEditContact, setverModalEditContact] = useState(false);
 	const [verModalDeleteContact, setVerModalDeleteContact] = useState(false);
-	const [checked, setChecked] = useState(true);
+	const navigate = useNavigate()
 
 	const OCULTA_CHECK_CPRIN = Configs && Configs["OCULTA_CHECK_CPRIN"] || {};
 
@@ -39,41 +45,98 @@ export const CardContact = (contact: IContacto) => {
 		setVerModalDeleteContact(!verModalDeleteContact);
 	}
 
-	const handleChange = (event: any) => {
-		setChecked(event.target.checked);
-	};
+	const CambiarEstadoContacto = async (tcEstado: boolean) => {
+
+		await CrearPeticion({
+			API: 'CUENTASPORPAGAR',
+			URLServicio: '/AdministracionTerceros/ActualizarContactoTercero',
+			Type: 'POST',
+			Body: {
+				tcId: conId,
+				tcTercero: propsTercerosContexto.TerceroSeleccionadoLista?.TerID,
+				tcNombre: conNombre,
+				tcTipoContacto: conTipoId,
+				tcEstado
+			}
+
+		}).then((respuesta) => {
+			if (respuesta != null) {
+				if (respuesta.ok) {
+					propsTercerosContexto.CambiarAlertas(
+						[1].map(alert => {
+							return <>
+								<Alert
+									key={1}
+									severity="success"
+									onClose={() => propsTercerosContexto.CerrarAlertas()}
+								>
+									<AlertTitle>!Bien hecho!</AlertTitle>
+									El contacto se ha actualizado con éxito
+								</Alert>
+							</>
+						})
+					)
+					navigate("/FichaTerceros/MarcoTerceros/Contactos", {
+						state: {
+							Reload: true
+						}
+					});
+
+				}
+				else if (respuesta.errores && respuesta.errores.length > 0) {
+					propsTercerosContexto.CambiarAlertas(
+						respuesta.errores.map(x => {
+							return <>
+								<Alert
+									key={x.descripcion}
+									severity="warning"
+									onClose={() => propsTercerosContexto.CerrarAlertas()}
+								>
+									<AlertTitle>Error</AlertTitle>
+									{x.descripcion}
+								</Alert>
+							</>;
+						})
+					);
+				}
+			}
+		})
+	}
 
 	useEffect(() => {
 		ConsultarConfigs();
 	}, [])
 
-	const ConsultarConfigs =  async() => {
-		
+	const ConsultarConfigs = async () => {
+
 		await CrearPeticion({
-			API: 'CONFIGURACION' ,
+			API: 'CONFIGURACION',
 			URLServicio: '/ConsultasGenerales/ConsultarConfigs',
-			Type:"POST",
-			Body:{
+			Type: "POST",
+			Body: {
 				usuarioID: 1,
-				listaConfigs:[
+				listaConfigs: [
 					{
 						configID: "OCULTA_CHECK_CPRIN"
 					}
 				]
 			}
 		}).then(response => {
-			if(response != null)
+			if (response != null)
 				setConfigs(response.datos)
 		})
-		
+
 	}
-	
+
+	const propsInfoItem = {
+		color: (conPrincipal || conEstado) ? "text.primary" : "text.disabled"
+	}
 
 	return (
 		<>
 			<Stack width={444}>
 				<Card>
-					<Stack direction="row" alignItems="center" px={2} py={1.5} justifyContent="space-between">
+					<Stack direction="row" alignItems="start" px={2} py={1.5} justifyContent="space-between">
 						<Stack direction="row" alignItems="center">
 							<Stack paddingRight={2}>
 								<Avatar sx={{ width: 32, height: 32 }} >
@@ -86,53 +149,104 @@ export const CardContact = (contact: IContacto) => {
 								</Typography>
 								<Typography color="text.secondary" variant='body1'>
 									{
-										(!!conCargo || conCargo == "") ? "Desconocido" : conCargo
+										(!conCargo) ? "Desconocido" : conCargo
 									}
 								</Typography>
 							</Stack>
 						</Stack>
-						<Stack>
-							{conPrincipal && (OCULTA_CHECK_CPRIN.configValor == 0) && <Chip label="Contacto Principal" color="secondary" size="small" />}
+						<Stack pt={0.5}>
+							{conPrincipal && (OCULTA_CHECK_CPRIN.configValor == 0) &&
+								<Chip
+									label="Contacto Principal"
+									color="secondary"
+									size="small"
+									sx={{ borderRadius: "4px" }}
+								/>
+							}
 						</Stack>
 					</Stack>
 					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={0.5}>
 						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem title="Número documento" text={conNumDocumento} />
-							<InfoItem title="Teléfono" text={conTelefono} />
-							<InfoItem title="Tipo" text={conTipo} showTooltip={false}></InfoItem>
+							<InfoItem
+								title="Número documento"
+								text={conNumDocumento}
+								{...propsInfoItem}
+							/>
+							<InfoItem
+								title="Teléfono"
+								text={conTelefono}
+								{...propsInfoItem}
+							/>
+							<InfoItem
+								title="Tipo"
+								text={conTipo}
+								{...propsInfoItem}
+							/>
 						</Stack>
 						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem title="Celular" text={conCelular} />
-							<InfoItem title="Ciudad" text={conCiudad}></InfoItem>
-							<InfoItem title="Email" text={conEmail} showTooltip={false}></InfoItem>
+							<InfoItem
+								title="Celular"
+								text={conCelular}
+								{...propsInfoItem}
+							/>
+							<InfoItem
+								title="Ciudad"
+								text={conCiudad}
+								{...propsInfoItem}
+							/>
+							<InfoItem
+								title="Email"
+								text={conEmail}
+								showTooltip={true}
+								{...propsInfoItem}
+							/>
 						</Stack>
 					</Stack>
 					<CardActions sx={{ padding: "0px" }}>
 						<Stack px={2} py={1} direction="row" justifyContent="space-between" alignItems="center" width="100%">
 							<Stack direction="row" gap={1}>
 								<Tooltip title="Editar" placement="top" arrow >
-									<IconButton size="small" color="primary" onClick={handleEditContact}>
+									<IconButton
+										size="small"
+										color="primary"
+										disabled={!(conPrincipal || conEstado)}
+										onClick={handleEditContact}
+									>
 										<EditOutlined fontSize="small" />
 									</IconButton>
 								</Tooltip>
 								{
 									(!conPrincipal || (OCULTA_CHECK_CPRIN.configValor == 1)) &&
 									<Tooltip title="Eliminar" placement="top" arrow >
-										<IconButton size="small" color="error" onClick={handleDeleteContact}>
+										<IconButton 
+										size="small" 
+										color="error"
+										disabled={!(conPrincipal || conEstado)} 
+										onClick={handleDeleteContact}>
 											<DeleteOutlined fontSize="small" />
 										</IconButton>
 									</Tooltip>
 								}
 							</Stack>
 							<Stack direction="row">
-								<FormGroup>
-									<FormControlLabel
-										control={<Switch size="small" />}
-										label="Activo"
-										checked={checked}
-										onChange={handleChange}
-										sx={{ marginRight: "0px" }} />
-								</FormGroup>
+								{
+									(!conPrincipal || (OCULTA_CHECK_CPRIN.configValor == 1)) &&
+									<FormGroup>
+										<FormControlLabel
+											defaultChecked={conEstado}
+											control=
+											{
+												<Switch
+													size="small"
+													defaultChecked={conEstado}
+													onChange={(e, checked) => CambiarEstadoContacto(checked)}
+												/>
+											}
+											label="Activo"
+											sx={{ marginRight: "0px" }}
+										/>
+									</FormGroup>
+								}
 							</Stack>
 						</Stack>
 					</CardActions>
@@ -141,7 +255,7 @@ export const CardContact = (contact: IContacto) => {
 
 			{
 				verModalEditContact == true &&
-				<FormularioContacto estado={verModalEditContact} cambiarEstado={handleEditContact} contact={contact}/>
+				<FormularioContacto estado={verModalEditContact} cambiarEstado={handleEditContact} contact={contact} />
 			}
 
 			{
