@@ -149,10 +149,33 @@ export default function EditarInformacionGeneral() {
 
    useEffect(() => {
       console.log(InfoTercero)
-      if (InfoTercero){
-         setValue('terTipoPersona', terTipoPersona);
+      if (InfoTercero) {
+         setValue('terTipoPersona', InfoTercero.terTipoPersona)
+         setValue('terPrimerNombre', InfoTercero.terPrimerNombre)
+         setValue('terSegundoNombre', InfoTercero.terSegundoNombre);
+         setValue('terPrimerApellido', InfoTercero.terPrimerApellido)
+         setValue('terSegundoApellido', InfoTercero.terSegundoApellido)
+         setValue('terTipoIdentificacion', InfoTercero.terTipoIdentificacion)
+         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion)
+         setValue('terDiv', InfoTercero.terDiv)
+         setValue('terFormaPagoId', InfoTercero.terFormaPagoId)
+         setValue('terCiudadId', InfoTercero.terCiudadId)
+         setValue('terDireccion', InfoTercero.terDireccion)
+         setValue('terTipoId', InfoTercero.terTipoId)
+         setValue('terSubTipoId', InfoTercero.terSubTipoId)
+         setValue('terEmail', InfoTercero.terEmail)
+         setValue('terTelefono', InfoTercero.terTelefono)
+         setValue('terCelular', InfoTercero.terCelular)
+         setValue('terObservaciones', InfoTercero.terObservaciones)
+         setValue('terContactoPrincipalNombre', InfoTercero.terContactoPrincipalNombre)
+         setValue('terContactoPrincipalEmail', InfoTercero.terContactoPrincipalEmail)
+         setValue('terRepresentanteLNombre', InfoTercero.terRepresentanteLNombre)
+         setValue('terTipoIdentificacion', InfoTercero.terTipoIdentificacion)
+         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion)
+         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion)
+         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion)
       }
-    }, []);
+   }, []);
 
 
    useEffect(() => {
@@ -178,11 +201,11 @@ export default function EditarInformacionGeneral() {
                               <Controller
                                  control={control}
                                  name="terTipoPersona"
+                                 defaultValue={terTipoPersona || "N"}
                                  render={({ field }) => (
                                     <RadioGroup
                                        {...field}
                                        row
-                                       defaultValue={terTipoPersona}
                                        aria-labelledby="demo-row-radio-buttons-group-label"
                                        name="terTipoPersona"
                                     >
@@ -259,16 +282,16 @@ export default function EditarInformacionGeneral() {
 
                            <Controller
                               control={control}
-                              name="terDigitoV"
+                              name="terDiv"
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
                                     {...propsInputs}
-                                    id="terDigitoV"
+                                    id="terDiv"
                                     label="DV"
                                     type="text"
-                                    error={!!errors.terDigitoV}
-                                    helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
+                                    error={!!errors.terDiv}
+                                    helperText={errors.terDiv && `${errors.terDiv.message}`}
                                     sx={{
                                        width: "20%"
                                     }}

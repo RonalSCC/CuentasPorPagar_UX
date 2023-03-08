@@ -77,6 +77,7 @@ export default function _SeccionNombreTercero() {
                             fullWidth
                             id="terSegundoApellido"
                             label="Segundo apellido"
+                            placeholder='Segundo Apellido'
                         />
                     )}
                 />
