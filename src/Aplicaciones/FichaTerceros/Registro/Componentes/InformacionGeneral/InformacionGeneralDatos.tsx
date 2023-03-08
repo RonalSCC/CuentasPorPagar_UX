@@ -86,10 +86,9 @@ export default function InformacionGeneralDatos(props:any) {
     }
 
     const EditarTercero = ()=> {
+                
         navigate("EditarInformacionGeneral", {
-            state: {
-                InformacionTercero: InfoTercero
-            }
+            state:InfoTercero
         });
     }
   return (

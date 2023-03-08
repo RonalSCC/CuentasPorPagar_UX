@@ -3,22 +3,29 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useForm, FormProvider, Controller } from 'react-hook-form'
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useLocation } from 'react-router-dom';
 import { DevTool } from "@hookform/devtools";
+
+// Contextos
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
 
 // Interfaces
 import ICiudad from '../../../Interfaces/Generales/ICiudad';
-import IConfig from '../../../Interfaces/Generales/IConfig';
 import ITipoTercero from '../../../Interfaces/Generales/ITipoTercero';
 import ITipoDocumento from '../../../Interfaces/Generales/ITipoDocumento';
-
-// Icons
-import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
-import FormularioDirecciones from './FormularioDirecciones';
-import TipoPersonaNaturalCampos from './TipoPersonaNaturalCampos';
-import { TercerosContexto } from '../../../Contextos/TercerosContexto';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
-import { Save } from '@mui/icons-material';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+
+// Iconos
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import { Save } from '@mui/icons-material';
+
+// Componentes
+import _SeccionRazonSocial from './_SeccionRazonSocial'
+import _SeccionNombreTercero from './_SeccionNombresTercero';
+import _SeccionDireccionTercero from './_SeccionDireccionTercero';
+import _SeccionNombresTercero from './_SeccionNombresTercero';
+import _SeccionContactoTercero from './_SeccionContactoTercero';
 
 export interface ITercero {
    terCelular: string,
@@ -39,22 +46,22 @@ export interface ITercero {
    terTipoPersona: string,
 }
 
-export default function FormularioInformacionGeneral() {
+export default function _FormularioTercero() {
 
    const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
-   const [verModalDireccion, setVerModalDireccion] = useState(false);
-   const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
-   const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
-   const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
-   const [Configs, setConfigs] = useState<any>()
+   const [ verModalDireccion, setVerModalDireccion ] = useState(false);
+   const [ ListaTipoTercero, setListaTipoTercero ] = useState<Array<ITipoTercero>>([]);
+   const [ ListaTipoDocumento, setListaTipoDocumento ] = useState<Array<ITipoDocumento>>([]);
+   const [ ListaCiudades, setListaCiudades ] = useState<Array<ICiudad>>([]);
+   const [ Configs, setConfigs ] = useState<any>()
 
-   const PROV_TELEFONO:IConfigValues = Configs && Configs["PROV_TELEFONO"];
+   const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
    const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
    const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
    const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
-   
+
    const schema = Yup.object().shape({
       terTipoPersona: Yup
          .string(),
@@ -138,22 +145,22 @@ export default function FormularioInformacionGeneral() {
 
    const metodos = useForm({
       defaultValues: {
-         terTipoPersona: "N",
+         terTipoPersona: "",
          terRazonSocial: "",
-         terPrimerNombre: "Cristian",
-         terSegundoNombre: "Camilo",
-         terPrimerApellido: "Pérez",
-         terSegundoApellido: "Sandoval",
+         terPrimerNombre: "",
+         terSegundoNombre: "",
+         terPrimerApellido: "",
+         terSegundoApellido: "",
          terTipoDocumento: "",
          terNumeroIdentificacion: "",
          terDigitoV: "",
          terTipo: "",
          terCiudad: "",
-         terDireccion: "asdas",
+         terDireccion: "",
          terTelefono: "",
-         terCelular:"",
-         terContactoPrincipalNombre: "Ronal",
-         terContactoPrincipalEmail: "Ronal@sinco.com.co"
+         terCelular: "",
+         terContactoPrincipalNombre: "",
+         terContactoPrincipalEmail: ""
       },
       resolver: yupResolver(schema),
       mode: 'onSubmit',
@@ -326,10 +333,9 @@ export default function FormularioInformacionGeneral() {
    return (
       <>
          <FormProvider {...metodos}>
-            <Stack direction="column" gap={1.5} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
-
-               <Card style={{ backgroundColor: "white", width: "60%" }}>
-                  <Stack padding={3} gap={1.5}>
+            <Stack direction="column" gap={.5} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
+               <Card style={{ backgroundColor: "white", width:"60%" }}>
+                  <Stack padding={3} gap={.5}>
                      {/* Tipo de persona */}
                      <Stack direction="column">
                         <FormControl>
@@ -357,31 +363,15 @@ export default function FormularioInformacionGeneral() {
 
                      {
                         terTipoPersona == 'N' ?
-                           <TipoPersonaNaturalCampos propsInputs={propsInputs} /> :
-                           <Stack direction="row" gap={1.5}>
-                              <Controller
-                                 control={metodos.control}
-                                 name="terRazonSocial"
-                                 render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                       {...field}
-                                       {...propsInputs}
-                                       type="text"
-                                       fullWidth
-                                       label="Razón Social"
-                                       error={!!errors.terRazonSocial}
-                                       helperText={errors.terRazonSocial && `${errors.terRazonSocial.message}`}
-                                    />
-                                 )}
-                              />
-                           </Stack>
+                           <_SeccionNombresTercero /> :
+                           <_SeccionRazonSocial />
                      }
 
 
                      {/* Tipo Doc, Numero Ident, DV y Tipo */}
-                     <Stack direction="row" gap={1.5}>
+                     <Stack direction="row" gap={.5}>
                         <Stack width="50%" direction="column">
-                           <Stack direction="row" gap={1.5}>
+                           <Stack direction="row" gap={.5}>
                               <FormControl
                                  fullWidth
                                  sx={{
@@ -486,7 +476,7 @@ export default function FormularioInformacionGeneral() {
                      </Stack>
 
                      {/* Ciudad y dirección */}
-                     <Stack direction="row" gap={1.5}>
+                     <Stack direction="row" gap={.5}>
                         <FormControl
                            sx={{
                               width: "50%"
@@ -538,11 +528,11 @@ export default function FormularioInformacionGeneral() {
                            <AddLocationAltOutlinedIcon onClick={VerFormularioDirecciones} color='secondary' sx={{ cursor: "pointer" }} />
                            {
                               verModalDireccion == true &&
-                              <FormularioDirecciones estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
+                              <_SeccionDireccionTercero estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
                            }
                         </Stack>
                      </Stack>
-                     <Stack direction="row" gap={1.5}>
+                     <Stack direction="row" gap={.5}>
                         <Controller
                            control={control}
                            name="terTelefono"
@@ -582,39 +572,8 @@ export default function FormularioInformacionGeneral() {
                         Contacto
                      </Typography>
 
-                     {/* Nombre, mail contacto */}
-                     <Stack direction="row" gap={1.5}>
-                        <Controller
-                           control={control}
-                           name="terContactoPrincipalNombre"
-                           render={({ field, formState: { errors } }) => (
+                     <_SeccionContactoTercero />
 
-                              <TextField
-                                 {...field}
-                                 {...propsInputs}
-                                 id="terContactoPrincipalNombre"
-                                 label="Nombre"
-                                 error={!!errors.terContactoPrincipalNombre}
-                                 helperText={errors.terContactoPrincipalNombre && `${errors.terContactoPrincipalNombre.message}`}
-                              />
-                           )}
-                        />
-                        <Controller
-                           control={control}
-                           name="terContactoPrincipalEmail"
-                           render={({ field, formState: { errors } }) => (
-
-                              <TextField
-                                 {...field}
-                                 {...propsInputs}
-                                 id="terContactoPrincipalEmail"
-                                 label="Email"
-                                 error={!!errors.terContactoPrincipalEmail}
-                                 helperText={errors.terContactoPrincipalEmail && `${errors.terContactoPrincipalEmail.message}`}
-                              />
-                           )}
-                        />
-                     </Stack>
                   </Stack>
                </Card>
             </Stack>

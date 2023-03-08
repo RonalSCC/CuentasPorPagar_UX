@@ -1,7 +1,7 @@
 import type { RouteObject } from "react-router-dom";
 import { useRoutes } from 'react-router-dom';
 import MarcoTerceros from "./Registro/Componentes/MarcoTerceros";
-import FormularioRegistroTercero from "./Registro/Componentes/NuevoRegistro/FormularioRegistroTercero";
+import FormularioRegistroTercero from "./Registro/Componentes/NuevoRegistro/_FormularioTercero";
 import SinSeleccion from "./Registro/Componentes/SinSeleccion";
 import Terceros from "./Registro/Componentes/Terceros";
 import MarcoTerceroProveedor from "./Registro/Contextos/MarcoTercerosProveedor";

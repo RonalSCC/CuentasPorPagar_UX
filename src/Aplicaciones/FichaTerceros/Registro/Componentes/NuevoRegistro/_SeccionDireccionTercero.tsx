@@ -30,7 +30,7 @@ export interface IUndIdentidad {
     UndIdentidadDesc: string
 }
 
-export default function FormularioDirecciones({ estado, cambiarEstado }: FormularioDireccionesProps) {
+export default function _SeccionDireccionTercero({ estado, cambiarEstado }: FormularioDireccionesProps) {
 
     const [listaCalles, setListaCalles] = useState<Array<ICalle>>([]);
     const [listaViaPrincipales, setListaViaPrincipales] = useState<Array<IViaPrincipal>>([])

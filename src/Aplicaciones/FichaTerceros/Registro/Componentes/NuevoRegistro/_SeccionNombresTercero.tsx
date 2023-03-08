@@ -2,21 +2,14 @@ import { Stack, TextField } from '@mui/material'
 import { useFormContext, Controller } from 'react-hook-form'
 import React from 'react'
 
-
-export default function TipoPersonaNaturalCampos(
-    {
-        propsInputs
-    }:
-        {
-            propsInputs: Record<string, any>
-        }
-) {
+export default function _SeccionNombreTercero() {
 
     const { control } = useFormContext();
+
     return (
         <>
             {/* Nombre */}
-            <Stack direction="row" gap={1.5}>
+            <Stack direction="row" gap={1.5} width='100%'>
                 <Controller
                     control={control}
                     name="terPrimerNombre"
@@ -24,7 +17,9 @@ export default function TipoPersonaNaturalCampos(
                     render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
-                            {...propsInputs}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
                             id="terPrimerNombre"
                             label="Primer nombre"
                             placeholder='Pimer Nombre'
@@ -41,7 +36,9 @@ export default function TipoPersonaNaturalCampos(
                     render={({ field }) => (
                         <TextField
                             {...field}
-                            {...propsInputs}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
                             id="terSegundoNombre"
                             label="Segundo nombre"
                             placeholder='Segundo Nombre'
@@ -49,16 +46,18 @@ export default function TipoPersonaNaturalCampos(
                     )}
                 />
             </Stack>
-            <Stack direction="row" gap={1.5}>
+            <Stack direction="row" gap={1.5} width='100%'>
                 <Controller
                     control={control}
                     name="terPrimerApellido"
                     defaultValue=""
-                    render={({ field, formState:{errors} }) => (
+                    render={({ field, formState: { errors } }) => (
 
                         <TextField
                             {...field}
-                            {...propsInputs}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
                             id="terPrimerApellido"
                             label="Primer apellido"
                             required
@@ -73,7 +72,9 @@ export default function TipoPersonaNaturalCampos(
                     render={({ field }) => (
                         < TextField
                             {...field}
-                            {...propsInputs}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
                             id="terSegundoApellido"
                             label="Segundo apellido"
                         />

@@ -1,358 +1,646 @@
-import { Edit } from '@mui/icons-material';
-import { Button, Card, CardActions, Chip, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, Switch, TextField, Typography } from '@mui/material'
-import React, { useContext, useState } from 'react'
-import ContenedorBotonesEditarInfo from './_ContenedorBotonesEditarInfo';
+// Componentes Material UI y react
+import { Card, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import React, { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import ObtenerConfigs from '../../../../../Consumos/ObtenerConfigs';
+import { useForm, FormProvider, Controller } from 'react-hook-form';
+
+// Contextos
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
-import { IInfoUsuario } from './InformacionGeneralDatos';
-export interface PropsEditarInformacionGeneral{
-  InformacionTercero?: IInfoUsuario
-};
-export default function EditarInformacionGeneral(
-  {
-    InformacionTercero  
-  }:PropsEditarInformacionGeneral
-) {
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
 
-  const location = useLocation();
+// Iconos
+import { Edit } from '@mui/icons-material';
 
-  const [InfoTercero, setInfoTercero] = useState<IInfoUsuario>(location.state.InformacionTercero);
-  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+// Interfaces
+import ICiudad from '../../../Interfaces/Generales/ICiudad';
+import ITipoDocumento from '../../../Interfaces/Generales/ITipoDocumento';
+import ITipoTercero from '../../../Interfaces/Generales/ITipoTercero';
+import ISubTipoTercero from '../../../Interfaces/Generales/ISubTipoTercero';
+import IFormaPago from '../../../Interfaces/Generales/IFormaPago';
 
-  const navigate = useNavigate();
+// Componentes
+import ContenedorBotonesEditarInfo from './_ContenedorBotonesEditarInfo';
+import { _SeccionTelefono } from './_SeccionTelefono';
+import _SeccionNombresTercero from '../NuevoRegistro/_SeccionNombresTercero';
+import _SeccionRazonSocial from '../NuevoRegistro/_SeccionRazonSocial';
+import _SeccionDireccionTercero from '../NuevoRegistro/_SeccionDireccionTercero';
+import _SeccionContactoTercero from '../NuevoRegistro/_SeccionContactoTercero';
 
-  const propsInputs: Record<string, any> = {
-    variant:"outlined", 
-    size:'small',
-    fullWidth:true,
-  };
+export default function EditarInformacionGeneral() {
 
-  const GuardarInformacion = ()=>{
+   const { state: InfoTercero } = useLocation();
+   const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+   const [verModalDireccion, setVerModalDireccion] = useState(false);
+   const [ListaFormaDePago, setListaFormaDePago] = useState<Array<IFormaPago>>([]);
+   const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
+   const [ListaSubTiposTercero, setListaSubTiposTercero] = useState<Array<ISubTipoTercero>>([]);
+   const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
+   const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
 
-  }
+   const metodos = useForm({
+      mode: 'onSubmit',
+   })
 
-  const CancelarEdicion = ()=>{
-    navigate("InformacionGeneralDatos");
-  }
+   const { control, handleSubmit, watch, setValue } = metodos
+   const terTipoPersona = watch("terTipoPersona")
 
-  const CambioNaturaleza = (event: React.ChangeEvent<HTMLInputElement>)=> {
-    console.log(event.target.value);
-  }
-  
-  return (
-    <>
-      <Stack direction="column" width="100%" gap={1.5}>
-        <Card sx={{backgroundColor: "white", width:"100%"}}>
-          <Stack direction={"column"} padding={2} gap={1.5}>
-            <Typography variant='h6' color="text.primary">
-                Información general
-            </Typography>
+   const navigate = useNavigate();
 
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Stack direction="column">
-                <FormControl>
-                  <Typography variant='caption' color="text.secondary" fontWeight={400}>
-                      * Tipo de persona
-                  </Typography>
-                    <RadioGroup
-                      row
-                      name="TipoPersona"
-                      value={InfoTercero.terTipoPersona}
-                    >
-                      <FormControlLabel value={"N"} control={<Radio onChange={CambioNaturaleza}/>} label="Natural" />
-                      <FormControlLabel value={"J"} control={<Radio onChange={CambioNaturaleza}/>} label="Jurídica" />
-                    </RadioGroup>
-                </FormControl>
-              </Stack>
+   const propsInputs: Record<string, any> = {
+      variant: "outlined",
+      size: 'small',
+      fullWidth: true,
+   };
 
-              <FormGroup>
-                <FormControlLabel control={<Switch defaultChecked />} label="Activo" />
-              </FormGroup>
-            </Stack>
+   const GuardarInformacion = () => {
 
-            <TextField
-                {...propsInputs}
-                id="razonSocial" 
-                label="Razón social"
-                required
-                value={InfoTercero.terRazonSocial}
-            />
+   }
 
-            <Stack direction="row" gap={.5}>
-              <Stack direction="row" gap={1.5} width={"50%"}>
-                <FormControl
-                 fullWidth
-                 sx={{
-                  width: "35%"
-                 }}
-                >
-                  <InputLabel required shrink>Tipo</InputLabel>
-                    <Select
-                      labelId="label-tipoDocumento"
-                      id="tipoDocumento"
-                      label="Tipo"
-                      size='small'
-                      notched
-                    >
-                      <MenuItem value={10}>1</MenuItem>
-                    </Select>
-                </FormControl>
+   const CancelarEdicion = () => {
+      navigate("InformacionGeneralDatos");
+   }
 
-                <TextField 
-                  {...propsInputs}
-                  id="numeroIdentificacion" 
-                  label="Número de identificación" 
-                  type="number"
-                  required
-                />
+   const CambioNaturaleza = (event: React.ChangeEvent<HTMLInputElement>) => {
+      console.log(event.target.value);
+   }
 
-                <TextField 
-                  {...propsInputs}
-                  id="digitoVerificacion" 
-                  label="DV" 
-                  type="number"
-                  sx={{
-                    width: "20%"
-                  }}
-                />
-              </Stack>
+   const VerFormularioDirecciones = () => {
+      setVerModalDireccion(!verModalDireccion);
+   }
 
-              <FormControl sx={{width: "50%"}}>
-                <InputLabel required shrink>Forma de pago</InputLabel>
-                  <Select
-                    labelId="label-tipoDocumento"
-                    id="formaPago"
-                    label="Forma de pago"
-                    size='small'
-                    notched
-                  >
-                    <MenuItem value={10}>1</MenuItem>
-                  </Select>
-              </FormControl>
-            </Stack>
+   const ConsultarListas = async () => {
+      let PropsDefaultRequest = {
+         API: "CONFIGURACION",
+         URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
+         Type: "GET"
+      };
 
-            <Stack direction="row" gap={.5}>
-              <FormControl
-                sx={{width: "50%"}}
-              >
-                  <InputLabel required shrink>Ciudad</InputLabel>
-                    <Select
-                      labelId="label-tipoDocumento"
-                      id="Ciudad"
-                      label="Ciudad"
-                      size='small'
-                      notched
-                    >
-                      <MenuItem value={10}>1</MenuItem>
-                    </Select>
-              </FormControl>
+      // ---- Tipos
+      await CrearPeticion({
+         ...PropsDefaultRequest,
+         Body: {
+            UsuarioID: 1,
+            Clave: 'TipoTerceros'
+         }
+      })
+         .then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+               setListaTipoTercero(respuesta.datos);
+            }
+         });
 
-              <Stack width={"50%"} direction="row" gap={1.5}>
-                <TextField 
-                  {...propsInputs}
-                  id="Direccion" 
-                  label="Dirección" 
-                  fullWidth
-                />
+      // ---- Ciudades
+      await CrearPeticion({
+         ...PropsDefaultRequest,
+         Body: {
+            UsuarioID: 1,
+            Clave: 'Ciudades'
+         }
+      })
+         .then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+               setListaCiudades(respuesta.datos);
+            }
+         });
+      // ---- Tipos Documento
+      await CrearPeticion({
+         ...PropsDefaultRequest,
+         Body: {
+            UsuarioID: 1,
+            Clave: 'TiposDocumento'
+         }
+      })
+         .then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+               setListaTipoDocumento(respuesta.datos);
+            }
+         });
 
-                <IconButton size='small'>
-                  <Edit fontSize='small'/>
-                </IconButton>
-              </Stack>
-            </Stack>
+      // ---- Sub-Tipos
+      await CrearPeticion({
+         ...PropsDefaultRequest,
+         Body: {
+            UsuarioID: 1,
+            Clave: 'SubTiposTercero'
+         }
+      })
+         .then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+               setListaSubTiposTercero(respuesta.datos);
+            }
+         });
 
-            <Stack direction={"row"} gap={.5}>
-              <FormControl
-                sx={{width: "50%"}}
-              >
-                <InputLabel required shrink>Tipo</InputLabel>
-                <Select
-                  labelId="label-tipoDocumento"
-                  id="Tipo"
-                  label="Tipo"
-                  size='small'
-                  notched
-                >
-                  <MenuItem value={10}>1</MenuItem>
-                </Select>
-              </FormControl>
+      // ---- Forma de Pago
+      await CrearPeticion({
+         ...PropsDefaultRequest,
+         Body: {
+            UsuarioID: 1,
+            Clave: 'FormasDePago'
+         }
+      })
+         .then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+               setListaFormaDePago(respuesta.datos);
+            }
+         });
 
-              <FormControl
-                sx={{width: "50%"}}
-              >
-                <InputLabel required shrink>Sub-tipo</InputLabel>
-                <Select
-                  labelId="label-tipoDocumento"
-                  id="Sub-tipo"
-                  label="Sub-tipo"
-                  size='small'
-                  notched
-                >
-                  <MenuItem value={10}>1</MenuItem>
-                </Select>
-              </FormControl>
-            </Stack>
+   }
 
-            <Stack direction={"row"} gap={.5}>
-              <FormControl
-                fullWidth
-              >
-                <InputLabel required shrink>Actividad economica</InputLabel>
-                <Select
-                  labelId="label-tipoDocumento"
-                  id="ActividadEconomica"
-                  label="Actividad economica"
-                  size='small'
-                  notched
-                >
-                  <MenuItem value={10}>1</MenuItem>
-                </Select>
-              </FormControl>
-
-              <TextField 
-                {...propsInputs}
-                id="CorreoElectronico" 
-                label="Correo electronico" 
-              />
-            </Stack>
-
-            <Stack direction={"row"} gap={.5} >
-              <Stack direction={"column"} gap={.5} width="50%">
-                <TextField 
-                  {...propsInputs}
-                  id="Telefono fijo" 
-                  label="Telefono fijo" 
-                  type={"number"}
-                />
-
-                <Stack direction={"row"} gap={1.5} >
-                  <Chip size='small' label="Número1"/>
-                  <Chip size='small' label="Número2"/>
-
-                </Stack>
-              </Stack>
-              
-              <Stack direction={"column"} gap={1.5} width="50%">
-                <TextField 
-                  {...propsInputs}
-                  id="Telefono celular" 
-                  label="Telefono celular" 
-                  type={"number"}
-                />
-
-                <Stack direction={"row"} gap={1.5}>
-                  <Chip size='small' label="Número1"/>
-                  <Chip size='small' label="Número2"/>
-                </Stack>
-              </Stack>
-            </Stack>
-
-            <TextField 
-                {...propsInputs}
-                id="Observaciones" 
-                multiline
-                rows={2}
-                label="Observaciones" 
-            />
-
-            <Typography variant='subtitle2' color="primary.light">
-                  Contacto principal
-            </Typography>
-
-            <Stack direction="row" gap={.5}>
-                <TextField 
-                  {...propsInputs}
-                  id="NombreCP" 
-                  label="Nombre" 
-                />
-
-                <TextField 
-                  {...propsInputs}
-                  id="CorreoElectronicoCP" 
-                  label="Contacto principal" 
-                />
-            </Stack>
-          </Stack>
-
-          <ContenedorBotonesEditarInfo 
-            MetodoGuardar={GuardarInformacion}
-            MetodoCancelar={CancelarEdicion}
-          />
-        </Card>
+   useEffect(() => {
+      console.log(InfoTercero)
+      if (InfoTercero){
+         setValue('terTipoPersona', terTipoPersona);
+      }
+    }, []);
 
 
+   useEffect(() => {
+      ConsultarListas();
+   }, [])
 
-        <Card sx={{backgroundColor: "white", width:"100%"}}>
-            <Stack direction={"column"} padding={2} gap={1.5}>
-                <Typography variant='subtitle2' color={"primary.light"}>
-                  Representante legal
-                </Typography>
+   return (
+      <>
+         <FormProvider {...metodos}>
+            <Stack direction="column" width="100%" gap={1}>
+               <Card sx={{ backgroundColor: "white", width: "100%" }}>
+                  <Stack direction={"column"} padding={2} gap={1}>
+                     <Typography variant='h6' color="text.primary">
+                        Información general
+                     </Typography>
 
-                <Stack direction={"row"} gap={.5}>
-                  <TextField
-                      {...propsInputs}
-                      id="NombreRL" 
-                      label="Nombre"
-                      required
-                      sx={{
-                        width: "50%"
-                      }}
-                  />
+                     <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Stack direction="column">
+                           <FormControl>
+                              <Typography variant='caption' color="text.secondary" fontWeight={400}>
+                                 * Tipo de persona
+                              </Typography>
+                              <Controller
+                                 control={control}
+                                 name="terTipoPersona"
+                                 render={({ field }) => (
+                                    <RadioGroup
+                                       {...field}
+                                       row
+                                       defaultValue={terTipoPersona}
+                                       aria-labelledby="demo-row-radio-buttons-group-label"
+                                       name="terTipoPersona"
+                                    >
+                                       <FormControlLabel value={'N'} control={<Radio />} label="Natural" />
+                                       <FormControlLabel value={'J'} control={<Radio />} label="Jurídica" />
+                                    </RadioGroup>
+                                 )}
+                              />
+                           </FormControl>
+                        </Stack>
 
-                  <Stack direction={"row"} gap={.5} width="50%">
-                    <FormControl
-                        fullWidth
-                        sx={{
-                          width: "30%"
-                        }}
-                      >
-                      <InputLabel required shrink>Tipo de ID</InputLabel>
-                        <Select
-                          labelId="label-tipoDocumento"
-                          id="TipoIdentificacionRL"
-                          label="Tipo de ID"
-                          size='small'
-                          notched
+                        <FormGroup>
+                           <FormControlLabel control={<Switch defaultChecked />} label="Activo" />
+                        </FormGroup>
+                     </Stack>
+
+                     {
+                        terTipoPersona == 'N' ?
+                           <Stack direction={1 ? "row" : "column"} gap={0.5}>
+                              <_SeccionNombresTercero />
+                           </Stack>
+                           :
+                           <_SeccionRazonSocial />
+                     }
+
+                     <Stack direction="row" gap={.5}>
+                        <Stack direction="row" gap={1.5} width={"50%"}>
+                           <FormControl
+                              fullWidth
+                              sx={{
+                                 width: "35%"
+                              }}
+                           >
+                              <Controller
+                                 control={control}
+                                 name="terTipoDocumento"
+                                 render={({ field, formState: { errors } }) => (
+                                    <TextField
+                                       {...field}
+                                       id="TipoTercero"
+                                       label="Tipo"
+                                       size='small'
+                                       placeholder='Seleccione'
+                                       select
+                                       required
+                                       error={!!errors.terTipoDocumento}
+                                       helperText={errors.terTipoDocumento && `${errors.terTipoDocumento.message}`}
+                                    >
+                                       {
+                                          ListaTipoDocumento.map(data => {
+                                             return <MenuItem key={data.TipoID} value={data.TipoID}>{data.TipoID}</MenuItem>
+                                          })
+                                       }
+                                    </TextField>
+                                 )}
+                              />
+                           </FormControl>
+
+                           <Controller
+                              control={control}
+                              name="terNumeroIdentificacion"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...propsInputs}
+                                    {...field}
+                                    id="terNumeroIdentificacion"
+                                    label="Número de identificación"
+                                    type="text"
+                                    error={!!errors.terNumeroIdentificacion}
+                                    helperText={errors.terNumeroIdentificacion && `${errors.terNumeroIdentificacion.message}`}
+                                 />
+                              )}
+                           />
+
+                           <Controller
+                              control={control}
+                              name="terDigitoV"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...field}
+                                    {...propsInputs}
+                                    id="terDigitoV"
+                                    label="DV"
+                                    type="text"
+                                    error={!!errors.terDigitoV}
+                                    helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
+                                    sx={{
+                                       width: "20%"
+                                    }}
+                                 />
+                              )}
+                           />
+                        </Stack>
+
+                        <FormControl sx={{ width: "50%" }}>
+                           <Controller
+                              control={control}
+                              name="terFormaDePago"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...field}
+                                    id="terFormaDePago"
+                                    label="Forma de Pago"
+                                    size='small'
+                                    placeholder='Seleccione'
+                                    select
+                                    required
+                                    error={!!errors.terFormaDePago}
+                                    helperText={errors.terFormaDePago && `${errors.terFormaDePago.message}`}
+                                 >
+                                    {
+                                       ListaFormaDePago.map(data => {
+                                          return <MenuItem key={data.FrPID} value={data.FrPID}>{data.FrPDesc}</MenuItem>
+                                       })
+                                    }
+                                 </TextField>
+                              )}
+                           />
+                        </FormControl>
+                     </Stack>
+
+                     <Stack direction="row" gap={.5}>
+                        <FormControl
+                           sx={{
+                              width: "50%"
+                           }}
+                           size='small'
                         >
-                          <MenuItem value={10}>1</MenuItem>
-                        </Select>
-                    </FormControl>
+                           <Controller
+                              control={control}
+                              name="terCiudad"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...field}
+                                    id="terCiudad"
+                                    label="Ciudad"
+                                    size='small'
+                                    select
+                                    error={!!errors.terCiudad}
+                                    helperText={errors.terCiudad && `${errors.terCiudad.message}`}
+                                 >
+                                    {
+                                       ListaCiudades.map(ciudad => {
+                                          return <MenuItem key={ciudad.CiuID} value={ciudad.CiuID}>{ciudad.CiuNombre}</MenuItem>
+                                       })
+                                    }
+                                 </TextField>
+                              )}
+                           />
+                        </FormControl>
 
-                    <TextField
-                        {...propsInputs}
-                        id="NumeroIdentificacionRL" 
-                        label="Número de identificación"
-                        type={"number"}
-                        required
-                    />
+                        <Stack width={"50%"} direction="row" gap={1.5}>
+                           <Controller
+                              control={control}
+                              name="terDireccion"
+                              render={({ field, formState: { errors } }) => (
+
+                                 <TextField
+                                    {...field}
+                                    {...propsInputs}
+                                    required
+                                    id="terDireccion"
+                                    label="Dirección"
+                                    error={!!errors.terDireccion}
+                                    helperText={errors.terDireccion && `${errors.terDireccion.message}`}
+                                 />
+                              )}
+                           />
+
+                           <IconButton onClick={VerFormularioDirecciones} size='small' sx={{ cursor: "pointer" }} >
+                              <Edit fontSize='small' />
+                           </IconButton>
+                           {
+                              verModalDireccion == true &&
+                              <_SeccionDireccionTercero estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
+                           }
+
+
+                        </Stack>
+                     </Stack>
+
+                     <Stack direction={"row"} gap={.5}>
+                        <FormControl
+                           sx={{
+                              width: "50%"
+                           }}
+                        >
+                           <Controller
+                              control={control}
+                              name="terTipo"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...field}
+                                    id="TipoTercero"
+                                    label="Tipo"
+                                    size='small'
+                                    placeholder='Seleccione'
+                                    select
+                                    error={!!errors.terTipo}
+                                    helperText={errors.terTipo && `${errors.terTipo.message}`}
+
+                                 >
+                                    {
+                                       ListaTipoTercero.map(data => {
+                                          return <MenuItem key={data.TpTID} value={data.TpTID}>{data.TpTDesc}</MenuItem>
+                                       })
+                                    }
+                                 </TextField>
+                              )}
+                           />
+                        </FormControl>
+
+                        <FormControl
+                           sx={{
+                              width: "50%"
+                           }}
+                        >
+                           <Controller
+                              control={control}
+                              name="terSubTipo"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...field}
+                                    id="terSubTipo"
+                                    label="Sub-tipo"
+                                    size='small'
+                                    placeholder='Seleccione'
+                                    select
+                                    error={!!errors.terSubTipo}
+                                    helperText={errors.terSubTipo && `${errors.terSubTipo.message}`}
+                                 >
+                                    {
+                                       ListaSubTiposTercero.map(data => {
+                                          return <MenuItem key={data.TipoId} value={data.TipoId}>{data.TipoDesc}</MenuItem>
+                                       })
+                                    }
+                                 </TextField>
+                              )}
+                           />
+                        </FormControl>
+                     </Stack>
+
+                     <Stack direction={"row"} gap={.5}>
+                        <FormControl
+                           fullWidth
+                        >
+                           <Controller
+                              control={control}
+                              name="terActividadEconomica"
+                              render={({ field, formState: { errors } }) => (
+                                 <TextField
+                                    {...field}
+                                    id="terActividadEconomica"
+                                    label="Actividad económicas"
+                                    size='small'
+                                    placeholder='Seleccione'
+                                    select
+                                    error={!!errors.terActividadEconomica}
+                                    helperText={errors.terActividadEconomica && `${errors.terActividadEconomica.message}`}
+                                 >
+                                    {/* Pendiente lista de actividad Economicas */}
+                                    {
+                                       ListaSubTiposTercero.map(data => {
+                                          return <MenuItem key={data.TipoId} value={data.TipoId}>{data.TipoDesc}</MenuItem>
+                                       })
+                                    }
+                                 </TextField>
+                              )}
+                           />
+                        </FormControl>
+
+                        <Controller
+                           control={control}
+                           name="terEmail"
+                           render={({ field, formState: { errors } }) => (
+
+                              <TextField
+                                 {...field}
+                                 variant="outlined"
+                                 size="small"
+                                 fullWidth
+                                 id="terEmail"
+                                 label="Email"
+                                 error={!!errors.terEmail}
+                                 helperText={errors.terEmail && `${errors.terEmail.message}`}
+                              />
+                           )}
+                        />
+                     </Stack>
+
+                     <Stack direction={"row"} gap={.5} >
+                        <Stack direction={"column"} gap={.5} width="50%">
+                           <_SeccionTelefono name='terTelefono' label='* Teléfono fijo' />
+                        </Stack>
+
+                        <Stack direction={"column"} gap={.5} width="50%">
+                           <_SeccionTelefono name='terCelular' label='* Teléfono celular' />
+                        </Stack>
+                     </Stack>
+
+                     <Controller
+                        control={control}
+                        name='terObservaciones'
+                        render={({ field, formState: { errors } }) => (
+
+                           <TextField
+                              {...field}
+                              {...propsInputs}
+                              id="terObservaciones"
+                              multiline
+                              rows={2}
+                              label="Observaciones"
+                              error={!!errors.terObservaciones}
+                              helperText={errors.terObservaciones && `${errors.terObservaciones.message}`}
+                           />
+                        )}
+                     />
                   </Stack>
-                </Stack>
 
-                <Stack direction={"row"} gap={.5}>
-                  <TextField
-                    {...propsInputs}
-                    id="LugarExpedicionRL" 
-                    label="Lugar expedición"
-                    required
+                  <ContenedorBotonesEditarInfo
+                     MetodoGuardar={handleSubmit(GuardarInformacion)}
+                     MetodoCancelar={CancelarEdicion}
                   />
+               </Card>
 
-                  <TextField
-                    {...propsInputs}
-                    id="CorreoElectronicoRL" 
-                    label="Correo electronico"
-                    required
+               <Card sx={{ backgroundColor: "white", width: "100%" }}>
+                  <Stack p={2} gap={1.5}>
+                     <Typography variant='subtitle2' color="primary.light">
+                        Contacto principal
+                     </Typography>
+                     <_SeccionContactoTercero />
+                  </Stack>
+                  <ContenedorBotonesEditarInfo
+                     MetodoGuardar={handleSubmit(GuardarInformacion)}
+                     MetodoCancelar={CancelarEdicion}
                   />
-                </Stack>
+               </Card>
+
+               <Card sx={{ backgroundColor: "white", width: "100%" }}>
+                  <Stack direction={"column"} p={2} gap={.5}>
+                     <Typography variant='subtitle2' color={"primary.light"}>
+                        Representante legal
+                     </Typography>
+
+                     <Stack direction={"row"} gap={.5}>
+                        <Controller
+                           control={control}
+                           name='terRepresentanteLNombre'
+                           render={({ field, formState: { errors } }) => (
+                              <TextField
+                                 {...field}
+                                 {...propsInputs}
+                                 id="terRepresentanteLNombre"
+                                 label="Nombre"
+                                 required
+                                 sx={{
+                                    width: "50%"
+                                 }}
+                                 error={!!errors.terRepresentanteLNombre}
+                                 helperText={errors.terRepresentanteLNombre && `${errors.terRepresentanteLNombre.message}`}
+                              />
+                           )}
+                        />
+
+                        <Stack direction={"row"} gap={.5} width="50%">
+                           <FormControl
+                              fullWidth
+                              sx={{
+                                 width: "30%"
+                              }}
+                           >
+                              <Controller
+                                 control={control}
+                                 name='terRepresentanteLITipodentificacion'
+                                 render={({ field, formState: { errors } }) => (
+                                    <TextField
+                                       {...field}
+                                       id="terRepresentanteLTipodIdentificacion"
+                                       label="Tipo de ID"
+                                       size='small'
+                                       select
+                                       error={!!errors.terRepresentanteLTipodIdentificacion}
+                                       helperText={errors.terRepresentanteLTipodIdentificacion && `${errors.terRepresentanteLTipodIdentificacion.message}`}
+                                    >
+                                       <MenuItem value={10}>1</MenuItem>
+                                    </TextField>
+                                 )}
+                              />
+                           </FormControl>
+
+                           <Controller
+                              control={control}
+                              name='terRepresentanteLNumeroIdentificacion'
+                              render={({ field, formState: { errors } }) => (
+
+                                 <TextField
+                                    {...propsInputs}
+                                    {...field}
+                                    id="terRepresentanteLNumeroIdentificacion"
+                                    label="Número de identificación"
+                                    type={"number"}
+                                    required
+                                    error={!!errors.terRepresentanteLNumeroIdentificacion}
+                                    helperText={errors.terRepresentanteLNumeroIdentificacion && `${errors.terRepresentanteLNumeroIdentificacion.message}`}
+                                 />
+                              )}
+                           />
+                        </Stack>
+                     </Stack>
+
+                     <Stack direction={"row"} gap={.5}>
+                        <Controller
+                           control={control}
+                           name='terRepresentanteLExpedicion'
+                           render={({ field, formState: { errors } }) => (
+
+                              <TextField
+                                 {...propsInputs}
+                                 {...field}
+                                 id="terRepresentanteLExpedicion"
+                                 label="Lugar de expedición"
+                                 type={"number"}
+                                 required
+                                 error={!!errors.terRepresentanteLExpedicion}
+                                 helperText={errors.terRepresentanteLExpedicion && `${errors.terRepresentanteLExpedicion.message}`}
+                              />
+                           )}
+                        />
+
+                        <Controller
+                           control={control}
+                           name='terRepresentanteLEmail'
+                           render={({ field, formState: { errors } }) => (
+
+                              <TextField
+                                 {...propsInputs}
+                                 {...field}
+                                 id="terRepresentanteLEmail"
+                                 label="Correo electrónico"
+                                 type='email'
+                                 required
+                                 error={!!errors.terRepresentanteLEmail}
+                                 helperText={errors.terRepresentanteLEmail && `${errors.terRepresentanteLEmail.message}`}
+                              />
+                           )}
+                        />
+                     </Stack>
+                  </Stack>
+
+                  <ContenedorBotonesEditarInfo
+                     MetodoGuardar={handleSubmit(GuardarInformacion)}
+                     MetodoCancelar={CancelarEdicion}
+                  />
+               </Card>
             </Stack>
-            
-            <ContenedorBotonesEditarInfo 
-              MetodoGuardar={GuardarInformacion}
-              MetodoCancelar={CancelarEdicion}
-            />
-        </Card>
-      </Stack>
-    </>
-  )
+         </FormProvider>
+      </>
+   )
 }
+
+
