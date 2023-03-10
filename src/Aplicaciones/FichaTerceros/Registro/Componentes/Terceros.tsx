@@ -13,9 +13,6 @@ export default function Terceros(props:any) {
   const [buscarTerceroDialog, setBuscarTerceroDialog] = useState(false);
 
   useEffect(() => {
-    console.log(propsTercerosContexto.TerceroSeleccionadoLista)
-    console.log(propsTercerosContexto.NuevoRegistro)
-
     if (!propsTercerosContexto.NuevoRegistro) {
       if (propsTercerosContexto.TerceroSeleccionadoLista) {
         navigate("MarcoTerceros");
@@ -37,7 +34,7 @@ export default function Terceros(props:any) {
   
   return (
     <>
-      <Stack direction="column" alignItems="flex-end" width="100%" height={"100%"}>
+      <Stack direction="column" alignItems="flex-end" width="100%" height={"100%"} sx={{overflowY: "auto"}}>
         <Stack 
           direction="row" 
           width="100%" 

@@ -10,7 +10,7 @@ const RoutesCuentasPorPagar:RouteObject[] = [
     {
         children:[
             {
-                path:"FichaTerceros",
+                path:"FichaTerceros/*",
                 element: <Terceros />,
                 children:RoutesTerceros,
                 

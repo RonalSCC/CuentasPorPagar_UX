@@ -112,6 +112,13 @@ export const themeOptions: ThemeOptions = {
   },
   spacing: 8,
   components: {
+    MuiAlert:{
+      styleOverrides: {
+        root: {
+          zIndex: 10000
+        }
+      }
+    },
     MuiButton: {
       defaultProps: {
         size: "small",

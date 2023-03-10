@@ -8,7 +8,7 @@ import { DevTool } from "@hookform/devtools";
 
 // Contextos
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
 
 // Interfaces
 import ICiudad from '../../../Interfaces/Generales/ICiudad';
@@ -115,7 +115,7 @@ export default function _FormularioTercero() {
    };
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs = {
+      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
          Type: "POST"
@@ -154,7 +154,7 @@ export default function _FormularioTercero() {
    }
 
    const ConsultarListas = async () => {
-      let PropsDefaultRequest = {
+      let PropsDefaultRequest:CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
@@ -202,7 +202,7 @@ export default function _FormularioTercero() {
 
    const onClickSubmit = async (data: ITercero) => {
 
-      let PropsDefaultRequestConfigs = {
+      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/CrearTerceroFicha",
          Type: "POST"

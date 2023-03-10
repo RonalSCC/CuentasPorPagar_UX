@@ -5,3 +5,8 @@
 body{
     margin: 0px;
 }
+
+div:has(.UpZIndex){
+    z-index: 10000;
+}
+

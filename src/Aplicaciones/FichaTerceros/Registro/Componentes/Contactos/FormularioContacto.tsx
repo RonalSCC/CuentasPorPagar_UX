@@ -2,7 +2,7 @@ import { Alert, AlertTitle, Button, Checkbox, Dialog, DialogActions, DialogConte
 import { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
 import ICiudad from '../../../Interfaces/Generales/ICiudad';
 import { ITipoContactos } from '../../../Interfaces/Generales/ITipoContactos';
 import * as Yup from "yup";
@@ -86,7 +86,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
    });
 
    const ConsultarListas = async () => {
-      let PropsDefaultRequest = {
+      let PropsDefaultRequest:CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
@@ -120,7 +120,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
    }
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs = {
+      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
          Type: "POST"
@@ -152,17 +152,13 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
    //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
 
    const onClickSubmit = async (data: any) => {
-      let PropsDefaultRequest = {
-         API: "CUENTASPORPAGAR",
-         Type: "POST"
-      };
-
       data.tcCelular = data.tcCelular && data.tcCelular.toString();
       data.tcExtension = data.tcExtension && data.tcExtension.toString();
       data.tcTelefono = data.tcTelefono && data.tcTelefono.toString();
 
       await CrearPeticion({
-         ...PropsDefaultRequest,
+         API: "CUENTASPORPAGAR",
+         Type: "POST",
          URLServicio:
             contact ?
                "/AdministracionTerceros/ActualizarContactoTercero"

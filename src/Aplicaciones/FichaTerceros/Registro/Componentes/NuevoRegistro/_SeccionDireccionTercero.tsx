@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import { Divider, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
 
 export interface FormularioDireccionesProps {
     estado: boolean,
@@ -79,7 +79,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
     }
 
     const ConsultarListas = async () => {
-        let PropsDefaultRequest = {
+        let PropsDefaultRequest:CrearPeticionAxios = {
             API: "CONFIGURACION",
             URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
             Type: "GET"

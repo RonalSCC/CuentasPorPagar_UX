@@ -1,27 +1,37 @@
 import { Add } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, Fab, Stack, Typography } from '@mui/material';
-import React, { useState } from 'react'
-import ModalFormNuevaCuenta from './_ModalFormNuevaCuenta';
+import React, { useContext, useState } from 'react'
+import ModalFormNuevaCuenta from './_ModalFormEditarCrearCuenta';
 import SinCuentas from './SinCuentas';
 import VisualizacionCuentas from './VisualizacionCuentas';
+import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto';
+import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor';
 
 export default function Cuentas() {
-    const [dialogNuevaCuentaAbierta, setDialogNuevaCuentaAbierta] = useState(false);
-    const [ListCuentasBancarias, setListCuentasBancarias] = useState<Array<any>>([1]);
+
+    const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
+    const {
+        CambiarCuentaSeleccionada, 
+        CuentaExpandida,
+        CambiarEstadoModalCrearEditar
+    } = paramsCuentasBancariasContexto;
+    
+    const [ListCuentasBancarias, setListCuentasBancarias] = useState<Array<any>>();
 
     const CerrarDialogNuevaCuenta = () => {
-        setDialogNuevaCuentaAbierta(false);
+        CambiarEstadoModalCrearEditar(false);
     }
 
     const AbrirDialogNuevaCuenta = () => {
-        setDialogNuevaCuentaAbierta(true);
+        CambiarCuentaSeleccionada();
+        CambiarEstadoModalCrearEditar(true);
     }
   return (
     <>
         {
             (!ListCuentasBancarias || ListCuentasBancarias.length == 0) ?
-            <SinCuentas />:
-            <VisualizacionCuentas />
+            <VisualizacionCuentas />: 
+            <SinCuentas />
         }
 
             <Fab
@@ -40,10 +50,7 @@ export default function Cuentas() {
                 Nueva cuenta bancaria
             </Fab>
 
-        <ModalFormNuevaCuenta 
-            DialogAbierto={dialogNuevaCuentaAbierta} 
-            CerrarDialog={CerrarDialogNuevaCuenta} 
-        />
+        <ModalFormNuevaCuenta />
     </>
   )
 }

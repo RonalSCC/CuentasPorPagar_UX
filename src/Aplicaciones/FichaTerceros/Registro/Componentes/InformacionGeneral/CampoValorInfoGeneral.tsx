@@ -16,7 +16,6 @@ export default function CampoValorInfoGeneral(
     }:PropsCampoValorInfoGeneral) 
 {
     useEffect(() => {
-      console.log(Valor)
     }, []);
     
   return (

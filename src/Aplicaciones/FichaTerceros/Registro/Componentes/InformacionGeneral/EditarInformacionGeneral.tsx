@@ -9,7 +9,7 @@ import { DevTool } from "@hookform/devtools";
 // Contextos
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
 
 // Iconos
 import { Edit } from '@mui/icons-material';
@@ -108,7 +108,7 @@ export default function EditarInformacionGeneral() {
    };
 
    const GuardarInformacion = async (data: any) => {
-      let PropsDefaultRequest = {
+      let PropsDefaultRequest:CrearPeticionAxios = {
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/EditarTerceroFicha",
          Type: "POST",
@@ -191,7 +191,7 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarListas = async () => {
-      let PropsDefaultRequest = {
+      let PropsDefaultRequest:CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
@@ -283,7 +283,7 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs = {
+      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
          Type: "POST"
