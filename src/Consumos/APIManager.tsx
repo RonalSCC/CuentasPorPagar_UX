@@ -38,7 +38,7 @@ export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IR
         .catch(function({response}){
             return response.data;
         })
-    }else{
+    }else if (DatosEnvio.Type == 'GET'){
         return await axiosRequest.get(
             DatosEnvio.URLServicio, 
             {
@@ -49,7 +49,19 @@ export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IR
             return data;
         })
         .catch(function(error){
-            console.log(error);
-        });
+        })
+    } 
+    else{
+        return await axiosRequest.delete(
+            DatosEnvio.URLServicio, 
+            {
+                params:DatosEnvio.Body
+            }
+        )
+        .then(function({data}:{data:IRespuestaGeneral}){
+            return data;
+        })
+        .catch(function(error){
+        }) 
     }
 }
