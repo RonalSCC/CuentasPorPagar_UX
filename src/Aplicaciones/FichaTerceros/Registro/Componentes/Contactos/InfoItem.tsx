@@ -3,16 +3,17 @@ import { Stack, Tooltip, Typography } from '@mui/material'
 export interface InfoItemPorps {
   title: string,
   text: string,
-  showTooltip?: boolean
+  showTooltip?: boolean,
+  color: string
 }
 
-const InfoItem = ({ title, text, showTooltip }: InfoItemPorps) => {
+const InfoItem = ({ title, text, showTooltip, color }: InfoItemPorps) => {
   return (
     
     <Stack>
-      <Typography color="text.primary" variant="caption">{title}</Typography>
-      <Tooltip title={ showTooltip != undefined ? text : ""} placement="top" arrow>
-        <Typography variant='body2' noWrap color="text.secondary">{(text == null || text =="") ? "-":text }</Typography>
+      <Typography color={color} variant="body2">{title}</Typography>
+      <Tooltip title={ showTooltip  ? text : ""} placement="top" arrow>
+        <Typography variant='body1' noWrap color={color}>{(text == null || text =="") ? "-":text }</Typography>
       </Tooltip>
     </Stack>
     

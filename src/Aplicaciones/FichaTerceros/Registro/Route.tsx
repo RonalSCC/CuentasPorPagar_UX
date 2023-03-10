@@ -1,7 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 import { useRoutes } from 'react-router-dom';
 import Cuentas from "./Componentes/CuentasBancarias/Cuentas";
-import EditarInformacionGeneral from "./Componentes/InformacionGeneral/EditarInformacionGeneral";
 import InformacionGeneralDatos from "./Componentes/InformacionGeneral/InformacionGeneralDatos";
 import Contactos from './Componentes/Contactos/Contactos'
 import MarcoTerceroProveedor from "./Contextos/MarcoTercerosProveedor";
@@ -9,6 +8,7 @@ import ConfiguracionTributaria from "./Componentes/ConfiguracionTributaria/Confi
 import RegistroDeDescuentos from './Componentes/RegistroDeDescuentos/RegistroDeDescuentos';
 import DocumentosDeTerceros from "./Componentes/ConfiguracionAvanzada/DocumentosDeTerceros/DocumentosDeTerceros";
 import EmbargoEndoso from "./Componentes/ConfiguracionAvanzada/EmbargoEndoso/EmbargoEndoso";
+import EditarInformacionGeneral from "./Componentes/InformacionGeneral/EditarInformacionGeneral";
 import CuentasBancariasProveedor from "../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor";
 const CambiarTerceroMientras = ()=>{
 
@@ -27,6 +27,7 @@ const RoutesMarcoTerceros:RouteObject[] = [
             {
                 path:"EditarInformacionGeneral",
                 element: <EditarInformacionGeneral />,
+                index:true
             },
             {
                 path:"CuentasBancarias",
