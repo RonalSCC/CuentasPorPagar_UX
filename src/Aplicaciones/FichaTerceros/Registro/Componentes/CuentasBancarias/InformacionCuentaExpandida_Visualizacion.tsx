@@ -1,18 +1,37 @@
 import { DeleteOutline, EditOutlined } from '@mui/icons-material'
-import { Button, Checkbox, Divider, FormControlLabel, FormGroup, IconButton, Stack, Switch, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import { Alert, Button, Checkbox, Divider, FormControlLabel, FormGroup, IconButton, Stack, Switch, Typography } from '@mui/material'
+import React, { useContext, useState } from 'react'
 import CuentaPorSucursal_Visualizacion from './CuentaPorSucursal_Visualizacion'
 import Image from 'mui-image';
-import ModalEditarCuentaBancaria from './_ModalEditarCuentaBancaria';
 import ModalEditarSucursales from './_ModalEditarSucursales';
 import ModalEliminar from '../Generales/_ModalEliminar';
-
-export default function InformacionCuentaExpandida_Visualizacion() {
+import {GetValueOrDefault} from '../../../../../Utilidades/GetValueOrDefault'
+import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto';
+import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor';
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/CuentasBancarias/IEnvioAPIGuardarEditarCuenta';
+import { ICuentaBancaria } from '../../../Interfaces/Registro/CuentasBancarias/ICuentaBancaria';
+export interface PropsInformacionCuentaExpandida_Visualizacion
+{
+}
+export default function InformacionCuentaExpandida_Visualizacion(
+    {
+    }:PropsInformacionCuentaExpandida_Visualizacion
+) {
 
     const [VerModalEditarCuentaBancaria, setVerModalEditarCuentaBancaria] = useState(false);
     const [VerModalEditarCuentasSucursales, setVerModalEditarCuentasSucursales] = useState(false);
     const [VerModalEliminarCuenta, setVerModalEliminarCuenta] = useState(false);
 
+    const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
+    const {
+        CuentaExpandida,
+        CambiarEstadoModalCrearEditar,
+        CambiarEstadoActualizarCuentas
+    } = paramsCuentasBancariasContexto;
 
     const EditarCuentaBancaria = (estado:boolean)=>{
         setVerModalEditarCuentaBancaria(estado);
@@ -26,8 +45,62 @@ export default function InformacionCuentaExpandida_Visualizacion() {
         setVerModalEliminarCuenta(estado);
     }
 
-    const EliminarCuenta = ()=>{
+    const EliminarCuenta = async()=>{
+        // ---- Registrar cuenta ---- //
+        await CrearPeticion({
+            API: "CUENTASPORPAGAR",
+            URLServicio: "/AdministracionTerceros/Eliminar_CuentaBancaria",
+            Type:"DELETE",
+            Body:{
+                tcbId: CuentaExpandida?.tcbId,
+                ruta: window.location.href
+            }
+        }).then((respuesta)=> {
+            if (respuesta != null) {
+                if (respuesta.ok) {
+                    propsTercerosContexto.CambiarAlertas([<Alert className='UpZIndex' severity="success">{respuesta.descripcion}</Alert>]);
+                    CambiarEstadoModalCrearEditar(false);
+                    CambiarEstadoActualizarCuentas(true);
+                }else{
+                    propsTercerosContexto.CambiarAlertas([<Alert className='UpZIndex' severity="info">{respuesta.descripcion}</Alert>]);
+                }
+            }
+        });
     }
+
+    const CambiarEstadoCuenta = async(event: React.ChangeEvent<HTMLInputElement>, checked: boolean)=> {
+        const DatosCuenta = CuentaExpandida as ICuentaBancaria;
+        let dataSend:IEnvioAPIGuardarEditarCuenta ={
+            tcbId: DatosCuenta.tcbId,
+            tcbTercero: DatosCuenta?.tcbTercero,
+            tcbEntidad: DatosCuenta?.tcbEntidad,
+            tcbTipo: DatosCuenta?.tcbTipoCuentaId,
+            tcbCuentaNo: DatosCuenta?.tcbNumeroCuenta,
+            tcbSwift: DatosCuenta?.tcbSwift ? DatosCuenta?.tcbSwift.toString(): "",
+            tcbAbba: DatosCuenta?.tcbAbbaIban ? DatosCuenta?.tcbAbbaIban.toString() : "",
+            tcbEmail: DatosCuenta?.tcbCorreoElectronico,
+            tcbContacto: DatosCuenta?.tcbContacto,
+            tcbTelefono: DatosCuenta?.tcbTelefono,
+            tcbPagoNit: DatosCuenta?.tcbPagoPorNit,
+            tcbActiva: checked,
+            ruta: window.location.href
+        }
+
+        // ---- Registrar cuenta ---- //
+        await CrearPeticion({
+            API: "CUENTASPORPAGAR",
+            URLServicio: "/CuentasBancariasTerceros/Editar_CuentaBancaria",
+            Type:"POST",
+            Body:dataSend
+        }).then((respuesta)=> {
+            if (respuesta != null && respuesta.ok == true) {
+                propsTercerosContexto.CambiarAlertas([<Alert severity="success">{respuesta.descripcion}</Alert>]);
+                CambiarEstadoModalCrearEditar(false);
+                CambiarEstadoActualizarCuentas(true);
+            }
+        });
+    }
+
   return (
     <>
         <Divider sx={{width:"100%"}} orientation='horizontal'/>
@@ -48,7 +121,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                                     Télefono:
                                 </Typography>
                                 <Typography variant='body2' color="text.secondary">
-                                    3214567890
+                                    {GetValueOrDefault(CuentaExpandida?.tcbTelefono)}
                                 </Typography>
                             </Stack>
 
@@ -57,7 +130,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                                     Contacto:
                                 </Typography>
                                 <Typography variant='body2' color="text.secondary">
-                                    3456789
+                                    {GetValueOrDefault(CuentaExpandida?.tcbContacto)}
                                 </Typography>
                             </Stack>
                         </Stack>
@@ -68,12 +141,12 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                                     Email:
                                 </Typography>
                                 <Typography variant='body2' color="text.secondary">
-                                    viviana.contreras@sinco.com.co
+                                    {GetValueOrDefault(CuentaExpandida?.tcbCorreoElectronico)}
                                 </Typography>
                             </Stack>
 
                             <FormGroup sx={{width:"50%"}}>
-                                <FormControlLabel control={<Checkbox size='small'/>} label="Pago por NIT" />
+                                <FormControlLabel control={<Checkbox defaultChecked={CuentaExpandida?.tcbPagoPorNit} size='small'/>} label="Pago por NIT" />
                             </FormGroup>
                         </Stack>
 
@@ -83,7 +156,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                 <Button 
                     variant='text'
                     startIcon={<EditOutlined />}
-                    onClick={()=> EditarCuentaBancaria(true)}
+                    onClick={()=> CambiarEstadoModalCrearEditar(true)}
                 >
                     Editar
                 </Button>
@@ -95,15 +168,22 @@ export default function InformacionCuentaExpandida_Visualizacion() {
                 <Image width="5%" src='Imagenes/Terceros/UbicacionCuentasPorPagar.svg' fit='cover'/>
 
                 <Stack direction="column" gap={1} width="80%">
-                    <Typography variant='subtitle2' color="text.primary">
-                        Sucursales asignadas
-                    </Typography>
 
                     <Stack direction="column" gap={1} >
-
-                        <CuentaPorSucursal_Visualizacion objInfoCuenta={{}}/>
-
-                        <CuentaPorSucursal_Visualizacion objInfoCuenta={{}}/>
+                        {
+                            (CuentaExpandida?.tcbListaSucursales && CuentaExpandida?.tcbListaSucursales.length > 0) 
+                            && 
+                            <CuentaPorSucursal_Visualizacion ListaSucursales={CuentaExpandida?.tcbListaSucursales}/> 
+                        }
+                        {
+                            (!CuentaExpandida?.tcbListaSucursales || CuentaExpandida?.tcbListaSucursales.length == 0) 
+                            &&
+                            <Stack direction={"row"}>
+                               <Typography variant='subtitle1' color="text.disabled">
+                                    No hay sucursales asignadas
+                                </Typography>
+                            </Stack>
+                        }
                     </Stack>
                 </Stack>
 
@@ -123,15 +203,9 @@ export default function InformacionCuentaExpandida_Visualizacion() {
             </IconButton>
 
             <FormGroup>
-                <FormControlLabel sx={{mr:"0px"}} control={<Switch checked size='small'/>} label="Activa" />
+                <FormControlLabel sx={{mr:"0px"}} control={<Switch onChange={(event,checked)=> CambiarEstadoCuenta(event,checked)} defaultChecked={CuentaExpandida?.tcbActiva} size='small'/>} label="Activa" />
             </FormGroup>
         </Stack>
-
-        {
-            VerModalEditarCuentaBancaria == true &&
-            <ModalEditarCuentaBancaria CerrarModal={EditarCuentaBancaria}/>
-
-        }
 
         {
             VerModalEditarCuentasSucursales == true &&

@@ -1,5 +1,6 @@
+import styled from '@emotion/styled';
 import { AccountBalanceOutlined, ContentCopy, ContentCut, ContentPaste, ExpandLessRounded, ExpandMoreRounded, GroupOutlined, LocalOfferOutlined, MenuOpenOutlined, MenuOutlined, PercentOutlined, Person, PersonOutlined, ReceiptLongOutlined, SettingsOutlined } from '@mui/icons-material'
-import { Badge, Fab, IconButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Menu, MenuItem, MenuList, Paper, Stack, Typography } from '@mui/material'
+import { Badge, Fab, IconButton, ListItemIcon, ListItemSecondaryAction, ListItemText, Menu, MenuItem, MenuList, Paper, Stack, Tooltip, Typography, withStyles } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
@@ -20,6 +21,7 @@ export default function MenuInformacionGeneral(
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const {propsMarcoTercero}:{propsMarcoTercero:any} = useContext<any>(MarcoTerceroContexto);
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {TerceroSeleccionadoLista} = propsTercerosContexto;
 
     
     const navigate = useNavigate();
@@ -69,6 +71,7 @@ export default function MenuInformacionGeneral(
     const CambiarOpcionMenuSeleccionada = (nuevaRuta:string)=>{
         navigate(nuevaRuta);
     }
+
   return (
     <>
         <Stack 
@@ -76,20 +79,20 @@ export default function MenuInformacionGeneral(
             justifyContent={"center"} 
             width="100%"
         >
-            <Stack flexWrap={'wrap'} direction="row" paddingRight={1.5} paddingLeft={3} width="100%">
+            <Stack flexWrap={'wrap'} gap={2.5} direction="row" paddingRight={1.5} paddingLeft={3} width="100%">
             {
                 expandido == true &&
-                <Stack flexWrap={'wrap'} direction="column" width={"80%"}>
+                <Stack flexWrap={'wrap'} direction="column" width={"70%"}>
                     <Stack direction="row" alignItems="center" gap={1} width="100%">
                         <Badge variant='dot' color='success'/>
                         <Typography overflow="hidden" noWrap textOverflow={"ellipsis"} variant='subtitle2' color="primary.main">
-                            {propsTercerosContexto.TerceroSeleccionadoLista?.TerNombre}
+                            {TerceroSeleccionadoLista?.TerNombre}
                         </Typography>
                     </Stack>
                     <Stack width="100%">
                         <Typography overflow="hidden" noWrap textOverflow={"ellipsis"} variant='caption' color="text.primary">
                             {/* ID: 1012  C.C.: 1001277214 */}
-                            {`ID: ${propsTercerosContexto.TerceroSeleccionadoLista?.TerID} ${propsTercerosContexto.TerceroSeleccionadoLista?.TerTipoIden}: ${propsTercerosContexto.TerceroSeleccionadoLista?.TerNit}` }
+                            {`ID: ${TerceroSeleccionadoLista?.TerID} ${TerceroSeleccionadoLista?.TerTipoIden}: ${TerceroSeleccionadoLista?.TerNit}` }
                         </Typography>
                     </Stack>
                 </Stack>   
@@ -99,7 +102,7 @@ export default function MenuInformacionGeneral(
                 <Fab 
                     variant='extended' 
                     size='small'
-                    color='primary'
+                    color='secondary'
                     onClick={()=> { expandirMenu()}}
                     sx={{width: expandido ? "20%": "100%"}}
                 >
@@ -115,42 +118,42 @@ export default function MenuInformacionGeneral(
         
         <Stack direction={"column"} sx={{ width: "100%"}} >
             <MenuList>
-                <MenuItem {...PropsMenu}>
+                <MenuItem {...PropsMenu} onClick={() => { CambiarOpcionMenuSeleccionada("InformacionGeneral")}}>
                     <ListItemIcon {...PropsItemIcon}>
                         <PersonOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("InformacionGeneral")}>Información general</ListItemText>
+                    <ListItemText {...PropsTextMenu} >Información general</ListItemText>
                 </MenuItem>
-                <MenuItem {...PropsMenu}>
+                <MenuItem {...PropsMenu} onClick={() => { CambiarOpcionMenuSeleccionada("Contactos")}}>
                     <ListItemIcon {...PropsItemIcon}>
                         <GroupOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("Contactos")}>Contactos</ListItemText>
+                    <ListItemText {...PropsTextMenu} >Contactos</ListItemText>
                 </MenuItem>
-                <MenuItem {...PropsMenu}>
+                <MenuItem {...PropsMenu} onClick={() => {CambiarOpcionMenuSeleccionada("CuentasBancarias")}}>
                     <ListItemIcon {...PropsItemIcon}>
                         <AccountBalanceOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("CuentasBancarias")}>Cuentas bancarias</ListItemText>
+                    <ListItemText {...PropsTextMenu} >Cuentas bancarias</ListItemText>
                 </MenuItem>
-                <MenuItem {...PropsMenu}>
+                <MenuItem {...PropsMenu} onClick={() => {CambiarOpcionMenuSeleccionada("ConfiguracionTributaria")}}>
                     <ListItemIcon {...PropsItemIcon}>
                         <PercentOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("ConfiguracionTributaria")}>Configuración tributaría</ListItemText>
+                    <ListItemText {...PropsTextMenu} >Configuración tributaría</ListItemText>
                 </MenuItem>
-                <MenuItem {...PropsMenu}>
+                <MenuItem {...PropsMenu} onClick={() => {CambiarOpcionMenuSeleccionada("RegistroDeDescuentos")}}>
                     <ListItemIcon {...PropsItemIcon}>
                         <LocalOfferOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
-                    <ListItemText {...PropsTextMenu} onClick={() => CambiarOpcionMenuSeleccionada("RegistroDeDescuentos")}>Registro de descuentos</ListItemText>
+                    <ListItemText {...PropsTextMenu} >Registro de descuentos</ListItemText>
                 </MenuItem>
-                <MenuItem {...PropsMenu}>
+                {/* <MenuItem {...PropsMenu}>
                     <ListItemIcon {...PropsItemIcon}>
                         <ReceiptLongOutlined {...PropsIconMenu}/>
                     </ListItemIcon>
                     <ListItemText {...PropsTextMenu}>Constitución</ListItemText>
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem 
                     {...PropsMenu}
                     onClick={
@@ -184,32 +187,33 @@ export default function MenuInformacionGeneral(
                     
                 </MenuItem>
                 {
-                    configuracionAvanzadaExpandida ?
-                    <>
-                        <MenuItem {...PropsMenu}>
+                    configuracionAvanzadaExpandida ? 
+                    [
+                        <MenuItem key={"DocumentosTercero"} {...PropsMenu}  onClick={() => CambiarOpcionMenuSeleccionada("DocumentosDeTerceros")}>
                             <ListItemIcon {...PropsItemIcon}>
                             </ListItemIcon>
                             <ListItemText 
                                 {...PropsTextMenu}
                                 disableTypography
-                                primary={<Typography variant="body2" color={"text.secondary"}
-                                onClick={() => CambiarOpcionMenuSeleccionada("DocumentosDeTerceros")}>Documentos de tercero</Typography>}
+                                primary={
+                                <Typography variant="body2" color={"text.secondary"}>
+                                    Documentos de tercero
+                                </Typography>}
                             >
                             </ListItemText>
-                        </MenuItem>
-                        <MenuItem {...PropsMenu}>
+                        </MenuItem>,
+                        <MenuItem key={"Embargo / Endoso"} {...PropsMenu} onClick={() => CambiarOpcionMenuSeleccionada("EmbargoEndoso")}>
                             <ListItemIcon {...PropsItemIcon}>
                             </ListItemIcon>
                             <ListItemText 
                                 {...PropsTextMenu}
                                 disableTypography
                                 primary={<Typography variant="body2" color={"text.secondary"}
-                                onClick={() => CambiarOpcionMenuSeleccionada("EmbargoEndoso")}
                                 >Embargo / Endoso</Typography>}
                             >
                             </ListItemText>
                         </MenuItem>
-                    </>:
+                    ]:
                     <Menu
                         id="menuConfiguracionAvanzada"
                         anchorEl={anchorEl}

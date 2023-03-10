@@ -9,7 +9,7 @@ import FormularioDirecciones from './FormularioDirecciones';
 import TipoPersonaNaturalCampos from './TipoPersonaNaturalCampos';
 import { useNavigate } from 'react-router-dom';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
+import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
 import ITipoTercero from '../../../Interfaces/Generales/ITipoTercero';
 import ITipoDocumento from '../../../Interfaces/Generales/ITipoDocumento';
 
@@ -21,6 +21,8 @@ export default function FormularioInformacionGeneral() {
   const [verModalDireccion, setVerModalDireccion] = useState(false);
   const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
   const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
+  const [ListaCiudades, setListaCiudades] = useState<Array<any>>([]);
+
 
   useEffect(() => {
     propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
@@ -34,7 +36,7 @@ export default function FormularioInformacionGeneral() {
   };
 
   const ConsultarListas = async ()=> {
-    let PropsDefaultRequest = {
+    let PropsDefaultRequest:CrearPeticionAxios = {
       API: "CONFIGURACION",
       URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
       Type:"GET"
@@ -63,6 +65,19 @@ export default function FormularioInformacionGeneral() {
     }).then((respuesta)=> {
       if (respuesta != null && respuesta.ok == true) {
           setListaTipoDocumento(respuesta.datos);
+      }
+    });
+
+    // ---- Ciudades
+    await CrearPeticion({
+      ...PropsDefaultRequest,
+      Body:{
+          UsuarioID: 1,
+          Clave: 'Ciudades'
+      }
+    }).then((respuesta)=> {
+      if (respuesta != null && respuesta.ok == true) {
+          setListaCiudades(respuesta.datos);
       }
     });
 
@@ -105,16 +120,21 @@ export default function FormularioInformacionGeneral() {
             </Stack>
 
             {
-                tipoPersonaChecked == 1  ?
-                  <TipoPersonaNaturalCampos propsInputs={propsInputs} /> :
-                  <Stack direction="row" gap={1.5}>
-                    <TextField 
-                      {...propsInputs}
-                      id="razonSocial" 
-                      label="Razón social"
-                      required
-                    />
-                  </Stack>
+                tipoPersonaChecked == 1 &&
+                  <TipoPersonaNaturalCampos propsInputs={propsInputs} />
+            }
+
+            {
+              tipoPersonaChecked == 2 &&
+              <Stack direction="row" gap={1.5}>
+                <TextField 
+                  error
+                  {...propsInputs}
+                  id="razonSocial" 
+                  label="Razón social"
+                  required
+                />
+              </Stack>
             }
             
 
@@ -198,16 +218,18 @@ export default function FormularioInformacionGeneral() {
                   }}
                   size='small'
                 >
-                  <InputLabel required  id="demo-multiple-name-label">Ciudad</InputLabel>
-                  <Select
-                    labelId="label-tipoDocumento"
+                  <TextField
                     id="tipoDocumento"
                     label="Ciudad"
                     size='small'
-                    notched
+                    select
                   >
-                    
-                  </Select>
+                    {
+                      ListaCiudades.map(data => {
+                        return <MenuItem key={data.CiuID} value={data.CiuID}>{data.CiuNombre}</MenuItem>
+                      })
+                    }
+                  </TextField>
                 </FormControl>
 
                 <Stack direction="row" width="50%" gap={1} alignItems="center">

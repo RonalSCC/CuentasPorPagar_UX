@@ -1,6 +1,8 @@
-import { Alert, AlertTitle, Collapse, Fade, Stack } from '@mui/material'
+import { Alert, AlertTitle, CircularProgress, Collapse, Fade, Stack } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import { CrearPeticion } from '../../../Consumos/APIManager'
 import ObtenerConfigs from '../../../Consumos/ObtenerConfigs'
+import IAccesosFicha from '../Interfaces/Contextos/IAccesosFicha'
 import { TercerosContexto } from './TercerosContexto'
 
 export interface TerceroSeleccionadoLista{
@@ -21,7 +23,9 @@ export interface PropsTerceroContexto {
     CambiarTerceroSeleccionadoLista: Function,
     CambiarAlertas:(ListaAlertas: Array<JSX.Element>) => void,
     CerrarAlertas: Function,
-    ObjConfigs:any
+    ObjConfigs:any,
+    CambiarEstadoLoader: (estado: boolean) => void,
+    AccesosFicha: Array<IAccesosFicha>
 }
 export default function TercerosProveedor(
     {
@@ -36,9 +40,19 @@ export default function TercerosProveedor(
     const [tituloPageHeader, setTituloPageHeader] = useState("");
     const [listaAlertas, setListaAlertas] = useState<Array<JSX.Element>>();
     const [ObjConfigs, setObjConfigs] = useState<any>({});
+    const [Loader, setLoader] = useState(false);
+    const [AccesosFicha, setAccesosFicha] = useState<Array<IAccesosFicha>>([]);
     useEffect(() => {
         ConsultarConfigs();
+        ConsultarAccesosFicha();
     }, [])
+
+    useEffect(() => {
+      setTimeout(function(){
+        CerrarAlertas();
+      },3000);
+    }, [listaAlertas])
+    
 
     const ConsultarConfigs = async ()=> {
         const Config = await ObtenerConfigs({
@@ -68,6 +82,19 @@ export default function TercerosProveedor(
         }
         
     }
+
+    const ConsultarAccesosFicha = async ()=> {
+        await CrearPeticion({
+            API: "CUENTASPORPAGAR",
+            URLServicio: "/AdministracionTerceros/Consultar_AccesosFichaTercero",
+            Type: "GET"
+        }).then((respuesta)=> {
+            if (respuesta != null && respuesta.ok == true) {
+                setAccesosFicha(respuesta.datos);
+            }
+        });
+    }
+
     const CambiarTerceroSeleccionadoLista = (TerceroNuevo:TerceroSeleccionadoLista) => {
         setTerceroSeleccionadoLista(TerceroNuevo);
     }
@@ -91,6 +118,24 @@ export default function TercerosProveedor(
     const CerrarAlertas = ()=>{
         setListaAlertas(undefined);
     }
+
+    const CambiarEstadoLoader = (estado:boolean)=> {
+        let body = document.getElementsByTagName("body");
+        if (!estado) {
+            setTimeout(function(){
+                setLoader(estado);
+                if (body) {
+                    body[0].style.opacity = "1";
+                }
+            },1500);
+        }else{
+            setLoader(estado);
+            if (body) {
+                body[0].style.opacity = "0.6";
+            }
+        }
+    }
+
     const propsTercerosContexto:PropsTerceroContexto = {
         TerceroSeleccionadoLista: terceroSeleccionadoLista, 
         CambiarTerceroSeleccionadoLista: CambiarTerceroSeleccionadoLista,
@@ -100,7 +145,9 @@ export default function TercerosProveedor(
         TituloPageHeader: tituloPageHeader,
         CambiarAlertas,
         CerrarAlertas,
-        ObjConfigs
+        ObjConfigs,
+        CambiarEstadoLoader,
+        AccesosFicha
     };
 
     return (
@@ -113,7 +160,12 @@ export default function TercerosProveedor(
                     }
                 </Stack>
             </Fade>
-
+             {
+                Loader == true && 
+                <Stack zIndex={10000} position={"fixed"} height="100%" width="100%" display={"flex"} justifyContent="center" alignItems={"center"}>
+                    <CircularProgress />
+                </Stack>
+             }       
         </TercerosContexto.Provider>
     )
 }

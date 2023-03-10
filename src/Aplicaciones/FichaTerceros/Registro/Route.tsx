@@ -9,6 +9,7 @@ import ConfiguracionTributaria from "./Componentes/ConfiguracionTributaria/Confi
 import RegistroDeDescuentos from './Componentes/RegistroDeDescuentos/RegistroDeDescuentos';
 import DocumentosDeTerceros from "./Componentes/ConfiguracionAvanzada/DocumentosDeTerceros/DocumentosDeTerceros";
 import EmbargoEndoso from "./Componentes/ConfiguracionAvanzada/EmbargoEndoso/EmbargoEndoso";
+import CuentasBancariasProveedor from "../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor";
 const CambiarTerceroMientras = ()=>{
 
 }
@@ -29,7 +30,9 @@ const RoutesMarcoTerceros:RouteObject[] = [
             },
             {
                 path:"CuentasBancarias",
-                element: <Cuentas />
+                element: <CuentasBancariasProveedor>
+                    <Cuentas />
+                </CuentasBancariasProveedor>
             },
             {
                 path:'ConfiguracionTributaria',

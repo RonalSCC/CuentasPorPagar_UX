@@ -16,6 +16,7 @@ import { Stack } from '@mui/material';
 import { RoutesCuentasPorPagarElement } from './Aplicaciones/Route';
 import { BrowserRouter, HashRouter, Outlet } from 'react-router-dom';
 import './Theme/base.css';
+import Loader from './Consumos/Loader';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -23,11 +24,12 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={SincoTheme}>
-      <Stack height="100%" width="100%" sx={{overflowY: "auto"}}>
+      <Stack height="100%" width="100%">
         <HashRouter>
           <RoutesCuentasPorPagarElement />
         </HashRouter>
       </Stack>
+      <Loader/>
     </ThemeProvider>
   </React.StrictMode>
 );

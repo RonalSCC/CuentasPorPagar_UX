@@ -5,14 +5,14 @@ import { AxiosRequestHeaders } from 'axios';
 import IRespuestaGeneral from './IRespuestaGeneral';
 
 export interface CrearPeticionAxios {
-    API:string,
+    API: "CONFIGURACION"|"CUENTASPORPAGAR",
     URLServicio: string,
-    Body: any,
+    Body?: any,
     Type:string,
-    Headers?: AxiosRequestHeaders
+    Headers?: AxiosRequestHeaders,
+    ShowLoader?:boolean 
 }
-export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IRespuestaGeneral>=> {
-
+export const CrearPeticion = async(DatosEnvio:CrearPeticionAxios):Promise<void|IRespuestaGeneral>=> {
     let URLAPI:string|undefined;
     if (DatosEnvio.API == "CUENTASPORPAGAR") {
         URLAPI = process.env.REACT_APP_URL_API_CUENTAS_POR_PAGAR;
@@ -38,6 +38,19 @@ export const CrearPeticion= async(DatosEnvio:CrearPeticionAxios):Promise<void|IR
         .catch(function({response}){
             return response.data;
         })
+    }else if(DatosEnvio.Type == "DELETE"){
+        return await axiosRequest.delete(
+            DatosEnvio.URLServicio,
+            {
+                params:DatosEnvio.Body
+            }
+        )
+        .then(function({data}:{data:IRespuestaGeneral}){
+            return data;
+        })
+        .catch(function(error){
+            console.log(error);
+        });
     }else{
         return await axiosRequest.get(
             DatosEnvio.URLServicio, 

@@ -4,6 +4,7 @@ import { Alert, AlertTitle, Button, Card, Chip, Divider, FormControl, FormContro
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CrearPeticion } from '../../../../../Consumos/APIManager'
+import { SendRequest } from '../../../../../Consumos/Request'
 import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
 import CampoValorInfoGeneral from './CampoValorInfoGeneral'
@@ -44,44 +45,43 @@ export default function InformacionGeneralDatos(props:any) {
 
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const [InfoTercero, setInfoTercero] = useState<IInfoUsuario>();
+            
     useEffect(() => {
       ConsultarInformacionTercero();
     }, [propsTercerosContexto.TerceroSeleccionadoLista]);
     
     const ConsultarInformacionTercero = async()=> {
         if (propsTercerosContexto.TerceroSeleccionadoLista) {
-            let respuesta = await CrearPeticion({
+            SendRequest.get({
                 API: "CUENTASPORPAGAR",
                 URLServicio: "/AdministracionTerceros/ConsultarTerceroFichaId",
-                Type: "GET",
                 Body:{
                     UsuarioID: 1,
                     TerId: propsTercerosContexto.TerceroSeleccionadoLista.TerID
                 }
+            }).then((respuesta)=> {
+                if (respuesta) {
+                    if(respuesta.ok){
+                        setInfoTercero(respuesta.datos);
+                    }
+                    else if (respuesta.errores && respuesta.errores.length > 0) {
+                        propsTercerosContexto.CambiarAlertas(
+                            respuesta.errores.map(x=> {
+                                return <>
+                                <Alert 
+                                    key={x.descripcion} 
+                                    severity="warning"
+                                    onClose={()=> propsTercerosContexto.CerrarAlertas()}
+                                >
+                                    <AlertTitle>Error</AlertTitle>
+                                    {x.descripcion}
+                                </Alert>
+                                </>;
+                            })
+                        );
+                    }
+                }
             });
-
-            if (respuesta != undefined) {
-                if(respuesta.ok){
-                    setInfoTercero(respuesta.datos);
-                    console.log(respuesta.datos);
-                }
-                else if (respuesta.errores && respuesta.errores.length > 0) {
-                    propsTercerosContexto.CambiarAlertas(
-                        respuesta.errores.map(x=> {
-                            return <>
-                            <Alert 
-                                key={x.descripcion} 
-                                severity="warning"
-                                onClose={()=> propsTercerosContexto.CerrarAlertas()}
-                            >
-                                <AlertTitle>Error</AlertTitle>
-                                {x.descripcion}
-                            </Alert>
-                            </>;
-                        })
-                    );
-                }
-            }
         }
     }
 

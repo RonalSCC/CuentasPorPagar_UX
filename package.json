@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ayf/generales": "^0.0.44",
+    "@hookform/resolvers": "^2.9.11",
     "@mui/icons-material": "^5.10.16",
     "@mui/material": "^5.10.17",
     "@testing-library/jest-dom": "^5.16.5",
@@ -12,9 +13,11 @@
     "mui-image": "^1.0.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.1",
     "react-imask": "^6.4.3",
     "react-router-dom": "^6.4.5",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "yup": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

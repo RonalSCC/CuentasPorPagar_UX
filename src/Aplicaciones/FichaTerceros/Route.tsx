@@ -14,7 +14,7 @@ const RoutesTerceros:RouteObject[] = [
     {
         children:[
             {
-                path:"MarcoTerceros",
+                path:"MarcoTerceros/*",
                 element: 
                     <>
                         <MarcoTerceroProveedor>

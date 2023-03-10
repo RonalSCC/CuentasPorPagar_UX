@@ -1,12 +1,13 @@
 import { Edit } from '@mui/icons-material';
-import { Button, Card, CardActions, Chip, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Button, Card, CardActions, Chip, FormControl, FormControlLabel, FormGroup, FormLabel, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, styled, Switch, TextField, Tooltip, tooltipClasses, TooltipProps, Typography } from '@mui/material'
 import React, { useContext, useState } from 'react'
 import ContenedorBotonesEditarInfo from './_ContenedorBotonesEditarInfo';
 import { useLocation, useNavigate } from 'react-router-dom'
-import ObtenerConfigs from '../../../../../Consumos/ObtenerConfigs';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import { IInfoUsuario } from './InformacionGeneralDatos';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 export interface PropsEditarInformacionGeneral{
   InformacionTercero?: IInfoUsuario
 };
@@ -17,7 +18,6 @@ export default function EditarInformacionGeneral(
 ) {
 
   const location = useLocation();
-
   const [InfoTercero, setInfoTercero] = useState<IInfoUsuario>(location.state.InformacionTercero);
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
 
@@ -40,6 +40,17 @@ export default function EditarInformacionGeneral(
   const CambioNaturaleza = (event: React.ChangeEvent<HTMLInputElement>)=> {
     console.log(event.target.value);
   }
+  
+  const BootstrapTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} arrow classes={{ popper: className }} />
+  ))(({ theme }) => ({
+    [`& .${tooltipClasses.arrow}`]: {
+      color: theme.palette.common.black,
+    },
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: "red",
+    },
+  }));
   
   return (
     <>
@@ -82,28 +93,41 @@ export default function EditarInformacionGeneral(
 
             <Stack direction="row" gap={.5}>
               <Stack direction="row" gap={1.5} width={"50%"}>
-                <FormControl
-                 fullWidth
-                 sx={{
-                  width: "35%"
-                 }}
-                >
-                  <InputLabel required shrink>Tipo</InputLabel>
-                    <Select
-                      labelId="label-tipoDocumento"
-                      id="tipoDocumento"
-                      label="Tipo"
-                      size='small'
-                      notched
-                    >
-                      <MenuItem value={10}>1</MenuItem>
-                    </Select>
-                </FormControl>
+                
+                  <TextField
+                    id="tipoDocumento"
+                    label="Tipo"
+                    size='small'
+                    sx={{
+                      width: "35%",
+                      // '& .MuiFormHelperText-root' : {
+                      //   position : 'absolute',
+                      //   bottom : '-2rem',
+                        
+                      // }
+                    }}
+                  >
+                    <MenuItem value={10}>1</MenuItem>
+                  </TextField>
 
                 <TextField 
                   {...propsInputs}
                   id="numeroIdentificacion" 
                   label="Número de identificación" 
+                  error
+                  helperText={<Tooltip 
+                                arrow 
+                                placement="top"
+                                title={"Debe registrar un tipo de identificacion"}>
+                                <Stack direction={"row"} height="50%" width="100%"></Stack>
+                              </Tooltip>}
+                  sx={{
+                    '& .MuiFormHelperText-root' : {
+                      position:"absolute",
+                      width:"100%",
+                      height: "100%"
+                    }
+                  }}
                   type="number"
                   required
                 />

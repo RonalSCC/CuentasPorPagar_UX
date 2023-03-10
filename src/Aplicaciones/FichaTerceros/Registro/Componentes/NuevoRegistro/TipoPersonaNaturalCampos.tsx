@@ -16,6 +16,7 @@ export default function TipoPersonaNaturalCampos(
                 <TextField 
                 {...propsInputs}
                 id="primerNombre" 
+                name='primerNombre'
                 label="Primer nombre"
                 placeholder='Prueba pruebita'
                 required
