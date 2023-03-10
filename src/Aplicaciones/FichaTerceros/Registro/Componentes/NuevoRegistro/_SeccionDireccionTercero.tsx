@@ -59,7 +59,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
             numeroUnidadIdentidad2,
         } = getValues()
         
-       let direcciónCompleta = 
+       let dirCompleta = 
         calle + " " +
         numeroViaPrincipal + " " + 
         interseccionViaPrincipal + " " +
@@ -71,10 +71,10 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
         unidadIdentidad2 + " " +
         numeroUnidadIdentidad2;
 
-        direcciónCompleta = direcciónCompleta.trim();
-        direcciónCompleta = direcciónCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
+        dirCompleta = dirCompleta.trim();
+        dirCompleta = dirCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
         
-       setValue("direccion",direcciónCompleta);
+       setValue("terDireccion",dirCompleta);
        cambiarEstado();
     }
 

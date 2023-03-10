@@ -13,6 +13,7 @@ export default function _SeccionContactoTercero() {
                 <Controller
                     control={control}
                     name="terContactoPrincipalNombre"
+                    defaultValue={undefined}
                     render={({ field, formState: { errors } }) => (
 
                         <TextField
@@ -30,6 +31,7 @@ export default function _SeccionContactoTercero() {
                 <Controller
                     control={control}
                     name="terContactoPrincipalEmail"
+                    defaultValue={undefined}
                     render={({ field, formState: { errors } }) => (
 
                         <TextField

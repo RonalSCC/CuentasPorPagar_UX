@@ -1,8 +1,10 @@
 // Componentes Material UI y react
-import { Card, FormControl, FormControlLabel, FormGroup, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Alert, AlertTitle, Card, Chip, FormControl, FormControlLabel, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Stack, Switch, TextField, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm, FormProvider, Controller } from 'react-hook-form';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { DevTool } from "@hookform/devtools";
 
 // Contextos
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
@@ -26,6 +28,9 @@ import _SeccionNombresTercero from '../NuevoRegistro/_SeccionNombresTercero';
 import _SeccionRazonSocial from '../NuevoRegistro/_SeccionRazonSocial';
 import _SeccionDireccionTercero from '../NuevoRegistro/_SeccionDireccionTercero';
 import _SeccionContactoTercero from '../NuevoRegistro/_SeccionContactoTercero';
+import { IActividadesEconomicas } from '../../../Interfaces/Generales/IActividadesEconomicas';
+import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
+import IConfigValues from '../../../Interfaces/Generales/IConfig';
 
 export default function EditarInformacionGeneral() {
 
@@ -33,17 +38,66 @@ export default function EditarInformacionGeneral() {
    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
    const [verModalDireccion, setVerModalDireccion] = useState(false);
    const [ListaFormaDePago, setListaFormaDePago] = useState<Array<IFormaPago>>([]);
+   const [ListaActividadesEconomicas, setListaActividadesEconomicas] = useState<Array<IActividadesEconomicas>>([])
    const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
    const [ListaSubTiposTercero, setListaSubTiposTercero] = useState<Array<ISubTipoTercero>>([]);
    const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
 
+   const [Configs, setConfigs] = useState<any>()
+
+   const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
+   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
+   const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
+   const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
+   const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
+   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
+
    const metodos = useForm({
+      defaultValues: {
+         terNatJur: "",
+         terRazonSocial:"",
+         terPrimerNombre: "",
+         terSegundoNombre: "",
+         terPrimerApellido: "",
+         terSegundoApellido: "",
+         terTipoDocumento: "",
+         terNumeroIdentificacion: "",
+         terDigitoV: "",
+         terFormaPago: "",
+         terCiudad: "",
+         terDireccion: "",
+         terTipo: "",
+         terSubTipo: "",
+         terActividadEconomica: "",
+         terEmail: "",
+         terTelefono: "",
+         terCelular: "",
+         terObservaciones: "",
+         terContactoPrincipalNombre: "",
+         terContactoPrincipalEmail: "",
+         terRepresentanteLNombre: "",
+         terRepresentanteLTipoIdentificacion: "",
+         terRepresentanteLIdentificacion: "",
+         terRepresentanteLExpedicion: "",
+         terRepresentanteLEmail: "",
+         terEstado: false,
+      },
+      resolver: yupResolver(schemaTercero({
+         TER_VALIDA_DV,
+         TER_NOCALCULAR_DV,
+         PROV_TELEFONO,
+         TER_REQ_REPLEGAL,
+         TER_FICHA_APIROS,
+         PROV_CORREO_CTO,
+         editaTercero: true
+      }
+      )),
       mode: 'onSubmit',
    })
 
    const { control, handleSubmit, watch, setValue } = metodos
-   const terTipoPersona = watch("terTipoPersona")
+   const terNatJur = watch("terNatJur")
 
    const navigate = useNavigate();
 
@@ -53,8 +107,75 @@ export default function EditarInformacionGeneral() {
       fullWidth: true,
    };
 
-   const GuardarInformacion = () => {
+   const GuardarInformacion = async (data: any) => {
+      let PropsDefaultRequest = {
+         API: "CUENTASPORPAGAR",
+         URLServicio: "/AdministracionTerceros/EditarTerceroFicha",
+         Type: "POST",
+         Body: {
+            terId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID,
+            terTipoIdentificacion: data.terTipoDocumento,
+            terTipoTercero: data.terTipo,
+            terTipoProveedor: data.terSubTipo,
+            terCIIU: data.terActividadEconomica,
+            terCorreo: data.terEmail,
+            terNombreContactoPrincipal: data.terContactoPrincipalNombre,
+            terCorreoContactoPrincipal: data.terContactoPrincipalEmail,
+            terNombreRepresentanteLegal: data.terRepresentanteLNombre,
+            //terTipoIdentificacionRepresentanteLegal: data.terRepresentanteLIdentificacion,
+            terIdentificacionRepresentanteLegal: data.terRepresentanteLIdentificacion,
+            terLugarExpedicionRepresentanteLegal: data.terRepresentanteLExpedicion,
+            terCorreoRepresentanteLegal: data.terRepresentanteLEmail,
+            ...data,
 
+         }
+      };
+
+      console.log(PropsDefaultRequest.Body)
+      
+      
+      await CrearPeticion({
+         ...PropsDefaultRequest,   
+      })
+         .then(respuesta => {
+            if (respuesta) {
+               if (respuesta.ok) {
+                  propsTercerosContexto.CambiarAlertas(
+                     [1].map(alert => {
+                        return <>
+                           <Alert
+                              key={1}
+                              severity="success"
+                              onClose={() => propsTercerosContexto.CerrarAlertas()}
+                           >
+                              <AlertTitle>!Bien hecho!</AlertTitle>
+                              El tercero ha sido actualizado con éxito
+                           </Alert>
+                        </>
+                     })
+                  )
+                  navigate('InformacionGeneralDatos')
+
+               }
+               else if (respuesta.errores && respuesta.errores.length > 0) {
+                  propsTercerosContexto.CambiarAlertas(
+                     respuesta.errores.map(x => {
+                        return <>
+                           <Alert
+                              key={x.descripcion}
+                              severity="warning"
+                              onClose={() => propsTercerosContexto.CerrarAlertas()}
+                           >
+                              <AlertTitle>Error</AlertTitle>
+                              {x.descripcion}
+                           </Alert>
+                        </>;
+                     })
+                  );
+               }
+            }
+
+         })
    }
 
    const CancelarEdicion = () => {
@@ -145,41 +266,98 @@ export default function EditarInformacionGeneral() {
             }
          });
 
+      // Actividades Económicas
+      await CrearPeticion({
+         ...PropsDefaultRequest,
+         Body: {
+            UsuarioID: 1,
+            Clave: 'ActividadesEconomicas'
+         }
+      })
+         .then((respuesta) => {
+            if (respuesta != null && respuesta.ok == true) {
+               setListaActividadesEconomicas(respuesta.datos);
+            }
+         });
+
+   }
+
+   const ConsultarConfigs = async () => {
+      let PropsDefaultRequestConfigs = {
+         API: "CONFIGURACION",
+         URLServicio: "/ConsultasGenerales/ConsultarConfigs",
+         Type: "POST"
+      };
+
+      await CrearPeticion({
+         ...PropsDefaultRequestConfigs,
+         Body: {
+            usuarioID: 1,
+            listaConfigs: [
+               {
+                  configID: "PROV_TELEFONO"
+               },
+               {
+                  configID: "TER_REQ_REPLEGAL"
+               },
+               {
+                  configID: "TER_VALIDA_DV"
+               },
+               {
+                  configID: "TER_NOCALCULAR_DV"
+               },
+               {
+                  configID: "TER_FICHA_APIROS"
+               },
+               {
+                  configID: "PROV_CORREO_CTO"
+               }
+            ]
+         }
+      }).then((respuesta) => {
+         if (respuesta != null) {
+            setConfigs(respuesta.datos)
+         }
+      })
    }
 
    useEffect(() => {
       console.log(InfoTercero)
       if (InfoTercero) {
-         setValue('terTipoPersona', InfoTercero.terTipoPersona)
-         setValue('terPrimerNombre', InfoTercero.terPrimerNombre)
-         setValue('terSegundoNombre', InfoTercero.terSegundoNombre);
-         setValue('terPrimerApellido', InfoTercero.terPrimerApellido)
-         setValue('terSegundoApellido', InfoTercero.terSegundoApellido)
-         setValue('terTipoIdentificacion', InfoTercero.terTipoIdentificacion)
-         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion)
-         setValue('terDiv', InfoTercero.terDiv)
-         setValue('terFormaPagoId', InfoTercero.terFormaPagoId)
-         setValue('terCiudadId', InfoTercero.terCiudadId)
+         setValue('terNatJur', InfoTercero.terTipoPersona || "")
+         setValue('terRazonSocial', InfoTercero.terRazonSocial || "")
+         setValue('terPrimerNombre', InfoTercero.terPrimerNombre  || "")
+         setValue('terSegundoNombre', InfoTercero.terSegundoNombre  || "")
+         setValue('terPrimerApellido', InfoTercero.terPrimerApellido  || "")
+         setValue('terSegundoApellido', InfoTercero.terSegundoApellido  || "")
+         setValue('terTipoDocumento', InfoTercero.terTipoIdentificacionId || "")
+         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion  || "")
+         setValue('terDigitoV', InfoTercero.terDiv || undefined)
+         setValue('terFormaPago', InfoTercero.terFormaPagoId || "")
+         setValue('terCiudad', InfoTercero.terCiudadId || "")
          setValue('terDireccion', InfoTercero.terDireccion)
-         setValue('terTipoId', InfoTercero.terTipoId)
-         setValue('terSubTipoId', InfoTercero.terSubTipoId)
-         setValue('terEmail', InfoTercero.terEmail)
-         setValue('terTelefono', InfoTercero.terTelefono)
-         setValue('terCelular', InfoTercero.terCelular)
-         setValue('terObservaciones', InfoTercero.terObservaciones)
-         setValue('terContactoPrincipalNombre', InfoTercero.terContactoPrincipalNombre)
-         setValue('terContactoPrincipalEmail', InfoTercero.terContactoPrincipalEmail)
-         setValue('terRepresentanteLNombre', InfoTercero.terRepresentanteLNombre)
-         setValue('terTipoIdentificacion', InfoTercero.terTipoIdentificacion)
-         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion)
-         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion)
-         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion)
+         setValue('terTipo', InfoTercero.terTipoId || "")
+         setValue('terSubTipo', InfoTercero.terSubTipoId || "")
+         setValue('terActividadEconomica', InfoTercero.terCIIU || "")
+         setValue('terEmail', InfoTercero.terEmail || "")
+         setValue('terTelefono', InfoTercero.terTelefono  || "")
+         setValue('terCelular', InfoTercero.terCelular  || "")
+         setValue('terObservaciones', InfoTercero.terObservaciones  || "")
+         setValue('terContactoPrincipalNombre', InfoTercero.terContactoPrincipalNombre || "")
+         setValue('terContactoPrincipalEmail', InfoTercero.terContactoPrincipalEmail || "")
+         setValue('terRepresentanteLNombre', InfoTercero.terRepresentanteLNombre || "")
+         setValue('terRepresentanteLTipoIdentificacion', InfoTercero.terRepresentanteLTipoIdentificacionId || "")
+         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion  || "")
+         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion  || "")
+         setValue('terRepresentanteLEmail', InfoTercero.terRepresentanteLEmail  || "")
+         setValue('terEstado', InfoTercero.terEstado  || false)
       }
    }, []);
 
 
    useEffect(() => {
       ConsultarListas();
+      ConsultarConfigs();
    }, [])
 
    return (
@@ -200,11 +378,12 @@ export default function EditarInformacionGeneral() {
                               </Typography>
                               <Controller
                                  control={control}
-                                 name="terTipoPersona"
-                                 defaultValue={terTipoPersona || "N"}
-                                 render={({ field }) => (
+                                 defaultValue=""
+                                 name="terNatJur"
+                                 render={({ field:{value, onChange} }) => (
                                     <RadioGroup
-                                       {...field}
+                                       value={value} 
+                                       onChange={(e) => onChange(e.target.value)}
                                        row
                                        aria-labelledby="demo-row-radio-buttons-group-label"
                                        name="terTipoPersona"
@@ -218,13 +397,23 @@ export default function EditarInformacionGeneral() {
                         </Stack>
 
                         <FormGroup>
-                           <FormControlLabel control={<Switch defaultChecked />} label="Activo" />
+                           <Controller
+                              control={control}
+                              name="terEstado"
+                              defaultValue={false}
+                              render={({ field: { onChange, value } }) => (
+                                 <FormControlLabel
+                                    control={<Switch checked={value} onChange={(e) => onChange(e.target.checked)} />}
+                                    label="Activo"
+                                 />
+                              )}
+                           />
                         </FormGroup>
                      </Stack>
 
                      {
-                        terTipoPersona == 'N' ?
-                           <Stack direction={1 ? "row" : "column"} gap={0.5}>
+                        terNatJur == 'N' ?
+                           <Stack direction="row" gap={0.5}>
                               <_SeccionNombresTercero />
                            </Stack>
                            :
@@ -242,10 +431,11 @@ export default function EditarInformacionGeneral() {
                               <Controller
                                  control={control}
                                  name="terTipoDocumento"
+                                 defaultValue=""
                                  render={({ field, formState: { errors } }) => (
                                     <TextField
                                        {...field}
-                                       id="TipoTercero"
+                                       id="terTipoDocumento"
                                        label="Tipo"
                                        size='small'
                                        placeholder='Seleccione'
@@ -282,16 +472,16 @@ export default function EditarInformacionGeneral() {
 
                            <Controller
                               control={control}
-                              name="terDiv"
+                              name="terDigitoV"
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
                                     {...propsInputs}
-                                    id="terDiv"
+                                    id="terDigitoV"
                                     label="DV"
                                     type="text"
-                                    error={!!errors.terDiv}
-                                    helperText={errors.terDiv && `${errors.terDiv.message}`}
+                                    error={!!errors.terDigitoV}
+                                    helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
                                     sx={{
                                        width: "20%"
                                     }}
@@ -303,18 +493,19 @@ export default function EditarInformacionGeneral() {
                         <FormControl sx={{ width: "50%" }}>
                            <Controller
                               control={control}
-                              name="terFormaDePago"
+                              name="terFormaPago"
+                              defaultValue=""
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
-                                    id="terFormaDePago"
+                                    id="terFormaPago"
                                     label="Forma de Pago"
                                     size='small'
                                     placeholder='Seleccione'
                                     select
                                     required
-                                    error={!!errors.terFormaDePago}
-                                    helperText={errors.terFormaDePago && `${errors.terFormaDePago.message}`}
+                                    error={!!errors.terFormaPago}
+                                    helperText={errors.terFormaPago && `${errors.terFormaPago.message}`}
                                  >
                                     {
                                        ListaFormaDePago.map(data => {
@@ -337,6 +528,7 @@ export default function EditarInformacionGeneral() {
                            <Controller
                               control={control}
                               name="terCiudad"
+                              defaultValue=""
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
@@ -344,6 +536,8 @@ export default function EditarInformacionGeneral() {
                                     label="Ciudad"
                                     size='small'
                                     select
+                                    type="text"
+                                    placeholder='Ciudad'
                                     error={!!errors.terCiudad}
                                     helperText={errors.terCiudad && `${errors.terCiudad.message}`}
                                  >
@@ -396,6 +590,7 @@ export default function EditarInformacionGeneral() {
                            <Controller
                               control={control}
                               name="terTipo"
+                              defaultValue=""
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
@@ -426,6 +621,7 @@ export default function EditarInformacionGeneral() {
                            <Controller
                               control={control}
                               name="terSubTipo"
+                              defaultValue=""
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
@@ -455,6 +651,7 @@ export default function EditarInformacionGeneral() {
                            <Controller
                               control={control}
                               name="terActividadEconomica"
+                              defaultValue=''
                               render={({ field, formState: { errors } }) => (
                                  <TextField
                                     {...field}
@@ -466,10 +663,10 @@ export default function EditarInformacionGeneral() {
                                     error={!!errors.terActividadEconomica}
                                     helperText={errors.terActividadEconomica && `${errors.terActividadEconomica.message}`}
                                  >
-                                    {/* Pendiente lista de actividad Economicas */}
+
                                     {
-                                       ListaSubTiposTercero.map(data => {
-                                          return <MenuItem key={data.TipoId} value={data.TipoId}>{data.TipoDesc}</MenuItem>
+                                       ListaActividadesEconomicas.map(data => {
+                                          return <MenuItem key={data.CIICod} value={data.CIICod}>{data.CIIDesc}</MenuItem>
                                        })
                                     }
                                  </TextField>
@@ -498,11 +695,57 @@ export default function EditarInformacionGeneral() {
 
                      <Stack direction={"row"} gap={.5} >
                         <Stack direction={"column"} gap={.5} width="50%">
-                           <_SeccionTelefono name='terTelefono' label='* Teléfono fijo' />
+                           {/* <_SeccionTelefono nombreControl='terTelefono' label='* Teléfono fijo' /> */}
+                           <Controller
+                              control={control}
+                              name='terTelefono'
+                              render={({ field, formState: { errors } }) => (
+
+                                 <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    id="terTelefono"
+                                    label='* Teléfono'
+                                    error={!!errors.terTelefono}
+                                    helperText={errors.terTelefono && `${errors.terTelefono.message}`}
+                                 />
+                              )}
+                           />
+
+                           <Stack direction={"row"} gap={1.5} >
+                              <Chip size='small' label='Número1' />
+                              <Chip size='small' label='Número2' />
+
+                           </Stack>
                         </Stack>
 
                         <Stack direction={"column"} gap={.5} width="50%">
-                           <_SeccionTelefono name='terCelular' label='* Teléfono celular' />
+                           {/* <_SeccionTelefono nombreControl='terCelular' label='* Teléfono celular' /> */}
+                           <Controller
+                              control={control}
+                              name='terCelular'
+                              render={({ field, formState: { errors } }) => (
+
+                                 <TextField
+                                    {...field}
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    id="terCelular"
+                                    label='* Teléfono celular'
+                                    error={!!errors.terCelular}
+                                    helperText={errors.terCelular && `${errors.terCelular.message}`}
+                                 />
+                              )}
+                           />
+
+                           <Stack direction={"row"} gap={1.5} >
+                              <Chip size='small' label='Número1' />
+                              <Chip size='small' label='Número2' />
+
+                           </Stack>
                         </Stack>
                      </Stack>
 
@@ -545,7 +788,7 @@ export default function EditarInformacionGeneral() {
                </Card>
 
                <Card sx={{ backgroundColor: "white", width: "100%" }}>
-                  <Stack direction={"column"} p={2} gap={.5}>
+                  <Stack direction={"column"} p={2} gap={1}>
                      <Typography variant='subtitle2' color={"primary.light"}>
                         Representante legal
                      </Typography>
@@ -579,18 +822,22 @@ export default function EditarInformacionGeneral() {
                            >
                               <Controller
                                  control={control}
-                                 name='terRepresentanteLITipodentificacion'
+                                 name='terRepresentanteLTipoIdentificacion'
                                  render={({ field, formState: { errors } }) => (
                                     <TextField
                                        {...field}
-                                       id="terRepresentanteLTipodIdentificacion"
+                                       id="terRepresentanteLTipoIdentificacion"
                                        label="Tipo de ID"
                                        size='small'
                                        select
-                                       error={!!errors.terRepresentanteLTipodIdentificacion}
-                                       helperText={errors.terRepresentanteLTipodIdentificacion && `${errors.terRepresentanteLTipodIdentificacion.message}`}
+                                       error={!!errors.terRepresentanteLTipoIdentificacion}
+                                       helperText={errors.terRepresentanteLTipoIdentificacion && `${errors.terRepresentanteLTipoIdentificacion.message}`}
                                     >
-                                       <MenuItem value={10}>1</MenuItem>
+                                       {
+                                          ListaTipoDocumento.map(data => {
+                                             return <MenuItem key={data.TipoID} value={data.TipoID}>{data.TipoID}</MenuItem>
+                                          })
+                                       }
                                     </TextField>
                                  )}
                               />
@@ -598,18 +845,19 @@ export default function EditarInformacionGeneral() {
 
                            <Controller
                               control={control}
-                              name='terRepresentanteLNumeroIdentificacion'
+                              name='terRepresentanteLIdentificacion'
+                              defaultValue=""
                               render={({ field, formState: { errors } }) => (
 
                                  <TextField
                                     {...propsInputs}
                                     {...field}
-                                    id="terRepresentanteLNumeroIdentificacion"
+                                    id="terRepresentanteLIdentificacion"
                                     label="Número de identificación"
                                     type={"number"}
                                     required
-                                    error={!!errors.terRepresentanteLNumeroIdentificacion}
-                                    helperText={errors.terRepresentanteLNumeroIdentificacion && `${errors.terRepresentanteLNumeroIdentificacion.message}`}
+                                    error={!!errors.terRepresentanteLIdentificacion}
+                                    helperText={errors.terRepresentanteLIdentificacion && `${errors.terRepresentanteLIdentificacion.message}`}
                                  />
                               )}
                            />
@@ -627,7 +875,6 @@ export default function EditarInformacionGeneral() {
                                  {...field}
                                  id="terRepresentanteLExpedicion"
                                  label="Lugar de expedición"
-                                 type={"number"}
                                  required
                                  error={!!errors.terRepresentanteLExpedicion}
                                  helperText={errors.terRepresentanteLExpedicion && `${errors.terRepresentanteLExpedicion.message}`}
@@ -638,8 +885,8 @@ export default function EditarInformacionGeneral() {
                         <Controller
                            control={control}
                            name='terRepresentanteLEmail'
+                           defaultValue=""
                            render={({ field, formState: { errors } }) => (
-
                               <TextField
                                  {...propsInputs}
                                  {...field}
@@ -662,6 +909,7 @@ export default function EditarInformacionGeneral() {
                </Card>
             </Stack>
          </FormProvider>
+         <DevTool control={control} />
       </>
    )
 }

@@ -3,10 +3,10 @@ import React from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 
 export interface I_SeccionTelefono {
-    name: string,
+    nombreControl: string,
     label: string
 }
-export const _SeccionTelefono = ({name = 'terTelefono', label = 'Teléfono'}:I_SeccionTelefono) => {
+export const _SeccionTelefono = ({nombreControl , label}:I_SeccionTelefono) => {
     
     const {control} = useFormContext()
     
@@ -14,7 +14,7 @@ export const _SeccionTelefono = ({name = 'terTelefono', label = 'Teléfono'}:I_S
         <>
             <Controller
                 control={control}
-                name={name}
+                name={nombreControl.toString()}
                 render={({ field, formState: { errors } }) => (
 
                     <TextField
@@ -22,10 +22,10 @@ export const _SeccionTelefono = ({name = 'terTelefono', label = 'Teléfono'}:I_S
                         variant="outlined"
                         size="small"
                         fullWidth
-                        id="terTelefono"
+                        id={nombreControl.toString()}
                         label={label}
-                        error={!!errors.terTelefono}
-                        helperText={errors.terTelefono && `${errors.terTelefono.message}`}
+                        error={!!errors.nombreControl}
+                        helperText={errors.nombreControl && `${errors.nombreControl.message}`}
                     />
                 )}
             />
