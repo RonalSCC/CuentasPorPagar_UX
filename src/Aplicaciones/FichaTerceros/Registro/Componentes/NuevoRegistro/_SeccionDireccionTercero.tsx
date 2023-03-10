@@ -30,7 +30,7 @@ export interface IUndIdentidad {
     UndIdentidadDesc: string
 }
 
-export default function FormularioDirecciones({ estado, cambiarEstado }: FormularioDireccionesProps) {
+export default function _SeccionDireccionTercero({ estado, cambiarEstado }: FormularioDireccionesProps) {
 
     const [listaCalles, setListaCalles] = useState<Array<ICalle>>([]);
     const [listaViaPrincipales, setListaViaPrincipales] = useState<Array<IViaPrincipal>>([])
@@ -59,7 +59,7 @@ export default function FormularioDirecciones({ estado, cambiarEstado }: Formula
             numeroUnidadIdentidad2,
         } = getValues()
         
-       let direcciónCompleta = 
+       let dirCompleta = 
         calle + " " +
         numeroViaPrincipal + " " + 
         interseccionViaPrincipal + " " +
@@ -71,10 +71,10 @@ export default function FormularioDirecciones({ estado, cambiarEstado }: Formula
         unidadIdentidad2 + " " +
         numeroUnidadIdentidad2;
 
-        direcciónCompleta = direcciónCompleta.trim();
-        direcciónCompleta = direcciónCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
+        dirCompleta = dirCompleta.trim();
+        dirCompleta = dirCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
         
-       setValue("direccion",direcciónCompleta);
+       setValue("terDireccion",dirCompleta);
        cambiarEstado();
     }
 

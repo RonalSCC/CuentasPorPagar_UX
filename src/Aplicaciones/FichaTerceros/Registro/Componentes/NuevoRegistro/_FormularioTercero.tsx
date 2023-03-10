@@ -1,23 +1,32 @@
 import { Alert, AlertTitle, Button, Card, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { useForm, FormProvider, Controller } from 'react-hook-form'
-import * as Yup from "yup";
+
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { DevTool } from "@hookform/devtools";
+
+// Contextos
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { CrearPeticion } from '../../../../../Consumos/APIManager';
 
 // Interfaces
 import ICiudad from '../../../Interfaces/Generales/ICiudad';
 import ITipoTercero from '../../../Interfaces/Generales/ITipoTercero';
 import ITipoDocumento from '../../../Interfaces/Generales/ITipoDocumento';
-
-// Icons
-import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
-import FormularioDirecciones from './FormularioDirecciones';
-import TipoPersonaNaturalCampos from './TipoPersonaNaturalCampos';
-import { TercerosContexto } from '../../../Contextos/TercerosContexto';
-import { CrearPeticion } from '../../../../../Consumos/APIManager';
-import { Save } from '@mui/icons-material';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+
+// Iconos
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import { Save } from '@mui/icons-material';
+
+// Componentes
+import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
+import _SeccionRazonSocial from './_SeccionRazonSocial'
+import _SeccionNombreTercero from './_SeccionNombresTercero';
+import _SeccionDireccionTercero from './_SeccionDireccionTercero';
+import _SeccionNombresTercero from './_SeccionNombresTercero';
+import _SeccionContactoTercero from './_SeccionContactoTercero';
 
 export interface ITercero {
    terCelular: string,
@@ -35,10 +44,10 @@ export interface ITercero {
    terTelefono: string,
    terTipo: string,
    terTipoDocumento: string,
-   terTipoPersona: string,
+   terNatJur: string,
 }
 
-export default function FormularioInformacionGeneral() {
+export default function _FormularioTercero() {
 
    const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
    const [verModalDireccion, setVerModalDireccion] = useState(false);
@@ -47,119 +56,47 @@ export default function FormularioInformacionGeneral() {
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
    const [Configs, setConfigs] = useState<any>()
 
-   const PROV_TELEFONO:IConfigValues = Configs && Configs["PROV_TELEFONO"];
+   const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
    const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
    const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
    const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
-   
-   const schema = Yup.object().shape({
-      terTipoPersona: Yup
-         .string(),
-      terRazonSocial: Yup
-         .string()
-         .when("terTipoPersona", (terTipoPersona, schema) =>
-            terTipoPersona == 'N' ? schema : schema.required("Debe ingresar una razón social")
-         ),
-      terPrimerNombre: Yup
-         .string()
-         .required("Debe ingresar el nombre del tercero"),
-      terSegundoNombre: Yup
-         .string(),
-      terPrimerApellido: Yup
-         .string()
-         .required("Debe ingresar el apellido del tercero"),
-      terSegundoApellido: Yup
-         .string(),
-      terTipoDocumento: Yup
-         .string()
-         .required("Debe seleccionar un tipo de identificación"),
-      terNumeroIdentificacion: Yup
-         .number()
-         .required("Debe ingresar el NIT del tercero")
-         .typeError("Solo se aceptan dígitos en este campo")
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros"),
-      terDigitoV: Yup
-         .number()
-         .when({
-            is: () => TER_VALIDA_DV?.configValor == 1 && TER_NOCALCULAR_DV?.configValor == 0,
-            then: Yup
-               .number()
-               .required("Este campo es requerido")
-               .typeError("El dígito de verificación es incorrecto")
-         })
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros"),
-      terTipo: Yup
-         .string().required("Debe Seleccionar el tipo de tercero"),
-      terCiudad: Yup
-         .string()
-         .required("Debe ingresar la ciudad del tercero"),
-      terDireccion: Yup
-         .string()
-         .required("Debe ingresar la dirección del tercero"),
-      terTelefono: Yup
-         .number()
-         .when({
-            is: () => PROV_TELEFONO?.configValor == 1 || TER_REQ_REPLEGAL?.configValor == 1,
-            then: Yup
-               .number()
-               .required("Debe ingresar un teléfono")
-               .typeError("Solo se aceptan digitos en este campo"),
-            otherwise: Yup
-               .number()
-               .typeError("Solo se aceptan digitos en este campo")
-               .notRequired()
-         })
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros"),
-      terCelular: Yup
-         .number()
-         .positive("Solo se acepta números positivos")
-         .integer("Solo se acepta números enteros")
-         .typeError("Este campo debe ser númerico"),
-      terContactoPrincipalNombre: Yup
-         .string()
-         .required("Debe ingresar el nombre del contacto principal"),
-      terContactoPrincipalEmail: Yup
-         .string()
-         .email("El campo no corresponde a una dirección emal correcta")
-         .when({
-            is: () => TER_FICHA_APIROS?.configValor != 1 && PROV_CORREO_CTO?.configValor == 1,
-            then: Yup
-               .string()
-               .required("Debe ingresar el correo electrónico del contacto principal"),
-         })
-
-   })
 
    const metodos = useForm({
       defaultValues: {
-         terTipoPersona: "N",
+         terNatJur: "",
          terRazonSocial: "",
          terPrimerNombre: "Cristian",
          terSegundoNombre: "Camilo",
          terPrimerApellido: "Pérez",
          terSegundoApellido: "Sandoval",
-         terTipoDocumento: "",
-         terNumeroIdentificacion: "",
-         terDigitoV: "",
-         terTipo: "",
-         terCiudad: "",
-         terDireccion: "asdas",
-         terTelefono: "",
-         terCelular:"",
-         terContactoPrincipalNombre: "Ronal",
-         terContactoPrincipalEmail: "Ronal@sinco.com.co"
+         terTipoDocumento: "CC",
+         terNumeroIdentificacion: "583655",
+         terDigitoV: "1",
+         terTipo: "2",
+         terCiudad: "25",
+         terDireccion: "calle 2 ",
+         terTelefono: "21",
+         terCelular: "665665",
+         terContactoPrincipalNombre: "Cristian",
+         terContactoPrincipalEmail: "cristian@sdsd.com"
       },
-      resolver: yupResolver(schema),
+      resolver: yupResolver(schemaTercero({
+         TER_VALIDA_DV,
+         TER_NOCALCULAR_DV,
+         PROV_TELEFONO,
+         TER_REQ_REPLEGAL,
+         TER_FICHA_APIROS,
+         PROV_CORREO_CTO,
+      }
+      )),
       mode: 'onSubmit',
    })
 
    const { control, handleSubmit, watch } = metodos
-   const terTipoPersona = watch("terTipoPersona")
+   const terNatJur = watch("terNatJur")
+   const navigate = useNavigate()
 
    const VerFormularioDirecciones = () => {
       setVerModalDireccion(!verModalDireccion);
@@ -300,6 +237,7 @@ export default function FormularioInformacionGeneral() {
                      </>
                   })
                )
+               navigate('InformacionGeneralDatos')
 
             }
             else if (response.errores && response.errores.length > 0) {
@@ -325,10 +263,9 @@ export default function FormularioInformacionGeneral() {
    return (
       <>
          <FormProvider {...metodos}>
-            <Stack direction="column" gap={1.5} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
-
+            <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
                <Card style={{ backgroundColor: "white", width: "60%" }}>
-                  <Stack padding={3} gap={1.5}>
+                  <Stack padding={3} gap={.5}>
                      {/* Tipo de persona */}
                      <Stack direction="column">
                         <FormControl>
@@ -337,13 +274,13 @@ export default function FormularioInformacionGeneral() {
                            </Typography>
                            <Controller
                               control={control}
-                              name="terTipoPersona"
+                              name="terNatJur"
                               defaultValue=""
                               render={({ field: { onChange, value } }) => (
                                  <RadioGroup
                                     row
                                     aria-labelledby="demo-row-radio-buttons-group-label"
-                                    name="terTipoPersona"
+                                    name="terNatJur"
                                     onChange={onChange}
                                  >
                                     <FormControlLabel checked={value == 'N'} value={'N'} control={<Radio />} label="Natural" />
@@ -355,32 +292,16 @@ export default function FormularioInformacionGeneral() {
                      </Stack>
 
                      {
-                        terTipoPersona == 'N' ?
-                           <TipoPersonaNaturalCampos propsInputs={propsInputs} /> :
-                           <Stack direction="row" gap={1.5}>
-                              <Controller
-                                 control={metodos.control}
-                                 name="terRazonSocial"
-                                 render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                       {...field}
-                                       {...propsInputs}
-                                       type="text"
-                                       fullWidth
-                                       label="Razón Social"
-                                       error={!!errors.terRazonSocial}
-                                       helperText={errors.terRazonSocial && `${errors.terRazonSocial.message}`}
-                                    />
-                                 )}
-                              />
-                           </Stack>
+                        terNatJur == 'N' ?
+                           <_SeccionNombresTercero /> :
+                           <_SeccionRazonSocial />
                      }
 
 
                      {/* Tipo Doc, Numero Ident, DV y Tipo */}
-                     <Stack direction="row" gap={1.5}>
+                     <Stack direction="row" gap={.5}>
                         <Stack width="50%" direction="column">
-                           <Stack direction="row" gap={1.5}>
+                           <Stack direction="row" gap={.5}>
                               <FormControl
                                  fullWidth
                                  sx={{
@@ -485,7 +406,7 @@ export default function FormularioInformacionGeneral() {
                      </Stack>
 
                      {/* Ciudad y dirección */}
-                     <Stack direction="row" gap={1.5}>
+                     <Stack direction="row" gap={.5}>
                         <FormControl
                            sx={{
                               width: "50%"
@@ -537,11 +458,11 @@ export default function FormularioInformacionGeneral() {
                            <AddLocationAltOutlinedIcon onClick={VerFormularioDirecciones} color='secondary' sx={{ cursor: "pointer" }} />
                            {
                               verModalDireccion == true &&
-                              <FormularioDirecciones estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
+                              <_SeccionDireccionTercero estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
                            }
                         </Stack>
                      </Stack>
-                     <Stack direction="row" gap={1.5}>
+                     <Stack direction="row" gap={.5}>
                         <Controller
                            control={control}
                            name="terTelefono"
@@ -581,39 +502,8 @@ export default function FormularioInformacionGeneral() {
                         Contacto
                      </Typography>
 
-                     {/* Nombre, mail contacto */}
-                     <Stack direction="row" gap={1.5}>
-                        <Controller
-                           control={control}
-                           name="terContactoPrincipalNombre"
-                           render={({ field, formState: { errors } }) => (
+                     <_SeccionContactoTercero />
 
-                              <TextField
-                                 {...field}
-                                 {...propsInputs}
-                                 id="terContactoPrincipalNombre"
-                                 label="Nombre"
-                                 error={!!errors.terContactoPrincipalNombre}
-                                 helperText={errors.terContactoPrincipalNombre && `${errors.terContactoPrincipalNombre.message}`}
-                              />
-                           )}
-                        />
-                        <Controller
-                           control={control}
-                           name="terContactoPrincipalEmail"
-                           render={({ field, formState: { errors } }) => (
-
-                              <TextField
-                                 {...field}
-                                 {...propsInputs}
-                                 id="terContactoPrincipalEmail"
-                                 label="Email"
-                                 error={!!errors.terContactoPrincipalEmail}
-                                 helperText={errors.terContactoPrincipalEmail && `${errors.terContactoPrincipalEmail.message}`}
-                              />
-                           )}
-                        />
-                     </Stack>
                   </Stack>
                </Card>
             </Stack>
