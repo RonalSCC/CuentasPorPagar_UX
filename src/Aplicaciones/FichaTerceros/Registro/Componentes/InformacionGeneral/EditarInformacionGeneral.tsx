@@ -31,6 +31,7 @@ import _SeccionContactoTercero from '../NuevoRegistro/_SeccionContactoTercero';
 import { IActividadesEconomicas } from '../../../Interfaces/Generales/IActividadesEconomicas';
 import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+import { SendRequest } from '../../../../../Consumos/Request';
 
 export default function EditarInformacionGeneral() {
 
@@ -56,7 +57,7 @@ export default function EditarInformacionGeneral() {
    const metodos = useForm({
       defaultValues: {
          terNatJur: "",
-         terRazonSocial:"",
+         terRazonSocial: "",
          terPrimerNombre: "",
          terSegundoNombre: "",
          terPrimerApellido: "",
@@ -108,13 +109,17 @@ export default function EditarInformacionGeneral() {
    };
 
    const GuardarInformacion = async (data: any) => {
-      let PropsDefaultRequest:CrearPeticionAxios = {
+
+      console.log(data)
+
+      SendRequest.put({
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/EditarTerceroFicha",
-         Type: "POST",
          Body: {
+            ...data,
             terId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID,
             terTipoIdentificacion: data.terTipoDocumento,
+            terNumeroIdentificacion: data.terNumeroIdentificacion.toString(),
             terTipoTercero: data.terTipo,
             terTipoProveedor: data.terSubTipo,
             terCIIU: data.terActividadEconomica,
@@ -122,68 +127,53 @@ export default function EditarInformacionGeneral() {
             terNombreContactoPrincipal: data.terContactoPrincipalNombre,
             terCorreoContactoPrincipal: data.terContactoPrincipalEmail,
             terNombreRepresentanteLegal: data.terRepresentanteLNombre,
-            //terTipoIdentificacionRepresentanteLegal: data.terRepresentanteLIdentificacion,
             terIdentificacionRepresentanteLegal: data.terRepresentanteLIdentificacion,
             terLugarExpedicionRepresentanteLegal: data.terRepresentanteLExpedicion,
             terCorreoRepresentanteLegal: data.terRepresentanteLEmail,
-            ...data,
-
+            terEstado: (data.terEstado) ? 1 : 0,
          }
-      };
+      }).then((respuesta) => {
+         if (respuesta) {
+            if (respuesta.ok) {
+               propsTercerosContexto.CambiarAlertas(
+                  [1].map(alert => {
+                     return <>
+                        <Alert
+                           key={1}
+                           severity="success"
+                           onClose={() => propsTercerosContexto.CerrarAlertas()}
+                        >
+                           <AlertTitle>!Bien hecho!</AlertTitle>
+                           El tercero ha sido actualizado con éxito
+                        </Alert>
+                     </>
+                  })
+               )
+               navigate('InformacionGeneralDatos')
 
-      console.log(PropsDefaultRequest.Body)
-      
-      
-      await CrearPeticion({
-         ...PropsDefaultRequest,   
-      })
-         .then(respuesta => {
-            if (respuesta) {
-               if (respuesta.ok) {
-                  propsTercerosContexto.CambiarAlertas(
-                     [1].map(alert => {
-                        return <>
-                           <Alert
-                              key={1}
-                              severity="success"
-                              onClose={() => propsTercerosContexto.CerrarAlertas()}
-                           >
-                              <AlertTitle>!Bien hecho!</AlertTitle>
-                              El tercero ha sido actualizado con éxito
-                           </Alert>
-                        </>
-                     })
-                  )
-                  navigate('InformacionGeneralDatos')
-
-               }
-               else if (respuesta.errores && respuesta.errores.length > 0) {
-                  propsTercerosContexto.CambiarAlertas(
-                     respuesta.errores.map(x => {
-                        return <>
-                           <Alert
-                              key={x.descripcion}
-                              severity="warning"
-                              onClose={() => propsTercerosContexto.CerrarAlertas()}
-                           >
-                              <AlertTitle>Error</AlertTitle>
-                              {x.descripcion}
-                           </Alert>
-                        </>;
-                     })
-                  );
-               }
             }
-
-         })
+            else if (respuesta.errores && respuesta.errores.length > 0) {
+               propsTercerosContexto.CambiarAlertas(
+                  respuesta.errores.map(x => {
+                     return <>
+                        <Alert
+                           key={x.descripcion}
+                           severity="warning"
+                           onClose={() => propsTercerosContexto.CerrarAlertas()}
+                        >
+                           <AlertTitle>Error</AlertTitle>
+                           {x.descripcion}
+                        </Alert>
+                     </>;
+                  })
+               );
+            }
+         }
+      });
    }
 
    const CancelarEdicion = () => {
       navigate("InformacionGeneralDatos");
-   }
-
-   const CambioNaturaleza = (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(event.target.value);
    }
 
    const VerFormularioDirecciones = () => {
@@ -191,7 +181,7 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarListas = async () => {
-      let PropsDefaultRequest:CrearPeticionAxios = {
+      let PropsDefaultRequest: CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
@@ -283,7 +273,7 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
+      let PropsDefaultRequestConfigs: CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
          Type: "POST"
@@ -326,12 +316,12 @@ export default function EditarInformacionGeneral() {
       if (InfoTercero) {
          setValue('terNatJur', InfoTercero.terTipoPersona || "")
          setValue('terRazonSocial', InfoTercero.terRazonSocial || "")
-         setValue('terPrimerNombre', InfoTercero.terPrimerNombre  || "")
-         setValue('terSegundoNombre', InfoTercero.terSegundoNombre  || "")
-         setValue('terPrimerApellido', InfoTercero.terPrimerApellido  || "")
-         setValue('terSegundoApellido', InfoTercero.terSegundoApellido  || "")
+         setValue('terPrimerNombre', InfoTercero.terPrimerNombre || "")
+         setValue('terSegundoNombre', InfoTercero.terSegundoNombre || "")
+         setValue('terPrimerApellido', InfoTercero.terPrimerApellido || "")
+         setValue('terSegundoApellido', InfoTercero.terSegundoApellido || "")
          setValue('terTipoDocumento', InfoTercero.terTipoIdentificacionId || "")
-         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion  || "")
+         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion || "")
          setValue('terDigitoV', InfoTercero.terDiv || undefined)
          setValue('terFormaPago', InfoTercero.terFormaPagoId || "")
          setValue('terCiudad', InfoTercero.terCiudadId || "")
@@ -340,17 +330,17 @@ export default function EditarInformacionGeneral() {
          setValue('terSubTipo', InfoTercero.terSubTipoId || "")
          setValue('terActividadEconomica', InfoTercero.terCIIU || "")
          setValue('terEmail', InfoTercero.terEmail || "")
-         setValue('terTelefono', InfoTercero.terTelefono  || "")
-         setValue('terCelular', InfoTercero.terCelular  || "")
-         setValue('terObservaciones', InfoTercero.terObservaciones  || "")
+         setValue('terTelefono', InfoTercero.terTelefono || "")
+         setValue('terCelular', InfoTercero.terCelular || "")
+         setValue('terObservaciones', InfoTercero.terObservaciones || "")
          setValue('terContactoPrincipalNombre', InfoTercero.terContactoPrincipalNombre || "")
          setValue('terContactoPrincipalEmail', InfoTercero.terContactoPrincipalEmail || "")
          setValue('terRepresentanteLNombre', InfoTercero.terRepresentanteLNombre || "")
          setValue('terRepresentanteLTipoIdentificacion', InfoTercero.terRepresentanteLTipoIdentificacionId || "")
-         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion  || "")
-         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion  || "")
-         setValue('terRepresentanteLEmail', InfoTercero.terRepresentanteLEmail  || "")
-         setValue('terEstado', InfoTercero.terEstado  || false)
+         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion || "")
+         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion || "")
+         setValue('terRepresentanteLEmail', InfoTercero.terRepresentanteLEmail || "")
+         setValue('terEstado', InfoTercero.terEstado || false)
       }
    }, []);
 
@@ -380,9 +370,9 @@ export default function EditarInformacionGeneral() {
                                  control={control}
                                  defaultValue=""
                                  name="terNatJur"
-                                 render={({ field:{value, onChange} }) => (
+                                 render={({ field: { value, onChange } }) => (
                                     <RadioGroup
-                                       value={value} 
+                                       value={value}
                                        onChange={(e) => onChange(e.target.value)}
                                        row
                                        aria-labelledby="demo-row-radio-buttons-group-label"
