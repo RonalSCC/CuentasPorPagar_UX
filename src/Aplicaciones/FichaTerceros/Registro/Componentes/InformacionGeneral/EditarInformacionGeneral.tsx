@@ -29,7 +29,7 @@ import _SeccionRazonSocial from '../NuevoRegistro/_SeccionRazonSocial';
 import _SeccionDireccionTercero from '../NuevoRegistro/_SeccionDireccionTercero';
 import _SeccionContactoTercero from '../NuevoRegistro/_SeccionContactoTercero';
 import { IActividadesEconomicas } from '../../../Interfaces/Generales/IActividadesEconomicas';
-import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
+import { schemaTercero } from '../../../EsquemasValidacion/CrearEditarTerceroSchema/SchemaTercero';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
 import { SendRequest } from '../../../../../Consumos/Request';
 
@@ -53,6 +53,9 @@ export default function EditarInformacionGeneral() {
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
    const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
+   const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"];
+   const TER_LONG_DV: IConfigValues = Configs && Configs["TER_LONG_DV"];
+   const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"]
 
    const metodos = useForm({
       defaultValues: {
@@ -85,22 +88,37 @@ export default function EditarInformacionGeneral() {
          terEstado: false,
       },
       resolver: yupResolver(schemaTercero({
-         TER_VALIDA_DV,
          TER_NOCALCULAR_DV,
          PROV_TELEFONO,
          TER_REQ_REPLEGAL,
          TER_FICHA_APIROS,
          PROV_CORREO_CTO,
+         TER_PERMITECARACTER,
+         TER_CAMBIANATJUR,
          editaTercero: true
       }
       )),
       mode: 'onSubmit',
    })
 
-   const { control, handleSubmit, watch, setValue } = metodos
+   const { control, handleSubmit, watch, setValue, getValues } = metodos
    const terNatJur = watch("terNatJur")
+   const terTipoDocumento = watch("terTipoDocumento")
 
    const navigate = useNavigate();
+
+   const PermiteCambiarNaturaleza = () => {
+      const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
+      const tipoDocumentoActual = getValues('terTipoDocumento')
+      const esPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? false : true
+
+      console.log({
+         tiposDocumentosPermitidos,
+         tipoDocumentoActual,
+         esPermitido
+      })
+      return esPermitido
+   }
 
    const propsInputs: Record<string, any> = {
       variant: "outlined",
@@ -301,6 +319,15 @@ export default function EditarInformacionGeneral() {
                },
                {
                   configID: "PROV_CORREO_CTO"
+               },
+               {
+                  configID: "TER_PERMITECARACTER"
+               },
+               {
+                  configID: "TER_LONG_DV"
+               },
+               {
+                  configID: "TER_CAMBIANATJUR"
                }
             ]
          }
@@ -344,11 +371,14 @@ export default function EditarInformacionGeneral() {
       }
    }, []);
 
-
    useEffect(() => {
       ConsultarListas();
       ConsultarConfigs();
    }, [])
+
+   useEffect(() => {
+      PermiteCambiarNaturaleza();
+   }, [terNatJur, terTipoDocumento])
 
    return (
       <>
@@ -379,7 +409,7 @@ export default function EditarInformacionGeneral() {
                                        name="terTipoPersona"
                                     >
                                        <FormControlLabel value={'N'} control={<Radio />} label="Natural" />
-                                       <FormControlLabel value={'J'} control={<Radio />} label="Jurídica" />
+                                       <FormControlLabel value={'J'} disabled={PermiteCambiarNaturaleza()} control={<Radio />} label="Jurídica" />
                                     </RadioGroup>
                                  )}
                               />
@@ -456,6 +486,12 @@ export default function EditarInformacionGeneral() {
                                     type="text"
                                     error={!!errors.terNumeroIdentificacion}
                                     helperText={errors.terNumeroIdentificacion && `${errors.terNumeroIdentificacion.message}`}
+                                    InputProps={{
+                                       readOnly: true
+                                    }}
+                                    inputProps={{
+                                       maxLength: TER_LONG_DV?.configValor
+                                    }}
                                  />
                               )}
                            />
@@ -472,6 +508,9 @@ export default function EditarInformacionGeneral() {
                                     type="text"
                                     error={!!errors.terDigitoV}
                                     helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
+                                    InputProps={{
+                                       readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false: true
+                                     }}
                                     sx={{
                                        width: "20%"
                                     }}

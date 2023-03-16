@@ -21,7 +21,7 @@ import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlin
 import { Save } from '@mui/icons-material';
 
 // Componentes
-import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
+import { schemaTercero } from '../../../EsquemasValidacion/CrearEditarTerceroSchema/SchemaTercero';
 import _SeccionRazonSocial from './_SeccionRazonSocial'
 import _SeccionNombreTercero from './_SeccionNombresTercero';
 import _SeccionDireccionTercero from './_SeccionDireccionTercero';
@@ -56,12 +56,15 @@ export default function _FormularioTercero() {
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
    const [Configs, setConfigs] = useState<any>()
 
-   const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
-   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
-   const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
-   const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
-   const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
-   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
+   const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"]
+   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"]
+   const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"]
+   const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"]
+   const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"]
+   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"]
+   const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"]
+   const TER_LONG_DV: IConfigValues = Configs && Configs["TER_LONG_DV"]
+   const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"]
 
    const metodos = useForm({
       defaultValues: {
@@ -83,31 +86,36 @@ export default function _FormularioTercero() {
          terContactoPrincipalEmail: "cristian@sdsd.com"
       },
       resolver: yupResolver(schemaTercero({
-         TER_VALIDA_DV,
          TER_NOCALCULAR_DV,
          PROV_TELEFONO,
          TER_REQ_REPLEGAL,
          TER_FICHA_APIROS,
          PROV_CORREO_CTO,
+         TER_PERMITECARACTER,
+         TER_CAMBIANATJUR
       }
       )),
-      mode: 'onSubmit',
+      mode: 'onChange',
+      reValidateMode: 'onChange'
    })
 
-   const { control, handleSubmit, watch } = metodos
+   const { control, handleSubmit, watch, getValues } = metodos
    const terNatJur = watch("terNatJur")
+   const terTipoDocumento = watch("terTipoDocumento")
    const navigate = useNavigate()
+
+   const PermiteCambiarNaturaleza = () => {
+      const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
+      const tipoDocumentoActual = getValues('terTipoDocumento')
+      const esPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? false : true
+      
+      return esPermitido
+   }
 
    const VerFormularioDirecciones = () => {
       setVerModalDireccion(!verModalDireccion);
    }
-
-   useEffect(() => {
-      propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
-      ConsultarListas();
-      ConsultarConfigs();
-   }, [])
-
+   
    const propsInputs: Record<string, any> = {
       variant: "outlined",
       size: 'small',
@@ -143,7 +151,16 @@ export default function _FormularioTercero() {
                },
                {
                   configID: "PROV_CORREO_CTO"
-               }
+               },
+               {
+                  configID: "TER_PERMITECARACTER"
+               },
+               {
+                  configID:"TER_LONG_DV"
+               },
+               {
+                  configID:"TER_CAMBIANATJUR"
+               },
             ]
          }
       }).then((respuesta) => {
@@ -159,7 +176,7 @@ export default function _FormularioTercero() {
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
       };
-
+      
       // ---- Tipos Terceros
       await CrearPeticion({
          ...PropsDefaultRequest,
@@ -199,7 +216,7 @@ export default function _FormularioTercero() {
       });
 
    }
-
+   
    const onClickSubmit = async (data: ITercero) => {
 
       let PropsDefaultRequestConfigs:CrearPeticionAxios = {
@@ -207,11 +224,11 @@ export default function _FormularioTercero() {
          URLServicio: "/AdministracionTerceros/CrearTerceroFicha",
          Type: "POST"
       };
-
+      
       data.terCelular = data.terCelular && data.terCelular.toString();
       data.terTelefono = data.terCelular && data.terTelefono.toString();
       data.terNumeroIdentificacion = data.terNumeroIdentificacion && data.terNumeroIdentificacion.toString();
-
+      
       await CrearPeticion({
          ...PropsDefaultRequestConfigs,
          Body: {
@@ -220,7 +237,7 @@ export default function _FormularioTercero() {
             ...data
          }
       }).then((response) => {
-
+         
          if (response != null) {
             if (response.ok) {
                propsTercerosContexto.CambiarAlertas(
@@ -248,7 +265,7 @@ export default function _FormularioTercero() {
                            key={x.descripcion}
                            severity="warning"
                            onClose={() => propsTercerosContexto.CerrarAlertas()}
-                        >
+                           >
                            <AlertTitle>Error</AlertTitle>
                            {x.descripcion}
                         </Alert>
@@ -260,12 +277,22 @@ export default function _FormularioTercero() {
       })
    };
 
+   useEffect(() => {
+      propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
+      ConsultarListas();
+      ConsultarConfigs();
+   }, [])
+
+   useEffect(() => {
+      PermiteCambiarNaturaleza();
+   }, [terNatJur, terTipoDocumento])
+
    return (
       <>
          <FormProvider {...metodos}>
             <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
                <Card style={{ backgroundColor: "white", width: "60%" }}>
-                  <Stack padding={3} gap={.5}>
+                  <Stack padding={3} gap={1}>
                      {/* Tipo de persona */}
                      <Stack direction="column">
                         <FormControl>
@@ -276,15 +303,16 @@ export default function _FormularioTercero() {
                               control={control}
                               name="terNatJur"
                               defaultValue=""
-                              render={({ field: { onChange, value } }) => (
+                              render={({ field: { onChange, value }, formState:{errors} }) => (
                                  <RadioGroup
                                     row
                                     aria-labelledby="demo-row-radio-buttons-group-label"
                                     name="terNatJur"
                                     onChange={onChange}
+                                    
                                  >
                                     <FormControlLabel checked={value == 'N'} value={'N'} control={<Radio />} label="Natural" />
-                                    <FormControlLabel checked={value == 'J'} value={'J'} control={<Radio />} label="Jurídica" />
+                                    <FormControlLabel checked={value == 'J'} disabled={PermiteCambiarNaturaleza()} value={'J'} control={<Radio />} label="Jurídica" />
                                  </RadioGroup>
                               )}
                            />
@@ -292,9 +320,9 @@ export default function _FormularioTercero() {
                      </Stack>
 
                      {
-                        terNatJur == 'N' ?
-                           <_SeccionNombresTercero /> :
-                           <_SeccionRazonSocial />
+                        terNatJur == 'J' ?
+                        <_SeccionRazonSocial />:
+                        <_SeccionNombresTercero /> 
                      }
 
 
@@ -365,6 +393,12 @@ export default function _FormularioTercero() {
                                        type="text"
                                        error={!!errors.terDigitoV}
                                        helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
+                                       InputProps={{
+                                          readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false: true,
+                                       }}
+                                       inputProps={{
+                                          maxLength: TER_LONG_DV?.configValor
+                                       }}
                                        sx={{
                                           width: "15%"
                                        }}
