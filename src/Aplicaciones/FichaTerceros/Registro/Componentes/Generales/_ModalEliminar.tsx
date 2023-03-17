@@ -9,15 +9,14 @@ export interface PropsModalEliminar {
     FunCerrarModal: Function,
     FunEliminarRegistro : Function
 }
-export default function ModalEliminar(
-    {
-        Titulo,
-        Texto,
-        ImageSRC,
-        FunCerrarModal, 
-        FunEliminarRegistro
-    }:PropsModalEliminar
-) {
+export default function ModalEliminar(ModalEliminarProps:PropsModalEliminar) {
+  const {
+    Titulo,
+    Texto,
+    ImageSRC,
+    FunCerrarModal, 
+    FunEliminarRegistro
+  } = ModalEliminarProps;
   return (
     <Dialog
         open={true}
