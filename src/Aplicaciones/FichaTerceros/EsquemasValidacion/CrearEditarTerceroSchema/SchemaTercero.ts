@@ -171,8 +171,7 @@ export const schemaTercero = ({
                 .notRequired(),
             otherwise: Yup
                 .string()
-                .email("El campo no corresponde a una dirección email correcta")
-                .required("Debe ingresar el correo electrónico del representante legal"),
+                .required("Debe ingresar una actividad económica"),
         }),
         terEmail: Yup
             .string()
