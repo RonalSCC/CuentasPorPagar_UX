@@ -24,9 +24,6 @@ export default function VisualizacionCuentas() {
     } = paramsCuentasBancariasContexto;
 
     const [ListaCuentas, setListaCuentas] = useState<Array<ICuentaBancaria>>([])
-    const CambiarCuentaExpandida = (Cuenta:ICuentaBancaria)=>{
-        CambiarCuentaSeleccionada(Cuenta);
-    }
 
     useEffect(() => {
       ConsultarInformacionCuentas();

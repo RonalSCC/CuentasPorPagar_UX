@@ -6,6 +6,7 @@ import Loader from './Loader';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import * as ReactDOMServer from 'react-dom/server';
+import { Alert } from '@mui/material';
 
 export interface SendRequestAxios {
     API: "CONFIGURACION"|"CUENTASPORPAGAR",
@@ -111,6 +112,7 @@ export const SendRequest: RequestAYF = {
             return data;
         })
         .catch(function(error){
+            // MostrarAlertasError(error.response.data);
             console.log(error);
         })
         .finally(function(){
@@ -139,6 +141,7 @@ export const SendRequest: RequestAYF = {
             return data;
         })
         .catch(function(error){
+            // MostrarAlertasError(error.response.data);
             console.log(error);
         })
         .finally(function(){
@@ -164,6 +167,17 @@ const VerOcultarLoader = (estado:boolean)=>{
             loader.style.display = "flex";
         }else{
             loader.style.display = "none";
+        }
+    }
+}
+
+const MostrarAlertasError = (dataResponse:IRespuestaGeneral) =>{
+    if (dataResponse.errores && dataResponse.errores.length > 0) {
+        let errorAlerts = document.querySelector('[itemid="errorAlerts"]') as HTMLElement;
+        if (errorAlerts) {
+            let pls = ReactDOMServer.renderToStaticMarkup(<Alert severity="success">{"Prueba"}</Alert>);
+            console.log(pls);
+            errorAlerts.innerHTML = pls;
         }
     }
 }

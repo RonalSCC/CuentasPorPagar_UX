@@ -11,10 +11,17 @@ export interface DeleteContactProps {
   id: number
 }
 
-const DeleteContact = ({ estado, cambiarEstado, id }: DeleteContactProps) => {
+const DeleteContact = (DeleteContactProps: DeleteContactProps) => {
+  const { 
+    estado, 
+    cambiarEstado, 
+    id 
+  } = DeleteContactProps;
 
   const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
+  
   const navigate = useNavigate();
+
   const handleDeleteContact = async () => {
 
     let PorpsDefaultRequest:CrearPeticionAxios = {

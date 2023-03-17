@@ -14,7 +14,6 @@ import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/Cuent
 
 export default function ModalFormNuevaCuenta() 
 {
-    const [Configs, setConfigs] = useState<any>();
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const {
         CambiarEstadoLoader       

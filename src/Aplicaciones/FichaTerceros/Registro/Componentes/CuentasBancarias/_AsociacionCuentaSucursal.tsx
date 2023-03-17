@@ -17,19 +17,20 @@ export interface PropsAsociacionCuentaSucursal {
     CambiarSucursalPrincipal: (SucId: number) => void,
     CambiarEstadoNuevaSucursal:(estado: boolean) => void
 }
-export default function AsociacionCuentaSucursal(
-    {
+export default function AsociacionCuentaSucursal(AsociacionCuentaSucursalProps:PropsAsociacionCuentaSucursal) {    
+    const {
         ListaSucursales,
         Asociacion,
         CambiarSucursalPrincipal,
         CambiarEstadoNuevaSucursal
-    }:PropsAsociacionCuentaSucursal
-) {    
+    } = AsociacionCuentaSucursalProps;
+
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const {
         CambiarAlertas,
         CerrarAlertas
     } = propsTercerosContexto;
+    
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
     const {
       CuentaExpandida,

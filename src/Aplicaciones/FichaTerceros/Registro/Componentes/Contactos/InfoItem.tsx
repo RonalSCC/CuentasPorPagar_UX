@@ -7,7 +7,14 @@ export interface InfoItemPorps {
   color: string
 }
 
-const InfoItem = ({ title, text, showTooltip, color }: InfoItemPorps) => {
+const InfoItem = (InfoItemProps: InfoItemPorps) => {
+  const { 
+    title, 
+    text, 
+    showTooltip, 
+    color 
+  } = InfoItemProps;
+
   return (
     
     <Stack>

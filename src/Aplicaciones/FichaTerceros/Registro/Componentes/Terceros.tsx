@@ -7,7 +7,9 @@ import { RoutesTercerosElement } from '../../Route';
 import { Add, Search } from '@mui/icons-material';
 import BuscarTerceroDialog from './BuscarTerceroDialog';
 import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
+
 export default function Terceros(props:any) {
+
   const navigate = useNavigate();
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
   const [buscarTerceroDialog, setBuscarTerceroDialog] = useState(false);
@@ -30,7 +32,7 @@ export default function Terceros(props:any) {
 
   const CerrarDialogBuscarTercero = ()=>{
     setBuscarTerceroDialog(false);
-}
+  }
   
   return (
     <>

@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 import { FieldValues } from 'react-hook-form/dist/types';
 
 export const CardContact = (contact: IContacto) => {
-
 	const {
 		conId,
 		conNombre,

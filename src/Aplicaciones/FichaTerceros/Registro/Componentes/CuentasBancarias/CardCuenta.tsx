@@ -11,17 +11,18 @@ import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/Cuent
 import { CrearPeticion } from '../../../../../Consumos/APIManager'
 import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
+import { SendRequest } from '../../../../../Consumos/Request'
 
-export default function CardCuenta(
-    {
+export interface PropsCardCuenta {
+    objInfoCuenta:ICuentaBancaria,
+    Expandida?:boolean 
+}
+export default function CardCuenta(CardCuentaProps:PropsCardCuenta) {
+
+    const  {
         objInfoCuenta,
         Expandida = false
-    }:
-    {
-        objInfoCuenta:ICuentaBancaria,
-        Expandida?:boolean 
-    }
-) {
+    } = CardCuentaProps;
 
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
@@ -54,10 +55,9 @@ export default function CardCuenta(
         }
 
         // ---- Registrar cuenta ---- //
-        await CrearPeticion({
+        SendRequest.put({
             API: "CUENTASPORPAGAR",
             URLServicio: "/CuentasBancariasTerceros/Editar_CuentaBancaria",
-            Type:"POST",
             Body:dataSend
         }).then((respuesta)=> {
             if (respuesta != null && respuesta.ok == true) {
@@ -67,6 +67,7 @@ export default function CardCuenta(
             }
         });
     }
+    
   return (
     <>
         <Card>

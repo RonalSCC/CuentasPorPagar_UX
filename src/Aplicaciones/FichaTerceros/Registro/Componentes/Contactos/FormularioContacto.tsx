@@ -26,6 +26,27 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
    const [ListaTipoContactos, setListaTipoContactos] = useState<Array<ITipoContactos>>([]);
    const [Configs, setConfigs] = useState<any>()
 
+   useEffect(() => {
+      ConsultarListas();
+      ConsultarConfigs();
+   }, [])
+
+   useEffect(() => {
+      if (contact != null) {
+
+         // Extrae Extensión del telefono
+         const dataTelefono:Array<string> = contact.conTelefono.split(" - ");        
+         setValue("tcNombre", contact.conNombre)
+         setValue("tcCelular", contact.conCelular)
+         setValue("tcTelefono", dataTelefono[0] || "")
+         setValue("tcExtension", dataTelefono[1]|| "")
+         setValue("tcCiudad", contact.conCiudadId)
+         setValue("tcTipoContacto", contact.conTipoId)
+         setValue("tcEmail", contact.conEmail)
+         setValue("tcContactoPrincipal",contact.conPrincipal)
+      }
+   }, []);
+
    const OCULTA_CHECK_CPRIN:IConfigValues = Configs && Configs["OCULTA_CHECK_CPRIN"] || {};
    
    const navigate = useNavigate();
@@ -78,7 +99,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
          .nullable(),
       tcContactoPrincipal: Yup
          .boolean()
-   })
+   });
 
    const { control, handleSubmit, reset, setValue } = useForm({
       resolver: yupResolver(schema),
@@ -149,8 +170,8 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min) + min);
     }
-   //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
 
+   //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
    const onClickSubmit = async (data: any) => {
       data.tcCelular = data.tcCelular && data.tcCelular.toString();
       data.tcExtension = data.tcExtension && data.tcExtension.toString();
@@ -220,29 +241,6 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
          }
       })
    };
-
-   useEffect(() => {
-      ConsultarListas();
-      ConsultarConfigs();
-   }, [])
-
-   useEffect(() => {
-      if (contact != null) {
-
-         // Extrae Extensión del telefono
-
-         const dataTelefono:Array<string> = contact.conTelefono.split(" - ");        
-
-         setValue("tcNombre", contact.conNombre)
-         setValue("tcCelular", contact.conCelular)
-         setValue("tcTelefono", dataTelefono[0] || "")
-         setValue("tcExtension", dataTelefono[1]|| "")
-         setValue("tcCiudad", contact.conCiudadId)
-         setValue("tcTipoContacto", contact.conTipoId)
-         setValue("tcEmail", contact.conEmail)
-         setValue("tcContactoPrincipal",contact.conPrincipal)
-      }
-   }, [])
 
    const propsInputs: Record<string, any> = {
       variant: "outlined",

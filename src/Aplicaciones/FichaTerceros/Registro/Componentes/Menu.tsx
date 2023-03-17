@@ -7,16 +7,17 @@ import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
 import { MarcoTerceroContexto } from '../Contextos/MarcoTerceroContexto';
 
-export default function MenuInformacionGeneral(
-    {
+export interface IPropsMenuInformacionGeneral {
+    expandido:boolean,
+    expandirMenu: Function
+}
+export default function MenuInformacionGeneral(MenuInformacionGeneralProps:IPropsMenuInformacionGeneral) {
+    
+    const {
         expandido,
         expandirMenu
-    }:
-    {
-        expandido:boolean,
-        expandirMenu: Function
-    }
-) {
+    } = MenuInformacionGeneralProps
+
     const [configuracionAvanzadaExpandida, setConfiguracionAvanzadaExpandida] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const {propsMarcoTercero}:{propsMarcoTercero:any} = useContext<any>(MarcoTerceroContexto);

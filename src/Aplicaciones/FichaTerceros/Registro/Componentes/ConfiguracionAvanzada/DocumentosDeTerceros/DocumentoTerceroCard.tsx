@@ -1,10 +1,19 @@
 import { DeleteOutline, EditOutlined, FileDownloadOutlined } from '@mui/icons-material'
 import { Card, IconButton, Stack, Typography } from '@mui/material'
 import React, { useState } from 'react'
+import IDocumentoTercero from '../../../../Interfaces/Registro/ConfiguracionAvanzada/DocumentosTercero/IDocumentoTercero';
 import EliminarDocumento from './EliminarDocumento';
 
-export const DocumentoTerceroCard = () => {
+export interface IDocumentoTerceroCard{
+    InfoDocumento: IDocumentoTercero,
+    CambiarDocumentoVisor:  (Documento: IDocumentoTercero | undefined) => void
+}
+export const DocumentoTerceroCard = (DocumentoTerceroCard:IDocumentoTerceroCard) => {
 
+    const {
+        InfoDocumento,
+        CambiarDocumentoVisor
+    } = DocumentoTerceroCard;
     const [verModalEditDocument, setverModalEditDocument] = useState(false);
     const [verModalDeleteDocument, setVerModalDeleteDocument] = useState(false);
 
@@ -18,18 +27,27 @@ export const DocumentoTerceroCard = () => {
 
     return (
         <Stack width={"49.55%"}>
-            <Card> 
+            <Card onClick={()=> CambiarDocumentoVisor(InfoDocumento)} sx={{
+                '&:hover': {
+                    cursor:"pointer",
+                    backgroundColor: "rgba(0,0,0,.02)"
+                },
+            }}> 
                 <Stack p={2} gap={1.5} direction="row" justifyContent="space-between">
-                    <Stack direction="row" gap={0.5}>
+                    <Stack direction="row" gap={0.5} alignItems={"center"} overflow={"hidden"}>
                         <Typography
                             variant="subtitle2"
                         >
-                            Cámara de comercio
+                            {InfoDocumento.terTipoDocDesc}
                         </Typography>
                         <Typography
-                            variant="body1"
+                            variant="body2"
+                            noWrap={true}
+                            textOverflow="ellipsis"
+                            maxWidth={"50%"}
+                            color="text.disabled"
                         >
-                            camaradecomercio.doc
+                            {InfoDocumento.terImgNombreReal}
                         </Typography>
                     </Stack>
                     <Stack direction="row">

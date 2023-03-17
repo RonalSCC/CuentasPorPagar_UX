@@ -10,7 +10,12 @@ export interface CheckCardProps {
     CambiarValor: (ConfiguracionTCambio: ICambioConfiguracionTributaria) => void
 }
 
-const CheckCard = ({ ImpuestoConfig, CambiarValor }: CheckCardProps) => {
+const CheckCard = ( DatosCheckCard: CheckCardProps) => {
+
+    const {
+        ImpuestoConfig,
+        CambiarValor
+    } = DatosCheckCard;
 
     const isCheck = ImpuestoConfig?.valor == "1" || ImpuestoConfig?.valor?.toLocaleLowerCase() == "true" ? true: false
     const [checked, setChecked] = useState(isCheck);

@@ -20,6 +20,7 @@ const ConfiguracionTributaria = () => {
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const {TerceroSeleccionadoLista} = propsTercerosContexto;
     const [ListaCambiosConfiguracion, setListaCambiosConfiguracion] = useState<Array<ICambioConfiguracionTributaria>>([]);
+    
     let {
         handleSubmit,
         control,
@@ -31,12 +32,13 @@ const ConfiguracionTributaria = () => {
             PORICA: number()
                     .nullable()
                     .max(100,"El porcentaje no puede ser mayor a 100")
-                    .min(0.1, "No puede haber un porcentaje de 0")
+                    .min(0.0001, "No puede haber un porcentaje de 0")
                     .notRequired()
                     .default(0)
                     .typeError("El campo debe ser numerico")
         }))
     });
+
     useEffect(() => {
         ConsultarConfiguracionTributaria();
     }, [])
@@ -44,6 +46,8 @@ const ConfiguracionTributaria = () => {
     useEffect(() => {
         const PorcentajeICA = ConfiguracionTributaria.filter(ct => ct.id == "PORICA");
         if (PorcentajeICA.length > 0 ) {
+            console.log(PorcentajeICA);
+            console.log(parseFloat(PorcentajeICA[0].valor));
             setValue("PORICA",  parseFloat(PorcentajeICA[0].valor));
         }
     }, [ConfiguracionTributaria])
@@ -168,6 +172,7 @@ const ConfiguracionTributaria = () => {
                                     size="small" 
                                     variant="outlined"
                                     error={error ? true : false}
+                                    placeholder="Digite el porcentaje"
                                     helperText={error?.message}
                                     value={value}
                                     onChange={(event)=> {
@@ -240,10 +245,7 @@ const ConfiguracionTributaria = () => {
                     </Button>
                 </Stack>
             </Stack>         
-            
         </Stack>
-
-
     )
 }
 

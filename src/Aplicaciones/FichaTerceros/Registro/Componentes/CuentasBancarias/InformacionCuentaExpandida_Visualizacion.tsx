@@ -13,13 +13,8 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/CuentasBancarias/IEnvioAPIGuardarEditarCuenta';
 import { ICuentaBancaria } from '../../../Interfaces/Registro/CuentasBancarias/ICuentaBancaria';
-export interface PropsInformacionCuentaExpandida_Visualizacion
-{
-}
-export default function InformacionCuentaExpandida_Visualizacion(
-    {
-    }:PropsInformacionCuentaExpandida_Visualizacion
-) {
+
+export default function InformacionCuentaExpandida_Visualizacion() {
 
     const [VerModalEditarCuentaBancaria, setVerModalEditarCuentaBancaria] = useState(false);
     const [VerModalEditarCuentasSucursales, setVerModalEditarCuentasSucursales] = useState(false);

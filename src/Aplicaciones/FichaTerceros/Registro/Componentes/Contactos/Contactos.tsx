@@ -9,6 +9,7 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 import { CrearPeticion } from '../../../../../Consumos/APIManager'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { IInfoUsuario } from '../InformacionGeneral/InformacionGeneralDatos'
+import SinInformacion from '../Generales/SinInformacion'
 
 export interface IContacto {
     conId: number,
@@ -84,7 +85,7 @@ export default function Contactos() {
     }, [location.state?.Reload])
 
     return (
-        <Stack>
+        <Stack width={"100%"}>
             <Stack py={0.5} direction="row" alignItems="center">
                 <Button 
                     variant="text"
@@ -96,6 +97,13 @@ export default function Contactos() {
             <Stack gap={1} direction="row" flexWrap="wrap">
                 {
                     contactosList.map((contact) => <CardContact key={contact.conId} {...contact} />)
+                }
+                
+            </Stack>
+            <Stack height={"100%"} width={"100%"}>
+                {
+                    contactosList.length == 0 && 
+                    <SinInformacion message='No se ha encontrado información de contactos'/>
                 }
             </Stack>
             {
