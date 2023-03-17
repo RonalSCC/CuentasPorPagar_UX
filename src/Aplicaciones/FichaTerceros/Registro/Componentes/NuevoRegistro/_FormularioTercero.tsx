@@ -61,10 +61,14 @@ export default function _FormularioTercero() {
    const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"]
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"]
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"]
-   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"]
    const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"]
    const TER_LONG_DV: IConfigValues = Configs && Configs["TER_LONG_DV"]
    const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"]
+   const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
+   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"]
+   const PROV_CORREO_RLEGAL: IConfigValues = Configs && Configs["PROV_CORREO_RLEGAL"]
+   const TER_EDIT_DIR_TXT: IConfigValues = Configs && Configs["TER_EDIT_DIR_TXT"]
+   const TER_INACTIVO: IConfigValues = Configs && Configs["TER_INACTIVO"]
 
    const metodos = useForm({
       defaultValues: {
@@ -90,9 +94,10 @@ export default function _FormularioTercero() {
          PROV_TELEFONO,
          TER_REQ_REPLEGAL,
          TER_FICHA_APIROS,
-         PROV_CORREO_CTO,
          TER_PERMITECARACTER,
-         TER_CAMBIANATJUR
+         TER_CAMBIANATJUR,
+         PROV_CORREO_CTO,
+         PROV_CORREO_RLEGAL
       }
       )),
       mode: 'onChange',
@@ -150,17 +155,29 @@ export default function _FormularioTercero() {
                   configID: "TER_FICHA_APIROS"
                },
                {
-                  configID: "PROV_CORREO_CTO"
-               },
-               {
                   configID: "TER_PERMITECARACTER"
                },
                {
-                  configID:"TER_LONG_DV"
+                  configID: "TER_LONG_DV"
                },
                {
-                  configID:"TER_CAMBIANATJUR"
+                  configID: "TER_CAMBIANATJUR"
                },
+               {
+                  configID: "TER_BLOQUEA_DIR"
+               },
+               {
+                  configID: "PROV_CORREO_CTO"
+               },   
+               {
+                  configID: "PROV_CORREO_RLEGAL"
+               },
+               {
+                  configID: "TER_EDIT_DIR_TXT"
+               },
+               {
+                  configID: "TER_INACTIVO"
+               }  
             ]
          }
       }).then((respuesta) => {
@@ -233,7 +250,7 @@ export default function _FormularioTercero() {
          ...PropsDefaultRequestConfigs,
          Body: {
             usuarioID: 1,
-            terEstado: true,
+            terEstado: TER_INACTIVO?.configValor ? false : true,
             ...data
          }
       }).then((response) => {
@@ -485,6 +502,9 @@ export default function _FormularioTercero() {
                                     label="Dirección"
                                     error={!!errors.terDireccion}
                                     helperText={errors.terDireccion && `${errors.terDireccion.message}`}
+                                    inputProps={{
+                                       readOnly: TER_EDIT_DIR_TXT?.configValor ? false: true
+                                    }}
                                  />
                               )}
                            />
@@ -492,7 +512,11 @@ export default function _FormularioTercero() {
                            <AddLocationAltOutlinedIcon onClick={VerFormularioDirecciones} color='secondary' sx={{ cursor: "pointer" }} />
                            {
                               verModalDireccion == true &&
-                              <_SeccionDireccionTercero estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
+                              <_SeccionDireccionTercero 
+                                 estado={verModalDireccion} 
+                                 cambiarEstado={VerFormularioDirecciones} 
+                                 configs={{TER_BLOQUEA_DIR}}
+                              />
                            }
                         </Stack>
                      </Stack>

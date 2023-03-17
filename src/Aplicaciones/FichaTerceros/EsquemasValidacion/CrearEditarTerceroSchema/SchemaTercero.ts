@@ -1,15 +1,22 @@
 import * as Yup from "yup";
+import IConfigValues from '../../Interfaces/Generales/IConfig';
+
+export interface IConfigTercero {
+    config: IConfigValues
+}
+
 
 export const schemaTercero = ({
     TER_NOCALCULAR_DV,
     PROV_TELEFONO,
-    TER_REQ_REPLEGAL,
     TER_FICHA_APIROS,
     PROV_CORREO_CTO,
     TER_PERMITECARACTER,
     TER_CAMBIANATJUR,
-    editaTercero = false
-}) => {
+    PROV_CORREO_RLEGAL,
+    TER_REQ_REPLEGAL,
+    TER_REQ_ACTIVECON,
+}: Record<string, IConfigValues>, editaTercero = false) => {
 
     const tiposDocumento = TER_PERMITECARACTER?.configObs.split(',') || []
 
@@ -37,14 +44,14 @@ export const schemaTercero = ({
         terNumeroIdentificacion: Yup
             .mixed()
             .when({
-                is: (terNumeroIdentificacion) => terNumeroIdentificacion == "",
+                is: (terNumeroIdentificacion: string) => terNumeroIdentificacion == "",
                 then: Yup
                     .string()
                     .required("Debe ingresar el número de documento"),
                 otherwise: Yup
                     .mixed()
                     .when('terTipoDocumento', {
-                        is: (terTipoDocumento) => (tiposDocumento.includes(terTipoDocumento) && TER_PERMITECARACTER?.configValor == 1),
+                        is: (terTipoDocumento: string) => (tiposDocumento.includes(terTipoDocumento) && TER_PERMITECARACTER?.configValor == 1),
                         then: Yup
                             .mixed(),
                         otherwise: Yup
@@ -56,15 +63,15 @@ export const schemaTercero = ({
             }),
         terDigitoV: Yup
             .mixed()
-            .when('terTipoDocumento',{
-                is: (terTipoDocumento) => terTipoDocumento == 'CC',
+            .when('terTipoDocumento', {
+                is: (terTipoDocumento: string) => terTipoDocumento == 'CC',
                 then: Yup
                     .string()
                     .notRequired(),
                 otherwise: Yup
                     .mixed()
                     .when({
-                        is: (terDigitoV) => terDigitoV == '',
+                        is: (terDigitoV: string) => terDigitoV == '',
                         then: Yup
                             .string()
                             .required(""),
@@ -87,14 +94,14 @@ export const schemaTercero = ({
         terTelefono: Yup
             .mixed()
             .when({
-                is: (terTelefono) => (terTelefono == "" && PROV_TELEFONO?.configValor == '0'),
+                is: (terTelefono: string) => (terTelefono == "" && PROV_TELEFONO?.configValor == 1),
                 then: Yup
                     .string()
                     .notRequired(),
                 otherwise: Yup
                     .mixed()
                     .when({
-                        is: (terTelefono) => (terTelefono == "" && PROV_TELEFONO?.configValor == '1'),
+                        is: (terTelefono: string) => (terTelefono == "" && PROV_TELEFONO?.configValor == 1),
                         then: Yup
                             .string()
                             .required("Debe ingresar un número de teléfono"),
@@ -105,20 +112,20 @@ export const schemaTercero = ({
                             .typeError("Debe ingresar un número valido de teléfono")
                             .test('maxDigitos',
                                 `Número de caracteres superado, máximo: ${PROV_TELEFONO?.configObs}`,
-                                value => value.toString().length <= PROV_TELEFONO?.configObs)
+                                (value) => ((value) ? value.toString().length : 0) <= parseInt(PROV_TELEFONO?.configObs))
                     })
             }),
         terCelular: Yup
             .mixed()
             .when({
-                is: (terCelular) => (terCelular == "" && PROV_TELEFONO?.configValor == '0'),
+                is: (terCelular: string) => (terCelular == "" && PROV_TELEFONO?.configValor == 1),
                 then: Yup
                     .string()
                     .notRequired(),
                 otherwise: Yup
                     .mixed()
                     .when({
-                        is: (terCelular) => (terCelular == "" && PROV_TELEFONO?.configValor == '1'),
+                        is: (terCelular: string) => (terCelular == "" && PROV_TELEFONO?.configValor == 1),
                         then: Yup
                             .string()
                             .required("Debe ingresar un número de celular"),
@@ -129,22 +136,24 @@ export const schemaTercero = ({
                             .typeError("Debe ingresar un número valido de celular")
                             .test('maxDigitos',
                                 `Número de caracteres superado, máximo: ${PROV_TELEFONO?.configObs}`,
-                                value => value.toString().length <= PROV_TELEFONO?.configObs)
+                                (value) => ((value) ? value.toString().length : 0) <= parseInt(PROV_TELEFONO?.configObs))
                     })
             }),
         terContactoPrincipalNombre: Yup
             .string()
             .required("Debe ingresar el nombre del contacto principal"),
         terContactoPrincipalEmail: Yup
-            .string()
-            .email("El campo no corresponde a una dirección email correcta")
+            .mixed()
             .when({
-                is: () => TER_FICHA_APIROS?.configValor != 1 && PROV_CORREO_CTO?.configValor == 1,
+                is: (terContactoPrincipalEmail: string) => terContactoPrincipalEmail == "" && PROV_CORREO_CTO?.configValor == 0,
                 then: Yup
                     .string()
+                    .notRequired(),
+                otherwise: Yup
+                    .string()
+                    .email("El campo no corresponde a una dirección email correcta")
                     .required("Debe ingresar el correo electrónico del contacto principal"),
-            }),
-
+            })
     })
 
     const schemaEditarTercero = Yup.object().shape({
@@ -153,7 +162,18 @@ export const schemaTercero = ({
             .string()
             .required("Debe Seleccionar el subtipo del tercero"),
         terActividadEconomica: Yup
-            .string(),
+        .mixed()
+        .when({
+            is: (terActividadEconomica: string) =>
+                (terActividadEconomica == "" && TER_REQ_ACTIVECON?.configValor == 0),
+            then: Yup
+                .string()
+                .notRequired(),
+            otherwise: Yup
+                .string()
+                .email("El campo no corresponde a una dirección email correcta")
+                .required("Debe ingresar el correo electrónico del representante legal"),
+        }),
         terEmail: Yup
             .string()
             .email("El campo no corresponde a una dirección de email correcta"),
@@ -162,23 +182,53 @@ export const schemaTercero = ({
         terObservaciones: Yup
             .string(),
         terRepresentanteLNombre: Yup
-            .string(),
+            .mixed()
+            .when({
+                is: (terRepresentanteLNombre: string) => (terRepresentanteLNombre == "" && TER_REQ_REPLEGAL?.configValor == 0),
+                then: Yup
+                    .string()
+                    .notRequired(),
+                otherwise: Yup
+                    .string()
+                    .email("El campo no corresponde a una dirección email correcta")
+                    .required("Debe ingresar el nombre del representante legal"),
+            }),
         terRepresentanteLIdentificacion: Yup
             .mixed()
             .when({
-                is: (terRepresentanteLIdentificacion) => terRepresentanteLIdentificacion == "",
+                is: (terRepresentanteLIdentificacion: string) => (terRepresentanteLIdentificacion == "" && TER_REQ_REPLEGAL?.configValor == 0),
                 then: Yup
                     .string()
-                    .required("Debe ingresar un número de identificación"),
-                otherwise: Yup.number()
-                    .positive("Solo se aceptan números positivos")
-                    .integer("Solo se acepta números enteros")
-                    .typeError("Este campo debe ser númerico"),
-                terRepresentanteLExpedicion: Yup
-                    .string(),
-                terRepresentanteLEmail: Yup
+                    .notRequired(),
+                otherwise: Yup
                     .string()
-                    .email()
+                    .email("El campo no corresponde a una dirección email correcta")
+                    .required("Debe ingresar un número de identificación del representante legal"),
+            }),
+        terRepresentanteLExpedicion: Yup
+            .mixed()
+            .when({
+                is: (terRepresentanteLExpedicion: string) => (terRepresentanteLExpedicion == "" && TER_REQ_REPLEGAL?.configValor == 0),
+                then: Yup
+                    .string()
+                    .notRequired(),
+                otherwise: Yup
+                    .string()
+                    .email("El campo no corresponde a una dirección email correcta")
+                    .required("Debe ingresar la fecha de expedición del representante legal"),
+            }),
+        terRepresentanteLEmail: Yup
+            .mixed()
+            .when({
+                is: (terRepresentanteLEmail: string) =>
+                    (terRepresentanteLEmail == "" && (PROV_CORREO_RLEGAL?.configValor == 0 || TER_REQ_REPLEGAL?.configValor == 0)),
+                then: Yup
+                    .string()
+                    .notRequired(),
+                otherwise: Yup
+                    .string()
+                    .email("El campo no corresponde a una dirección email correcta")
+                    .required("Debe ingresar el correo electrónico del representante legal"),
             }),
         terEstado: Yup
             .boolean()

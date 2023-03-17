@@ -9,20 +9,22 @@ import { Divider, FormControl, InputLabel, MenuItem, Select, Stack, TextField } 
 import { useFormContext } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
+import IConfigValues from '../../../Interfaces/Generales/IConfig';
 
 export interface FormularioDireccionesProps {
     estado: boolean,
-    cambiarEstado: Function
+    cambiarEstado: Function,
+    configs: Record<string,IConfigValues>
 }
 
-export interface ICalle {
-    CalleID: string,
-    CalleDesc: string
+export interface IAvenida {
+    AvenidaID: string,
+    AvenidaDesc: string
 }
 
-export interface IViaPrincipal {
-    AvPrincipalID: string,
-    AvPrincipalDesc: string
+export interface IInterseccion {
+    InterseccionID: string,
+    InterseccionDesc: string
 }
 
 export interface IUndIdentidad {
@@ -30,10 +32,10 @@ export interface IUndIdentidad {
     UndIdentidadDesc: string
 }
 
-export default function _SeccionDireccionTercero({ estado, cambiarEstado }: FormularioDireccionesProps) {
+export default function _SeccionDireccionTercero({ estado, cambiarEstado, configs }: FormularioDireccionesProps) {
 
-    const [listaCalles, setListaCalles] = useState<Array<ICalle>>([]);
-    const [listaViaPrincipales, setListaViaPrincipales] = useState<Array<IViaPrincipal>>([])
+    const [listaAvenidas, setListaAvenidas] = useState<Array<IAvenida>>([]);
+    const [listaIntersecciones, setListaIntersecciones] = useState<Array<IInterseccion>>([])
     const [listaUndIdentidades, setListaUndIdentidades] = useState<Array<IUndIdentidad>>([])
 
     const { control, setValue, getValues } = useFormContext();
@@ -47,7 +49,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
     const handleUpdateAddress = () => {
         
         const {
-            calle,
+            avenidaPrincipal,
             numeroViaPrincipal,
             interseccionViaPrincipal,
             numeroViaSecundaria,
@@ -59,17 +61,40 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
             numeroUnidadIdentidad2,
         } = getValues()
         
-       let dirCompleta = 
-        calle + " " +
-        numeroViaPrincipal + " " + 
-        interseccionViaPrincipal + " " +
-        numeroViaSecundaria + " " +
-        interseccionViaSecundaria + " " +
-        numeroComplementoViaSecundaria + " " +
-        unidadIdentidad1 + " " +
-        numeroUnidadIdentidad1 + " " +
-        unidadIdentidad2 + " " +
-        numeroUnidadIdentidad2;
+        
+        let dirCompleta
+
+        console.log(configs)
+        if (configs["TER_BLOQUEA_DIR"]?.configValor == 0){
+
+            dirCompleta = avenidaPrincipal + " " + numeroViaPrincipal + interseccionViaPrincipal
+            
+            if (numeroViaSecundaria != "")
+                dirCompleta +=  " # " + numeroViaSecundaria + interseccionViaSecundaria
+            
+            if (numeroComplementoViaSecundaria != "")
+                dirCompleta += "-" + numeroComplementoViaSecundaria 
+            
+            if (unidadIdentidad1 != "")
+                dirCompleta += " " + unidadIdentidad1 + "-" + numeroUnidadIdentidad1
+            
+            if (unidadIdentidad2 != "")
+                dirCompleta += " " + unidadIdentidad2 + "-" + numeroUnidadIdentidad2;
+        }
+        else {
+            dirCompleta = avenidaPrincipal + " " +
+                numeroViaPrincipal + " " + 
+                interseccionViaPrincipal + " " +
+                numeroViaSecundaria + " " +
+                interseccionViaSecundaria + " " +
+                numeroComplementoViaSecundaria + " " +
+                unidadIdentidad1 + " " +
+                numeroUnidadIdentidad1 + " " +
+                unidadIdentidad2 + " " +
+                numeroUnidadIdentidad2; 
+        }
+
+        console.log(dirCompleta)
 
         dirCompleta = dirCompleta.trim();
         dirCompleta = dirCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
@@ -90,11 +115,11 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
             ...PropsDefaultRequest,
             Body: {
                 UsuarioID: 1,
-                Clave: 'Calles'
+                Clave: 'Avenidas'
             }
         }).then((respuesta) => {
             if (respuesta != null && respuesta.ok == true) {
-                setListaCalles(respuesta.datos);
+                setListaAvenidas(respuesta.datos);
             }
         });
 
@@ -103,11 +128,11 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
             ...PropsDefaultRequest,
             Body: {
                 UsuarioID: 1,
-                Clave: 'Avenidas'
+                Clave: 'Intersecciones'
             }
         }).then((respuesta) => {
             if (respuesta != null && respuesta.ok == true) {
-                setListaViaPrincipales(respuesta.datos);
+                setListaIntersecciones(respuesta.datos);
             }
         });
 
@@ -148,20 +173,20 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
                         <Stack direction="row" gap={1.5}>
                             <Controller
                                 control={control}
-                                name="calle"
+                                name="avenidaPrincipal"
                                 defaultValue=""
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
                                         {...propsInputs}
-                                        id="calle"
-                                        label="Calle"
+                                        id="avenidaPrincipal"
+                                        label="Avenida P"
                                         size='small'
                                         select
                                         placeholder='Seleccione'
                                     >
                                         {
-                                            listaCalles.map(cl => <MenuItem key={cl.CalleID} value={cl.CalleID}>{cl.CalleDesc}</MenuItem>)
+                                            listaAvenidas.map(av => <MenuItem key={av.AvenidaID} value={av.AvenidaID}>{av.AvenidaDesc}</MenuItem>)
                                         }
                                     </TextField>
                                 )}
@@ -194,8 +219,8 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
                                         select
                                     >
                                         {
-                                            listaViaPrincipales.map(AvPrin =>
-                                                <MenuItem key={AvPrin.AvPrincipalID} value={AvPrin.AvPrincipalID}>{AvPrin.AvPrincipalDesc}</MenuItem>
+                                            listaIntersecciones.map(inter =>
+                                                <MenuItem key={inter.InterseccionID} value={inter.InterseccionID}>{inter.InterseccionDesc}</MenuItem>
                                             )
                                         }
                                     </TextField>
@@ -238,8 +263,8 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado }: Form
                                         select
                                     >
                                         {
-                                            listaViaPrincipales.map(AvPrin =>
-                                                <MenuItem key={AvPrin.AvPrincipalID} value={AvPrin.AvPrincipalID}>{AvPrin.AvPrincipalDesc}</MenuItem>
+                                            listaIntersecciones.map(inter =>
+                                                <MenuItem key={inter.InterseccionID} value={inter.InterseccionID}>{inter.InterseccionDesc}</MenuItem>
                                             )
                                         }
 

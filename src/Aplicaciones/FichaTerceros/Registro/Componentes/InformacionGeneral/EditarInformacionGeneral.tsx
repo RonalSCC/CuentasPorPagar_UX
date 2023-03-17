@@ -48,14 +48,18 @@ export default function EditarInformacionGeneral() {
    const [Configs, setConfigs] = useState<any>()
 
    const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
-   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
    const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
-   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
    const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"];
    const TER_LONG_DV: IConfigValues = Configs && Configs["TER_LONG_DV"];
-   const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"]
+   const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"];
+   const TER_EDIT_DIR_TXT: IConfigValues = Configs && Configs["TER_EDIT_DIR_TXT"];
+   const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
+   const PROV_CORREO_RLEGAL: IConfigValues = Configs && Configs["PROV_CORREO_RLEGAL"]
+   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
+   const TER_REQ_ACTIVECON: IConfigValues = Configs && Configs["TER_REQ_ACTIVECON"];
+   const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
 
    const metodos = useForm({
       defaultValues: {
@@ -95,8 +99,10 @@ export default function EditarInformacionGeneral() {
          PROV_CORREO_CTO,
          TER_PERMITECARACTER,
          TER_CAMBIANATJUR,
-         editaTercero: true
-      }
+         PROV_CORREO_RLEGAL,
+         TER_REQ_ACTIVECON
+      },
+         true,
       )),
       mode: 'onSubmit',
    })
@@ -112,11 +118,6 @@ export default function EditarInformacionGeneral() {
       const tipoDocumentoActual = getValues('terTipoDocumento')
       const esPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? false : true
 
-      console.log({
-         tiposDocumentosPermitidos,
-         tipoDocumentoActual,
-         esPermitido
-      })
       return esPermitido
    }
 
@@ -328,6 +329,18 @@ export default function EditarInformacionGeneral() {
                },
                {
                   configID: "TER_CAMBIANATJUR"
+               },
+               {
+                  configId: "TER_EDIT_DIR_TXT"
+               },
+               {
+                  configID: "TER_BLOQUEA_DIR"
+               },
+               {
+                  configID: "PROV_CORREO_RLEGAL"
+               },
+               {
+                  configID: "TER_REQ_ACTIVECON"
                }
             ]
          }
@@ -509,8 +522,8 @@ export default function EditarInformacionGeneral() {
                                     error={!!errors.terDigitoV}
                                     helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
                                     InputProps={{
-                                       readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false: true
-                                     }}
+                                       readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false : true
+                                    }}
                                     sx={{
                                        width: "20%"
                                     }}
@@ -594,6 +607,9 @@ export default function EditarInformacionGeneral() {
                                     label="Dirección"
                                     error={!!errors.terDireccion}
                                     helperText={errors.terDireccion && `${errors.terDireccion.message}`}
+                                    inputProps={{
+                                       readOnly: TER_EDIT_DIR_TXT?.configValor ? false: true
+                                    }}
                                  />
                               )}
                            />
@@ -603,7 +619,11 @@ export default function EditarInformacionGeneral() {
                            </IconButton>
                            {
                               verModalDireccion == true &&
-                              <_SeccionDireccionTercero estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
+                              <_SeccionDireccionTercero
+                                 estado={verModalDireccion}
+                                 cambiarEstado={VerFormularioDirecciones}
+                                 configs={{ TER_BLOQUEA_DIR }}
+                              />
                            }
 
 
