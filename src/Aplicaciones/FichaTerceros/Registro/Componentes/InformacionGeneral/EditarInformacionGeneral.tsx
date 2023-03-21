@@ -62,35 +62,35 @@ export default function EditarInformacionGeneral() {
    const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
 
    const metodos = useForm({
-      defaultValues: {
-         terNatJur: "",
-         terRazonSocial: "",
-         terPrimerNombre: "",
-         terSegundoNombre: "",
-         terPrimerApellido: "",
-         terSegundoApellido: "",
-         terTipoDocumento: "",
-         terNumeroIdentificacion: "",
-         terDigitoV: "",
-         terFormaPago: "",
-         terCiudad: "",
-         terDireccion: "",
-         terTipo: "",
-         terSubTipo: "",
-         terActividadEconomica: "",
-         terEmail: "",
-         terTelefono: "",
-         terCelular: "",
-         terObservaciones: "",
-         terContactoPrincipalNombre: "",
-         terContactoPrincipalEmail: "",
-         terRepresentanteLNombre: "",
-         terRepresentanteLTipoIdentificacion: "",
-         terRepresentanteLIdentificacion: "",
-         terRepresentanteLExpedicion: "",
-         terRepresentanteLEmail: "",
-         terEstado: false,
-      },
+      // defaultValues: {
+      //    terNatJur: "",
+      //    terRazonSocial: "",
+      //    terPrimerNombre: "",
+      //    terSegundoNombre: "",
+      //    terPrimerApellido: "",
+      //    terSegundoApellido: "",
+      //    terTipoDocumento: "",
+      //    terNumeroIdentificacion: "",
+      //    terDigitoV: "",
+      //    terFormaPago: "",
+      //    terCiudad: "",
+      //    terDireccion: "",
+      //    terTipo: "",
+      //    terSubTipo: "",
+      //    terActividadEconomica: "",
+      //    terEmail: "",
+      //    terTelefono: "",
+      //    terCelular: "",
+      //    terObservaciones: "",
+      //    terContactoPrincipalNombre: "",
+      //    terContactoPrincipalEmail: "",
+      //    terRepresentanteLNombre: "",
+      //    terRepresentanteLTipoIdentificacion: "",
+      //    terRepresentanteLIdentificacion: "",
+      //    terRepresentanteLExpedicion: "",
+      //    terRepresentanteLEmail: "",
+      //    terEstado: false,
+      // },
       resolver: yupResolver(schemaTercero({
          TER_NOCALCULAR_DV,
          PROV_TELEFONO,
@@ -522,7 +522,7 @@ export default function EditarInformacionGeneral() {
                                     error={!!errors.terDigitoV}
                                     helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
                                     InputProps={{
-                                       readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false : true
+                                       readOnly: (TER_NOCALCULAR_DV?.configValor == 1 ) ? false : true
                                     }}
                                     sx={{
                                        width: "20%"
@@ -934,7 +934,6 @@ export default function EditarInformacionGeneral() {
                         <Controller
                            control={control}
                            name='terRepresentanteLEmail'
-                           defaultValue=""
                            render={({ field, formState: { errors } }) => (
                               <TextField
                                  {...propsInputs}

@@ -47,7 +47,7 @@ export interface ITercero {
    terNatJur: string,
 }
 
-export default function _FormularioTercero() {
+export default function FormularioCrearTercero() {
 
    const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
    const [verModalDireccion, setVerModalDireccion] = useState(false);
