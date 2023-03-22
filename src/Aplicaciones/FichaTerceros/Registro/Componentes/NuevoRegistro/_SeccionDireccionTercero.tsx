@@ -14,7 +14,7 @@ import IConfigValues from '../../../Interfaces/Generales/IConfig';
 export interface FormularioDireccionesProps {
     estado: boolean,
     cambiarEstado: Function,
-    configs: Record<string,IConfigValues>
+    configs: Record<string, IConfigValues>
 }
 
 export interface IAvenida {
@@ -38,7 +38,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
     const [listaIntersecciones, setListaIntersecciones] = useState<Array<IInterseccion>>([])
     const [listaUndIdentidades, setListaUndIdentidades] = useState<Array<IUndIdentidad>>([])
 
-    const { control, setValue, getValues } = useFormContext();
+    const { control, setValue, getValues, trigger, setError, formState: { errors }, reset } = useFormContext();
 
     const propsInputs: Record<string, any> = {
         variant: "outlined",
@@ -47,7 +47,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
     };
 
     const handleUpdateAddress = () => {
-        
+
         const {
             avenidaPrincipal,
             numeroViaPrincipal,
@@ -60,30 +60,34 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
             unidadIdentidad2,
             numeroUnidadIdentidad2,
         } = getValues()
-        
-        
+
+        if (avenidaPrincipal == "") {
+            setError("avenidaPrincipal", { type: "focus", message: "Debe ingresar una avenida" }, { shouldFocus: true })
+            return
+        }
+
         let dirCompleta
 
         console.log(configs)
-        if (configs["TER_BLOQUEA_DIR"]?.configValor == 0){
+        if (configs["TER_BLOQUEA_DIR"]?.configValor == 0) {
 
             dirCompleta = avenidaPrincipal + " " + numeroViaPrincipal + interseccionViaPrincipal
-            
+
             if (numeroViaSecundaria != "")
-                dirCompleta +=  " # " + numeroViaSecundaria + interseccionViaSecundaria
-            
+                dirCompleta += " # " + numeroViaSecundaria + interseccionViaSecundaria
+
             if (numeroComplementoViaSecundaria != "")
-                dirCompleta += "-" + numeroComplementoViaSecundaria 
-            
+                dirCompleta += "-" + numeroComplementoViaSecundaria
+
             if (unidadIdentidad1 != "")
                 dirCompleta += " " + unidadIdentidad1 + "-" + numeroUnidadIdentidad1
-            
+
             if (unidadIdentidad2 != "")
                 dirCompleta += " " + unidadIdentidad2 + "-" + numeroUnidadIdentidad2;
         }
         else {
             dirCompleta = avenidaPrincipal + " " +
-                numeroViaPrincipal + " " + 
+                numeroViaPrincipal + " " +
                 interseccionViaPrincipal + " " +
                 numeroViaSecundaria + " " +
                 interseccionViaSecundaria + " " +
@@ -91,20 +95,37 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                 unidadIdentidad1 + " " +
                 numeroUnidadIdentidad1 + " " +
                 unidadIdentidad2 + " " +
-                numeroUnidadIdentidad2; 
+                numeroUnidadIdentidad2;
         }
 
         console.log(dirCompleta)
 
         dirCompleta = dirCompleta.trim();
         dirCompleta = dirCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
-        
-       setValue("terDireccion",dirCompleta);
-       cambiarEstado();
+
+        setValue("terDireccion", dirCompleta);
+        trigger("terDireccion")
+        cambiarEstado();
+    }
+
+    const CerrarDialogoDirecciones = () => {
+        reset({
+            avenidaPrincipal: "",
+            numeroViaPrincipal: "",
+            interseccionViaPrincipal: "",
+            numeroViaSecundaria: "",
+            interseccionViaSecundaria: "",
+            numeroComplementoViaSecundaria: "",
+            unidadIdentidad1: "",
+            numeroUnidadIdentidad1: "",
+            unidadIdentidad2: "",
+            numeroUnidadIdentidad2: "",
+        })
+        cambiarEstado()
     }
 
     const ConsultarListas = async () => {
-        let PropsDefaultRequest:CrearPeticionAxios = {
+        let PropsDefaultRequest: CrearPeticionAxios = {
             API: "CONFIGURACION",
             URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
             Type: "GET"
@@ -159,22 +180,23 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
         <>
             <Dialog
                 open={estado}
-                onClose={() => cambiarEstado()}
+                onClose={() => CerrarDialogoDirecciones()}
                 fullWidth
             >
                 <DialogTitle paddingY={2} paddingX={3}>
                     Ubicación
                 </DialogTitle>
-                <DialogContent sx={{ padding: "0px" }}>
-                    <Stack gap={2} paddingY={1.5} paddingX={3}>
+                <DialogContent>
+                    <Stack gap={1} paddingY={0.5}>
                         <Typography variant='subtitle2' color="primary.main">
                             Vía principal
                         </Typography>
-                        <Stack direction="row" gap={1.5}>
+                        <Stack direction="row" gap={0.5}>
                             <Controller
                                 control={control}
                                 name="avenidaPrincipal"
                                 defaultValue=""
+                                rules={{ required: true }}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
@@ -183,7 +205,10 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                                         label="Avenida P"
                                         size='small'
                                         select
+                                        required
                                         placeholder='Seleccione'
+                                        error={!!errors.avenidaPrincipal}
+                                        helperText={errors.avenidaPrincipal && `${errors.avenidaPrincipal.message}`}
                                     >
                                         {
                                             listaAvenidas.map(av => <MenuItem key={av.AvenidaID} value={av.AvenidaID}>{av.AvenidaDesc}</MenuItem>)
@@ -232,7 +257,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                             Vía secundaria
                         </Typography>
 
-                        <Stack direction="row" gap={1.5}>
+                        <Stack direction="row" gap={0.5}>
                             <Controller
                                 control={control}
                                 name="numeroViaSecundaria"
@@ -268,7 +293,6 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                                             )
                                         }
 
-
                                     </TextField>
                                 )}
                             />
@@ -289,7 +313,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
 
                         <Divider />
 
-                        <Stack direction="row" gap={1.5}>
+                        <Stack direction="row" gap={0.5}>
                             <Controller
                                 control={control}
                                 name="unidadIdentidad1"
@@ -306,7 +330,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                                     >
                                         {
                                             listaUndIdentidades.map(und => (
-                                                <MenuItem key={und.UndIdentidadID} value={und.UndIdentidadID}>{und.UndIdentidadDesc }</MenuItem>
+                                                <MenuItem key={und.UndIdentidadID} value={und.UndIdentidadID}>{und.UndIdentidadDesc}</MenuItem>
                                             ))
                                         }
                                     </TextField>
@@ -327,7 +351,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                             />
                         </Stack>
 
-                        <Stack direction="row" gap={1.5}>
+                        <Stack direction="row" gap={0.5}>
                             <Controller
                                 control={control}
                                 name="unidadIdentidad2"
@@ -344,7 +368,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                                     >
                                         {
                                             listaUndIdentidades.map(und => (
-                                                <MenuItem key={und.UndIdentidadID} value={und.UndIdentidadID}>{und.UndIdentidadDesc }</MenuItem>
+                                                <MenuItem key={und.UndIdentidadID} value={und.UndIdentidadID}>{und.UndIdentidadDesc}</MenuItem>
                                             ))
                                         }
                                     </TextField>
@@ -368,7 +392,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                 </DialogContent>
                 <DialogActions>
                     <Stack direction="row" gap={1}>
-                        <Button size='medium' variant="text" onClick={() => cambiarEstado()}>
+                        <Button size='medium' variant="text" onClick={() => CerrarDialogoDirecciones()}>
                             Cerrar
                         </Button>
 

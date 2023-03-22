@@ -9,7 +9,6 @@ export interface IConfigTercero {
 export const schemaTercero = ({
     TER_NOCALCULAR_DV,
     PROV_TELEFONO,
-    TER_FICHA_APIROS,
     PROV_CORREO_CTO,
     TER_PERMITECARACTER,
     TER_CAMBIANATJUR,
@@ -74,7 +73,7 @@ export const schemaTercero = ({
                         is: (terDigitoV: string) => terDigitoV == '',
                         then: Yup
                             .string()
-                            .required(""),
+                            .required("Debe ingresar un dígito de verificación válido"),
                         otherwise: Yup
                             .number()
                             .positive("Solo se acepta números positivos")

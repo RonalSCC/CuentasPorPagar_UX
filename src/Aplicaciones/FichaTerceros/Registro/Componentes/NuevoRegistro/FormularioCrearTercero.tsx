@@ -1,6 +1,6 @@
-import { Alert, AlertTitle, Button, Card, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField, Typography } from '@mui/material'
+import { Alert, AlertTitle, Button, Card, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField, Tooltip, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
-import { useForm, FormProvider, Controller } from 'react-hook-form'
+import { useForm, FormProvider, Controller, useFieldArray } from 'react-hook-form'
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -74,20 +74,20 @@ export default function FormularioCrearTercero() {
       defaultValues: {
          terNatJur: "",
          terRazonSocial: "",
-         terPrimerNombre: "Cristian",
-         terSegundoNombre: "Camilo",
-         terPrimerApellido: "Pérez",
-         terSegundoApellido: "Sandoval",
-         terTipoDocumento: "CC",
-         terNumeroIdentificacion: "583655",
-         terDigitoV: "1",
-         terTipo: "2",
-         terCiudad: "25",
-         terDireccion: "calle 2 ",
-         terTelefono: "21",
-         terCelular: "665665",
-         terContactoPrincipalNombre: "Cristian",
-         terContactoPrincipalEmail: "cristian@sdsd.com"
+         terPrimerNombre: "",
+         terSegundoNombre: "",
+         terPrimerApellido: "",
+         terSegundoApellido: "",
+         terTipoDocumento: "",
+         terNumeroIdentificacion: "",
+         terDigitoV: "",
+         terTipo: "",
+         terCiudad: "",
+         terDireccion: "",
+         terTelefono: "",
+         terCelular: "",
+         terContactoPrincipalNombre: "",
+         terContactoPrincipalEmail: ""
       },
       resolver: yupResolver(schemaTercero({
          TER_NOCALCULAR_DV,
@@ -100,11 +100,10 @@ export default function FormularioCrearTercero() {
          PROV_CORREO_RLEGAL
       }
       )),
-      mode: 'onChange',
-      reValidateMode: 'onChange'
+      mode: 'onSubmit',
    })
 
-   const { control, handleSubmit, watch, getValues } = metodos
+   const { control, handleSubmit, watch, getValues, setValue, trigger } = metodos
    const terNatJur = watch("terNatJur")
    const terTipoDocumento = watch("terTipoDocumento")
    const navigate = useNavigate()
@@ -113,14 +112,14 @@ export default function FormularioCrearTercero() {
       const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
       const tipoDocumentoActual = getValues('terTipoDocumento')
       const esPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? false : true
-      
+
       return esPermitido
    }
 
    const VerFormularioDirecciones = () => {
       setVerModalDireccion(!verModalDireccion);
    }
-   
+
    const propsInputs: Record<string, any> = {
       variant: "outlined",
       size: 'small',
@@ -128,7 +127,7 @@ export default function FormularioCrearTercero() {
    };
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
+      let PropsDefaultRequestConfigs: CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
          Type: "POST"
@@ -168,7 +167,7 @@ export default function FormularioCrearTercero() {
                },
                {
                   configID: "PROV_CORREO_CTO"
-               },   
+               },
                {
                   configID: "PROV_CORREO_RLEGAL"
                },
@@ -177,7 +176,7 @@ export default function FormularioCrearTercero() {
                },
                {
                   configID: "TER_INACTIVO"
-               }  
+               }
             ]
          }
       }).then((respuesta) => {
@@ -188,12 +187,12 @@ export default function FormularioCrearTercero() {
    }
 
    const ConsultarListas = async () => {
-      let PropsDefaultRequest:CrearPeticionAxios = {
+      let PropsDefaultRequest: CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
       };
-      
+
       // ---- Tipos Terceros
       await CrearPeticion({
          ...PropsDefaultRequest,
@@ -233,19 +232,19 @@ export default function FormularioCrearTercero() {
       });
 
    }
-   
+
    const onClickSubmit = async (data: ITercero) => {
 
-      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
+      let PropsDefaultRequestConfigs: CrearPeticionAxios = {
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/CrearTerceroFicha",
          Type: "POST"
       };
-      
+
       data.terCelular = data.terCelular && data.terCelular.toString();
       data.terTelefono = data.terCelular && data.terTelefono.toString();
       data.terNumeroIdentificacion = data.terNumeroIdentificacion && data.terNumeroIdentificacion.toString();
-      
+
       await CrearPeticion({
          ...PropsDefaultRequestConfigs,
          Body: {
@@ -254,7 +253,7 @@ export default function FormularioCrearTercero() {
             ...data
          }
       }).then((response) => {
-         
+
          if (response != null) {
             if (response.ok) {
                propsTercerosContexto.CambiarAlertas(
@@ -282,7 +281,7 @@ export default function FormularioCrearTercero() {
                            key={x.descripcion}
                            severity="warning"
                            onClose={() => propsTercerosContexto.CerrarAlertas()}
-                           >
+                        >
                            <AlertTitle>Error</AlertTitle>
                            {x.descripcion}
                         </Alert>
@@ -296,8 +295,10 @@ export default function FormularioCrearTercero() {
 
    useEffect(() => {
       propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
+      setValue("terNatJur", "N")
       ConsultarListas();
       ConsultarConfigs();
+
    }, [])
 
    useEffect(() => {
@@ -307,7 +308,7 @@ export default function FormularioCrearTercero() {
    return (
       <>
          <FormProvider {...metodos}>
-            <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
+            <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"} overflow={'auto'}>
                <Card style={{ backgroundColor: "white", width: "60%" }}>
                   <Stack padding={3} gap={1}>
                      {/* Tipo de persona */}
@@ -319,17 +320,17 @@ export default function FormularioCrearTercero() {
                            <Controller
                               control={control}
                               name="terNatJur"
-                              defaultValue=""
-                              render={({ field: { onChange, value }, formState:{errors} }) => (
+                              render={({ field: { onChange, value, ...props } }) => (
                                  <RadioGroup
+                                    {...props}
                                     row
-                                    aria-labelledby="demo-row-radio-buttons-group-label"
                                     name="terNatJur"
                                     onChange={onChange}
-                                    
+                                    defaultValue={'N'}
+                                    value={value}
                                  >
-                                    <FormControlLabel checked={value == 'N'} value={'N'} control={<Radio />} label="Natural" />
-                                    <FormControlLabel checked={value == 'J'} disabled={PermiteCambiarNaturaleza()} value={'J'} control={<Radio />} label="Jurídica" />
+                                    <FormControlLabel value={'N'} checked={value == "N"} control={<Radio />} label="Natural" />
+                                    <FormControlLabel value={'J'} checked={value == "J"} disabled={PermiteCambiarNaturaleza()} control={<Radio />} label="Jurídica" />
                                  </RadioGroup>
                               )}
                            />
@@ -338,8 +339,8 @@ export default function FormularioCrearTercero() {
 
                      {
                         terNatJur == 'J' ?
-                        <_SeccionRazonSocial />:
-                        <_SeccionNombresTercero /> 
+                           <_SeccionRazonSocial /> :
+                           <_SeccionNombresTercero />
                      }
 
 
@@ -356,9 +357,13 @@ export default function FormularioCrearTercero() {
                                  <Controller
                                     control={control}
                                     name="terTipoDocumento"
-                                    render={({ field, formState: { errors } }) => (
+                                    render={({ field, formState: { errors, dirtyFields } }) => (
                                        <TextField
                                           {...field}
+                                          onChange = {(e) => field.onChange(
+                                             e.target.value,
+                                             dirtyFields.terTipoDocumento && trigger("terDigitoV")
+                                          )}
                                           id="TipoTercero"
                                           label="Tipo"
                                           size='small'
@@ -402,24 +407,25 @@ export default function FormularioCrearTercero() {
                                  control={control}
                                  name="terDigitoV"
                                  render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                       {...field}
-                                       {...propsInputs}
-                                       id="terDigitoV"
-                                       label="DV"
-                                       type="text"
-                                       error={!!errors.terDigitoV}
-                                       helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
-                                       InputProps={{
-                                          readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false: true,
-                                       }}
-                                       inputProps={{
-                                          maxLength: TER_LONG_DV?.configValor
-                                       }}
-                                       sx={{
-                                          width: "15%"
-                                       }}
-                                    />
+                                    <Tooltip title = {errors.terDigitoV && `${errors.terDigitoV.message}`} placement="top" arrow>
+                                       <TextField
+                                          {...field}
+                                          {...propsInputs}
+                                          id="terDigitoV"
+                                          label="DV"
+                                          type="text"
+                                          error={!!errors.terDigitoV}
+                                          InputProps={{
+                                             readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false : true,
+                                          }}
+                                          inputProps={{
+                                             maxLength: TER_LONG_DV?.configValor
+                                          }}
+                                          sx={{
+                                             width: "15%"
+                                          }}
+                                       />
+                                    </Tooltip>
                                  )}
                               />
                            </Stack>
@@ -487,7 +493,7 @@ export default function FormularioCrearTercero() {
                            />
                         </FormControl>
 
-                        <Stack direction="row" width="50%" gap={1} alignItems="center">
+                        <Stack direction="row" width="50%" gap={1}>
 
                            <Controller
                               control={control}
@@ -503,19 +509,20 @@ export default function FormularioCrearTercero() {
                                     error={!!errors.terDireccion}
                                     helperText={errors.terDireccion && `${errors.terDireccion.message}`}
                                     inputProps={{
-                                       readOnly: TER_EDIT_DIR_TXT?.configValor ? false: true
+                                       readOnly: TER_EDIT_DIR_TXT?.configValor ? false : true
                                     }}
                                  />
                               )}
                            />
-
-                           <AddLocationAltOutlinedIcon onClick={VerFormularioDirecciones} color='secondary' sx={{ cursor: "pointer" }} />
+                           <Stack pt={0.6}>
+                              <AddLocationAltOutlinedIcon onClick={VerFormularioDirecciones} color='secondary' sx={{ cursor: "pointer" }} />
+                           </Stack>
                            {
                               verModalDireccion == true &&
-                              <_SeccionDireccionTercero 
-                                 estado={verModalDireccion} 
-                                 cambiarEstado={VerFormularioDirecciones} 
-                                 configs={{TER_BLOQUEA_DIR}}
+                              <_SeccionDireccionTercero
+                                 estado={verModalDireccion}
+                                 cambiarEstado={VerFormularioDirecciones}
+                                 configs={{ TER_BLOQUEA_DIR }}
                               />
                            }
                         </Stack>

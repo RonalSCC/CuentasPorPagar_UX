@@ -396,7 +396,7 @@ export default function EditarInformacionGeneral() {
    return (
       <>
          <FormProvider {...metodos}>
-            <Stack direction="column" width="100%" gap={1}>
+            <Stack direction="column" width="100%" gap={1} overflow={'scroll'}>
                <Card sx={{ backgroundColor: "white", width: "100%" }}>
                   <Stack direction={"column"} padding={2} gap={1}>
                      <Typography variant='h6' color="text.primary">
@@ -411,7 +411,6 @@ export default function EditarInformacionGeneral() {
                               </Typography>
                               <Controller
                                  control={control}
-                                 defaultValue=""
                                  name="terNatJur"
                                  render={({ field: { value, onChange } }) => (
                                     <RadioGroup
