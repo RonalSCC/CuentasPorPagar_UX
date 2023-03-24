@@ -1,8 +1,13 @@
 import { Stack, TextField } from '@mui/material'
 import React from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
+import IConfigValues from '../../../Interfaces/Generales/IConfig';
 
-export default function _SeccionContactoTercero() {
+export interface I_SeccionContactoTercero {
+    configs: Record<string, IConfigValues>
+}
+
+export default function _SeccionContactoTercero({configs}:I_SeccionContactoTercero) {
     
     const {control} = useFormContext();
     
@@ -41,6 +46,7 @@ export default function _SeccionContactoTercero() {
                             fullWidth
                             id="terContactoPrincipalEmail"
                             label="Email"
+                            required={configs.PROV_CORREO_CTO?.configValor ? true: false}
                             error={!!errors.terContactoPrincipalEmail}
                             helperText={errors.terContactoPrincipalEmail && `${errors.terContactoPrincipalEmail.message}`}
                         />

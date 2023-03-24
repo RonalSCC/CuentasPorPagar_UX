@@ -1,5 +1,6 @@
+// Componentes Material UI y react
 import { Alert, AlertTitle, Button, Card, FormControl, FormControlLabel, MenuItem, Radio, RadioGroup, Stack, TextField, Tooltip, Typography } from '@mui/material'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useForm, FormProvider, Controller, useFieldArray } from 'react-hook-form'
 
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,12 +22,13 @@ import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlin
 import { Save } from '@mui/icons-material';
 
 // Componentes
-import { schemaTercero } from '../../../EsquemasValidacion/CrearEditarTerceroSchema/SchemaTercero';
+import { EsquemaCrearTercero } from '../../../EsquemasValidacion/CrearEditarTerceroSchema/EsquemaCrearTercero';
 import _SeccionRazonSocial from './_SeccionRazonSocial'
 import _SeccionNombreTercero from './_SeccionNombresTercero';
 import _SeccionDireccionTercero from './_SeccionDireccionTercero';
 import _SeccionNombresTercero from './_SeccionNombresTercero';
 import _SeccionContactoTercero from './_SeccionContactoTercero';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 
 export interface ITercero {
    terCelular: string,
@@ -49,7 +51,10 @@ export interface ITercero {
 
 export default function FormularioCrearTercero() {
 
-   const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
+   const [CheckNatural, setCheckNatural] = useState(false)
+
+   const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+   const {CambiarTerceroSeleccionadoLista} = propsTercerosContexto
    const [verModalDireccion, setVerModalDireccion] = useState(false);
    const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
    const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
@@ -57,22 +62,18 @@ export default function FormularioCrearTercero() {
    const [Configs, setConfigs] = useState<any>()
 
    const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"]
-   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"]
-   const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"]
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"]
-   const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"]
    const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"]
    const TER_LONG_DV: IConfigValues = Configs && Configs["TER_LONG_DV"]
    const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"]
    const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
    const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"]
-   const PROV_CORREO_RLEGAL: IConfigValues = Configs && Configs["PROV_CORREO_RLEGAL"]
    const TER_EDIT_DIR_TXT: IConfigValues = Configs && Configs["TER_EDIT_DIR_TXT"]
    const TER_INACTIVO: IConfigValues = Configs && Configs["TER_INACTIVO"]
 
    const metodos = useForm({
       defaultValues: {
-         terNatJur: "",
+         terNatJur: "N",
          terRazonSocial: "",
          terPrimerNombre: "",
          terSegundoNombre: "",
@@ -89,31 +90,35 @@ export default function FormularioCrearTercero() {
          terContactoPrincipalNombre: "",
          terContactoPrincipalEmail: ""
       },
-      resolver: yupResolver(schemaTercero({
-         TER_NOCALCULAR_DV,
-         PROV_TELEFONO,
-         TER_REQ_REPLEGAL,
-         TER_FICHA_APIROS,
+      resolver: yupResolver(EsquemaCrearTercero({
          TER_PERMITECARACTER,
-         TER_CAMBIANATJUR,
+         PROV_TELEFONO,
          PROV_CORREO_CTO,
-         PROV_CORREO_RLEGAL
       }
       )),
       mode: 'onSubmit',
    })
 
-   const { control, handleSubmit, watch, getValues, setValue, trigger } = metodos
+   const { control, handleSubmit, watch, getValues, setValue, resetField, trigger } = metodos
    const terNatJur = watch("terNatJur")
    const terTipoDocumento = watch("terTipoDocumento")
    const navigate = useNavigate()
 
-   const PermiteCambiarNaturaleza = () => {
-      const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
-      const tipoDocumentoActual = getValues('terTipoDocumento')
-      const esPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? false : true
+   const CambiarNaturaleza = () => {
+      if(TER_CAMBIANATJUR?.configValor == 1){
+         const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
+         const tipoDocumentoActual = getValues('terTipoDocumento')
+         const tipoPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? true : false
+         
+         if (!tipoPermitido) {
+            let terNatJurActual = getValues('terNatJur')
+            
+            if(terNatJurActual != 'N')
+               setValue('terNatJur', 'N')
+         }
 
-      return esPermitido
+         return tipoPermitido
+      }
    }
 
    const VerFormularioDirecciones = () => {
@@ -142,16 +147,7 @@ export default function FormularioCrearTercero() {
                   configID: "PROV_TELEFONO"
                },
                {
-                  configID: "TER_REQ_REPLEGAL"
-               },
-               {
-                  configID: "TER_VALIDA_DV"
-               },
-               {
                   configID: "TER_NOCALCULAR_DV"
-               },
-               {
-                  configID: "TER_FICHA_APIROS"
                },
                {
                   configID: "TER_PERMITECARACTER"
@@ -167,9 +163,6 @@ export default function FormularioCrearTercero() {
                },
                {
                   configID: "PROV_CORREO_CTO"
-               },
-               {
-                  configID: "PROV_CORREO_RLEGAL"
                },
                {
                   configID: "TER_EDIT_DIR_TXT"
@@ -270,6 +263,14 @@ export default function FormularioCrearTercero() {
                      </>
                   })
                )
+               CambiarTerceroSeleccionadoLista({
+                  TerDVNit:data.terDigitoV,
+                  TerID:response.datos.terID,
+                  TerNit:data.terNumeroIdentificacion,
+                  TerNombre: data.terNatJur == "N" ? `${data.terPrimerNombre} ${data.terSegundoNombre} ${data.terPrimerApellido} ${data.terSegundoApellido}`: data.terRazonSocial,
+                  TerTipoIden: data.terTipoDocumento,
+                  TerNatJur: data.terNatJur
+               })
                navigate('InformacionGeneralDatos')
 
             }
@@ -295,15 +296,16 @@ export default function FormularioCrearTercero() {
 
    useEffect(() => {
       propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
-      setValue("terNatJur", "N")
+      //setValue("terNatJur", "N")
       ConsultarListas();
       ConsultarConfigs();
 
    }, [])
 
    useEffect(() => {
-      PermiteCambiarNaturaleza();
-   }, [terNatJur, terTipoDocumento])
+      CambiarNaturaleza();
+   }, [terTipoDocumento])
+   
 
    return (
       <>
@@ -320,17 +322,15 @@ export default function FormularioCrearTercero() {
                            <Controller
                               control={control}
                               name="terNatJur"
-                              render={({ field: { onChange, value, ...props } }) => (
+                              render={({ field: { onChange, value } }) => (
                                  <RadioGroup
-                                    {...props}
                                     row
                                     name="terNatJur"
                                     onChange={onChange}
-                                    defaultValue={'N'}
                                     value={value}
                                  >
                                     <FormControlLabel value={'N'} checked={value == "N"} control={<Radio />} label="Natural" />
-                                    <FormControlLabel value={'J'} checked={value == "J"} disabled={PermiteCambiarNaturaleza()} control={<Radio />} label="Jurídica" />
+                                    <FormControlLabel value={'J'} checked={value == "J"} disabled={!CambiarNaturaleza()} control={<Radio />} label="Jurídica" />
                                  </RadioGroup>
                               )}
                            />
@@ -357,12 +357,12 @@ export default function FormularioCrearTercero() {
                                  <Controller
                                     control={control}
                                     name="terTipoDocumento"
-                                    render={({ field, formState: { errors, dirtyFields } }) => (
+                                    render={({ field, formState: { errors, dirtyFields, touchedFields } }) => (
                                        <TextField
                                           {...field}
                                           onChange = {(e) => field.onChange(
                                              e.target.value,
-                                             dirtyFields.terTipoDocumento && trigger("terDigitoV")
+                                             touchedFields.terDigitoV && trigger("terDigitoV")
                                           )}
                                           id="TipoTercero"
                                           label="Tipo"
@@ -399,7 +399,6 @@ export default function FormularioCrearTercero() {
                                           width: "60%",
                                           fontSize: 10
                                        }}
-
                                     />
                                  )}
                               />
@@ -537,6 +536,7 @@ export default function FormularioCrearTercero() {
                                  {...propsInputs}
                                  id="terTelefono"
                                  label="Télefono fijo"
+                                 required={PROV_TELEFONO?.configValor ? true: false}
                                  error={!!errors.terTelefono}
                                  helperText={errors.terTelefono && `${errors.terTelefono.message}`}
                               />
@@ -552,6 +552,7 @@ export default function FormularioCrearTercero() {
                                  {...propsInputs}
                                  id="terCelular"
                                  label="Celular"
+                                 required={PROV_TELEFONO?.configValor ? true: false}
                                  error={!!errors.terCelular}
                                  helperText={errors.terCelular && `${errors.terCelular.message}`}
                               />
@@ -567,7 +568,7 @@ export default function FormularioCrearTercero() {
                         Contacto
                      </Typography>
 
-                     <_SeccionContactoTercero />
+                     <_SeccionContactoTercero configs={{ PROV_CORREO_CTO }} />
 
                   </Stack>
                </Card>

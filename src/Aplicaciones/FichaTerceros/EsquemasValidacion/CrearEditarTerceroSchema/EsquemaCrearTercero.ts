@@ -6,20 +6,15 @@ export interface IConfigTercero {
 }
 
 
-export const schemaTercero = ({
-    TER_NOCALCULAR_DV,
+export const EsquemaCrearTercero = ({
     PROV_TELEFONO,
     PROV_CORREO_CTO,
     TER_PERMITECARACTER,
-    TER_CAMBIANATJUR,
-    PROV_CORREO_RLEGAL,
-    TER_REQ_REPLEGAL,
-    TER_REQ_ACTIVECON,
-}: Record<string, IConfigValues>, editaTercero = false) => {
+}: Record<string, IConfigValues>) => {
 
     const tiposDocumento = TER_PERMITECARACTER?.configObs.split(',') || []
 
-    const schemaCrearTercero = Yup.object().shape({
+    return Yup.object().shape({
         terNatJur: Yup
             .string(),
         terRazonSocial: Yup
@@ -154,87 +149,4 @@ export const schemaTercero = ({
                     .required("Debe ingresar el correo electrónico del contacto principal"),
             })
     })
-
-    const schemaEditarTercero = Yup.object().shape({
-        ...schemaCrearTercero.fields,
-        terSubTipo: Yup
-            .string()
-            .required("Debe Seleccionar el subtipo del tercero"),
-        terActividadEconomica: Yup
-        .mixed()
-        .when({
-            is: (terActividadEconomica: string) =>
-                (terActividadEconomica == "" && TER_REQ_ACTIVECON?.configValor == 0),
-            then: Yup
-                .string()
-                .notRequired(),
-            otherwise: Yup
-                .string()
-                .required("Debe ingresar una actividad económica"),
-        }),
-        terEmail: Yup
-            .string()
-            .email("El campo no corresponde a una dirección de email correcta"),
-        terFormaPago: Yup
-            .string(),
-        terObservaciones: Yup
-            .string(),
-        terRepresentanteLNombre: Yup
-            .mixed()
-            .when({
-                is: (terRepresentanteLNombre: string) => (terRepresentanteLNombre == "" && TER_REQ_REPLEGAL?.configValor == 0),
-                then: Yup
-                    .string()
-                    .notRequired(),
-                otherwise: Yup
-                    .string()
-                    .email("El campo no corresponde a una dirección email correcta")
-                    .required("Debe ingresar el nombre del representante legal"),
-            }),
-        terRepresentanteLIdentificacion: Yup
-            .mixed()
-            .when({
-                is: (terRepresentanteLIdentificacion: string) => (terRepresentanteLIdentificacion == "" && TER_REQ_REPLEGAL?.configValor == 0),
-                then: Yup
-                    .string()
-                    .notRequired(),
-                otherwise: Yup
-                    .string()
-                    .email("El campo no corresponde a una dirección email correcta")
-                    .required("Debe ingresar un número de identificación del representante legal"),
-            }),
-        terRepresentanteLExpedicion: Yup
-            .mixed()
-            .when({
-                is: (terRepresentanteLExpedicion: string) => (terRepresentanteLExpedicion == "" && TER_REQ_REPLEGAL?.configValor == 0),
-                then: Yup
-                    .string()
-                    .notRequired(),
-                otherwise: Yup
-                    .string()
-                    .email("El campo no corresponde a una dirección email correcta")
-                    .required("Debe ingresar la fecha de expedición del representante legal"),
-            }),
-        terRepresentanteLEmail: Yup
-            .mixed()
-            .when({
-                is: (terRepresentanteLEmail: string) =>
-                    (terRepresentanteLEmail == "" && (PROV_CORREO_RLEGAL?.configValor == 0 || TER_REQ_REPLEGAL?.configValor == 0)),
-                then: Yup
-                    .string()
-                    .notRequired(),
-                otherwise: Yup
-                    .string()
-                    .email("El campo no corresponde a una dirección email correcta")
-                    .required("Debe ingresar el correo electrónico del representante legal"),
-            }),
-        terEstado: Yup
-            .boolean()
-
-    })
-
-    if (editaTercero == true)
-        return schemaEditarTercero;
-    else
-        return schemaCrearTercero;
 }
