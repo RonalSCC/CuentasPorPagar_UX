@@ -62,7 +62,6 @@ export default function InformacionGeneralDatos(props:any) {
             }).then((respuesta)=> {
                 if (respuesta) {
                     if(respuesta.ok){
-                        console.log(respuesta.datos)
                         setInfoTercero(respuesta.datos);
                     }
                     else if (respuesta.errores && respuesta.errores.length > 0) {

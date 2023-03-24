@@ -126,9 +126,7 @@ export default function EditarInformacionGeneral() {
    };
 
    const GuardarInformacion = async (data: any) => {
-
-      console.log(data)
-
+      
       SendRequest.put({
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/EditarTerceroFicha",
@@ -347,7 +345,6 @@ export default function EditarInformacionGeneral() {
    }
 
    useEffect(() => {
-      console.log(InfoTercero)
       if (InfoTercero) {
          setValue('terNatJur', InfoTercero.terTipoPersona || "")
          setValue('terRazonSocial', InfoTercero.terRazonSocial || "")
