@@ -51,8 +51,6 @@ export interface ITercero {
 
 export default function FormularioCrearTercero() {
 
-   const [CheckNatural, setCheckNatural] = useState(false)
-
    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
    const {CambiarTerceroSeleccionadoLista} = propsTercerosContexto
    const [verModalDireccion, setVerModalDireccion] = useState(false);
@@ -99,7 +97,7 @@ export default function FormularioCrearTercero() {
       mode: 'onSubmit',
    })
 
-   const { control, handleSubmit, watch, getValues, setValue, resetField, trigger } = metodos
+   const { control, handleSubmit, watch, getValues, setValue, trigger } = metodos
    const terNatJur = watch("terNatJur")
    const terTipoDocumento = watch("terTipoDocumento")
    const navigate = useNavigate()

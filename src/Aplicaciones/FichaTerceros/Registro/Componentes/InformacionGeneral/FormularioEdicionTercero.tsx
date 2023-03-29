@@ -62,35 +62,35 @@ export default function EditarInformacionGeneral() {
    const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
 
    const metodos = useForm({
-      // defaultValues: {
-      //    terNatJur: "",
-      //    terRazonSocial: "",
-      //    terPrimerNombre: "",
-      //    terSegundoNombre: "",
-      //    terPrimerApellido: "",
-      //    terSegundoApellido: "",
-      //    terTipoDocumento: "",
-      //    terNumeroIdentificacion: "",
-      //    terDigitoV: "",
-      //    terFormaPago: "",
-      //    terCiudad: "",
-      //    terDireccion: "",
-      //    terTipo: "",
-      //    terSubTipo: "",
-      //    terActividadEconomica: "",
-      //    terEmail: "",
-      //    terTelefono: "",
-      //    terCelular: "",
-      //    terObservaciones: "",
-      //    terContactoPrincipalNombre: "",
-      //    terContactoPrincipalEmail: "",
-      //    terRepresentanteLNombre: "",
-      //    terRepresentanteLTipoIdentificacion: "",
-      //    terRepresentanteLIdentificacion: "",
-      //    terRepresentanteLExpedicion: "",
-      //    terRepresentanteLEmail: "",
-      //    terEstado: false,
-      // },
+      defaultValues: {
+         terNatJur: "",
+         terRazonSocial: "",
+         terPrimerNombre: "",
+         terSegundoNombre: "",
+         terPrimerApellido: "",
+         terSegundoApellido: "",
+         terTipoDocumento: "",
+         terNumeroIdentificacion: "",
+         terDigitoV: "",
+         terFormaPago: "",
+         terCiudad: "",
+         terDireccion: "",
+         terTipo: "",
+         terSubTipo: "",
+         terActividadEconomica: "",
+         terEmail: "",
+         terTelefono: "",
+         terCelular: "",
+         terObservaciones: "",
+         terContactoPrincipalNombre: "",
+         terContactoPrincipalEmail: "",
+         terRepresentanteLNombre: "",
+         terRepresentanteLTipoIdentificacion: "",
+         terRepresentanteLIdentificacion: "",
+         terRepresentanteLExpedicion: "",
+         terRepresentanteLEmail: "",
+         terEstado:false
+      },
       resolver: yupResolver(EsquemaEditarTercero({
          TER_NOCALCULAR_DV,
          PROV_TELEFONO,
@@ -114,9 +114,16 @@ export default function EditarInformacionGeneral() {
    const PermiteCambiarNaturaleza = () => {
       const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
       const tipoDocumentoActual = getValues('terTipoDocumento')
-      const esPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? false : true
+      const tipoPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? true : false
 
-      return esPermitido
+      if (!tipoPermitido) {
+         let terNatJurActual = getValues('terNatJur')
+         
+         if(terNatJurActual != 'N')
+            setValue('terNatJur', 'N')
+      }
+
+      return tipoPermitido
    }
 
    const propsInputs: Record<string, any> = {
@@ -404,7 +411,7 @@ export default function EditarInformacionGeneral() {
                               <Controller
                                  control={control}
                                  name="terNatJur"
-                                 render={({ field: { onChange, value, ...props } }) => (
+                                 render={({ field: { onChange, value } }) => (
                                     <RadioGroup
                                        value={value}
                                        onChange={(e) => onChange(e.target.value)}
@@ -413,7 +420,7 @@ export default function EditarInformacionGeneral() {
                                        name="terTipoPersona"
                                     >
                                        <FormControlLabel value={'N'} control={<Radio />} label="Natural" />
-                                       <FormControlLabel value={'J'} disabled={PermiteCambiarNaturaleza()} control={<Radio />} label="Jurídica" />
+                                       <FormControlLabel value={'J'} disabled={!PermiteCambiarNaturaleza()} control={<Radio />} label="Jurídica" />
                                     </RadioGroup>
                                  )}
                               />
