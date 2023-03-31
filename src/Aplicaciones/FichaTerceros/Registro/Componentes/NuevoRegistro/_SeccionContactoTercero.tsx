@@ -14,7 +14,7 @@ export default function _SeccionContactoTercero({configs}:I_SeccionContactoTerce
     return (
         <>
             {/* Nombre, mail contacto */}
-            <Stack direction="row" gap={.5}>
+            <Stack direction="row" gap={1}>
                 <Controller
                     control={control}
                     name="terContactoPrincipalNombre"

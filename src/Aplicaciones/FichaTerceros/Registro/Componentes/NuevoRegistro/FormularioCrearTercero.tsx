@@ -343,9 +343,9 @@ export default function FormularioCrearTercero() {
 
 
                      {/* Tipo Doc, Numero Ident, DV y Tipo */}
-                     <Stack direction="row" gap={.5}>
+                     <Stack direction="row" gap={1}>
                         <Stack width="50%" direction="column">
-                           <Stack direction="row" gap={.5}>
+                           <Stack direction="row" gap={0.5}>
                               <FormControl
                                  fullWidth
                                  sx={{
@@ -460,7 +460,7 @@ export default function FormularioCrearTercero() {
                      </Stack>
 
                      {/* Ciudad y dirección */}
-                     <Stack direction="row" gap={.5}>
+                     <Stack direction="row" gap={1}>
                         <FormControl
                            sx={{
                               width: "50%"
@@ -524,7 +524,7 @@ export default function FormularioCrearTercero() {
                            }
                         </Stack>
                      </Stack>
-                     <Stack direction="row" gap={.5}>
+                     <Stack direction="row" gap={1}>
                         <Controller
                            control={control}
                            name="terTelefono"
