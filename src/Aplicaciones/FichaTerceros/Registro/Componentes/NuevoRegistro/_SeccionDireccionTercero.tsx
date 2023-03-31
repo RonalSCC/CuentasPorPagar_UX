@@ -17,7 +17,7 @@ export interface FormularioDireccionesProps {
     configs: Record<string, IConfigValues>
 }
 
-export interface IAvenida {
+export interface IVia {
     AvenidaID: string,
     AvenidaDesc: string
 }
@@ -34,11 +34,11 @@ export interface IUndIdentidad {
 
 export default function _SeccionDireccionTercero({ estado, cambiarEstado, configs }: FormularioDireccionesProps) {
 
-    const [listaAvenidas, setListaAvenidas] = useState<Array<IAvenida>>([]);
+    const [listaAvenidas, setListaAvenidas] = useState<Array<IVia>>([]);
     const [listaIntersecciones, setListaIntersecciones] = useState<Array<IInterseccion>>([])
     const [listaUndIdentidades, setListaUndIdentidades] = useState<Array<IUndIdentidad>>([])
 
-    const { control, setValue, getValues, trigger, setError, formState: { errors }, reset } = useFormContext();
+    const { control, setValue, getValues, trigger, setError, formState: { errors }, resetField, watch } = useFormContext();
 
     const propsInputs: Record<string, any> = {
         variant: "outlined",
@@ -49,7 +49,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
     const handleUpdateAddress = () => {
 
         const {
-            avenidaPrincipal,
+            via,
             numeroViaPrincipal,
             interseccionViaPrincipal,
             numeroViaSecundaria,
@@ -61,17 +61,28 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
             numeroUnidadIdentidad2,
         } = getValues()
 
-        if (avenidaPrincipal == "") {
-            setError("avenidaPrincipal", { type: "focus", message: "Debe ingresar una avenida" }, { shouldFocus: true })
-            return
+        let error = false
+
+        if (via == "" ) {
+            setError("via", { type: "focus", message: "Selecciona" })
+            error = true
         }
+        if (numeroViaPrincipal == "") {
+            setError("numeroViaPrincipal", { type: "focus", message: "Selecciona" })
+            error = true
+        }
+        if (numeroViaSecundaria == "") {
+            setError("numeroViaSecundaria", { type: "focus", message: "Selecciona" })
+            error = true
+        }
+
+        if (error) return
 
         let dirCompleta
 
-        console.log(configs)
         if (configs["TER_BLOQUEA_DIR"]?.configValor == 0) {
 
-            dirCompleta = avenidaPrincipal + " " + numeroViaPrincipal + interseccionViaPrincipal
+            dirCompleta = via + " " + numeroViaPrincipal + interseccionViaPrincipal
 
             if (numeroViaSecundaria != "")
                 dirCompleta += " # " + numeroViaSecundaria + interseccionViaSecundaria
@@ -86,7 +97,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                 dirCompleta += " " + unidadIdentidad2 + "-" + numeroUnidadIdentidad2;
         }
         else {
-            dirCompleta = avenidaPrincipal + " " +
+            dirCompleta = via + " " +
                 numeroViaPrincipal + " " +
                 interseccionViaPrincipal + " " +
                 numeroViaSecundaria + " " +
@@ -98,8 +109,6 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                 numeroUnidadIdentidad2;
         }
 
-        console.log(dirCompleta)
-
         dirCompleta = dirCompleta.trim();
         dirCompleta = dirCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
 
@@ -109,18 +118,10 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
     }
 
     const CerrarDialogoDirecciones = () => {
-        reset({
-            avenidaPrincipal: "",
-            numeroViaPrincipal: "",
-            interseccionViaPrincipal: "",
-            numeroViaSecundaria: "",
-            interseccionViaSecundaria: "",
-            numeroComplementoViaSecundaria: "",
-            unidadIdentidad1: "",
-            numeroUnidadIdentidad1: "",
-            unidadIdentidad2: "",
-            numeroUnidadIdentidad2: "",
-        })
+        
+        resetField("via",{defaultValue:""})
+        resetField("numeroViaPrincipal",{defaultValue:""})
+        resetField("numeroViaSecundaria",{defaultValue:""})
         cambiarEstado()
     }
 
@@ -176,6 +177,13 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
     }, [])
 
 
+    useEffect(() => {
+        const subscription = watch(() => {
+            trigger(['via','numeroViaPrincipal','numeroViaSecundaria'])
+        })
+
+    },[])
+
     return (
         <>
             <Dialog
@@ -194,21 +202,21 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                         <Stack direction="row" gap={0.5}>
                             <Controller
                                 control={control}
-                                name="avenidaPrincipal"
+                                name="via"
                                 defaultValue=""
                                 rules={{ required: true }}
                                 render={({ field }) => (
                                     <TextField
                                         {...field}
                                         {...propsInputs}
-                                        id="avenidaPrincipal"
-                                        label="Avenida P"
+                                        id="via"
+                                        label="Via"
                                         size='small'
                                         select
                                         required
                                         placeholder='Seleccione'
-                                        error={!!errors.avenidaPrincipal}
-                                        helperText={errors.avenidaPrincipal && `${errors.avenidaPrincipal.message}`}
+                                        error={!!errors.via}
+                                        helperText={errors.via && `${errors.via.message}`}
                                     >
                                         {
                                             listaAvenidas.map(av => <MenuItem key={av.AvenidaID} value={av.AvenidaID}>{av.AvenidaDesc}</MenuItem>)
@@ -226,6 +234,9 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                                         {...propsInputs}
                                         id="numeroViaPrincipal"
                                         label="Número"
+                                        required
+                                        error={!!errors.numeroViaPrincipal}
+                                        helperText={errors.numeroViaPrincipal && `${errors.numeroViaPrincipal.message}`}
                                     />
                                 )}
                             />
@@ -268,6 +279,8 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                                         {...propsInputs}
                                         id="numeroViaSecundaria"
                                         label="Número"
+                                        error={!!errors.numeroViaSecundaria}
+                                        helperText={errors.numeroViaSecundaria && `${errors.numeroViaSecundaria.message}`}
                                     />
 
                                 )}
