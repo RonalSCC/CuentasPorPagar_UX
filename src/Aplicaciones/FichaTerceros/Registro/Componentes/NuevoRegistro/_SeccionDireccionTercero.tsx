@@ -39,7 +39,6 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
     const [listaUndIdentidades, setListaUndIdentidades] = useState<Array<IUndIdentidad>>([])
 
     const { control, setValue, getValues, trigger, setError, formState: { errors }, resetField, watch } = useFormContext();
-
     const propsInputs: Record<string, any> = {
         variant: "outlined",
         size: 'small',
@@ -176,14 +175,6 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
         ConsultarListas();
     }, [])
 
-
-    useEffect(() => {
-        const subscription = watch(() => {
-            trigger(['via','numeroViaPrincipal','numeroViaSecundaria'])
-        })
-
-    },[])
-
     return (
         <>
             <Dialog
@@ -194,8 +185,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                 <DialogTitle paddingY={2} paddingX={3}>
                     Ubicación
                 </DialogTitle>
-                <DialogContent>
-                    <Stack gap={1} paddingY={0.5}>
+                    <Stack gap={1} paddingY={1} paddingX={3}>
                         <Typography variant='subtitle2' color="primary.main">
                             Vía principal
                         </Typography>
@@ -402,7 +392,6 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                             />
                         </Stack>
                     </Stack>
-                </DialogContent>
                 <DialogActions>
                     <Stack direction="row" gap={1}>
                         <Button size='medium' variant="text" onClick={() => CerrarDialogoDirecciones()}>

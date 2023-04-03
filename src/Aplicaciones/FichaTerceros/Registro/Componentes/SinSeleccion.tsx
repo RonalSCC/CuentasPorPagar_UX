@@ -35,7 +35,7 @@ export default function SinSeleccion() {
     <Stack direction="column" paddingX={3} height="100%" gap={3} width="100%">
         <Stack direction="column" position="relative">
             <Stack height="50%" direction="row" position="absolute" width="100%" style={{backgroundColor:"primary"}}>
-                <Image fit='cover' src={"Imagenes/Terceros/FondoSeleccionarTerceros.png"} alt="" />
+                <Image fit='cover' src={"Imagenes/Terceros/FondoSeleccionarTerceros.png"} alt="" duration={0}/>
             </Stack>
             <Stack paddingTop={7} gap={1.5} zIndex={2} width="100%" direction="row" justifyContent="center">
                 <Card style={{width: "48%", backgroundColor:"#FFFFFF"}}>
@@ -56,7 +56,7 @@ export default function SinSeleccion() {
         </Stack>
             
         <Stack gap={1.5} direction={"column"} display="flex" alignItems={"center"} >
-            <Image src={"Imagenes/Terceros/Ilustracion-SinSeleccion.svg"} width="13%" alt="Nuevo Tercero" />
+            <Image src={"Imagenes/Terceros/Ilustracion-SinSeleccion.svg"} width="13%" alt="Nuevo Tercero" duration={0}/>
             <Button 
                 variant="contained"
                 onClick={ ()=> propsTercerosContexto.CambiarEstadoNuevoRegistro(true)}

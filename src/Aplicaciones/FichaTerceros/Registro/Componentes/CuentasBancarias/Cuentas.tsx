@@ -8,6 +8,7 @@ import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBan
 import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import SinInformacion from '../Generales/SinInformacion';
 
 export default function Cuentas() {
 
@@ -40,15 +41,14 @@ export default function Cuentas() {
                 disabled={BloquearCamposAcceso("CBCrearCuenta")}
                 startIcon={<Add/>}
                 onClick={()=> AbrirDialogNuevaCuenta()}
+                sx={{
+                    marginBottom: "1%"
+                }}
             >
                 Nueva cuenta bancaria
             </Button>
 
-            {
-                (!ListCuentasBancarias || ListCuentasBancarias.length == 0) ?
-                <VisualizacionCuentas />: 
-                <SinCuentas />
-            }
+            <VisualizacionCuentas />
 
         </Stack>
 

@@ -35,7 +35,7 @@ export default function BuscarTerceroDialog(BuscarTerceroDialogProps:IPropsBusca
           <Card>
             <Stack direction="column" padding={3}>
               <Stack direction="column" padding={2} gap={1.5} alignItems="center">
-                <Image width="20%" fit='cover' src={"Imagenes/Terceros/BuscarTercero.svg"} alt="" />
+                <Image width="20%" fit='cover' src={"Imagenes/Terceros/BuscarTercero.svg"} alt="" duration={0}/>
                 <Stack direction="column" gap={3} alignItems="center" width={"100%"}>
                   <Typography variant="h6" color="primary.main">
                     Selecciona el tercero que deseas consultar

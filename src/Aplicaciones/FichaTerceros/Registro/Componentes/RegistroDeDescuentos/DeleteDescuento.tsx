@@ -21,7 +21,7 @@ const DeleteDescuento = ({ cambiarEstadoModal }: DeleteDiscountProps) => {
       >
         <Stack p={3} gap={3}>
           <Stack alignSelf="center">
-            <Image fit='cover' src={"Imagenes/Terceros/DeleteDescuento.svg"} alt="" />
+            <Image fit='cover' src={"Imagenes/Terceros/DeleteDescuento.svg"} alt="" duration={0}/>
           </Stack>
           <Stack gap={1}>
             <Typography textAlign="center" noWrap variant="h6" color="primary">Eliminar Descuento</Typography>

@@ -9,6 +9,7 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
 import CampoValorInfoGeneral from './CampoValorInfoGeneral'
 import CardInformacionGeneral from './_CardInformacionGeneral'
+import moment from 'moment'
 
 export interface IInfoUsuario{
     terId: number,
@@ -21,6 +22,7 @@ export interface IInfoUsuario{
     terSegundoApellido?: null | string,
     terNumeroIdentificacion?: null | string,
     terTipoIdentificacion?: null | string,
+    TerTipoIdentificacionId?: null | string,
     terDiv?: null | string,
     terFormaPago?: null | string,
     terCiudad?: null | string,
@@ -38,7 +40,10 @@ export interface IInfoUsuario{
     terRepresentanteLIdentificacion?: null | string,
     terRepresentanteLExpedicion?: null | string,
     terRepresentanteLEmail?: null | string,
-    terEstudioSeguridad: boolean
+    terEstudioSeguridad: boolean,
+    terFechaCreacion: null | Date,
+    terFechaModificacion:  null | Date,
+    terUsuarioMod: null | string
 }
 export default function InformacionGeneralDatos(props:any) {
     const navigate = useNavigate();
@@ -93,7 +98,7 @@ export default function InformacionGeneralDatos(props:any) {
   return (
     <>
         {/* -------------------------------- */}
-        <Stack direction="column" gap={3} paddingBottom={5} width="100%" >
+        <Stack direction="column" gap={1} paddingBottom={5} width="100%" >
             <CardInformacionGeneral
                 Titulo='Información general'
                 MetodoEditar={EditarTercero}
@@ -105,13 +110,16 @@ export default function InformacionGeneralDatos(props:any) {
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Tipo de persona:"
-                            Valor={InfoTercero?.terTipoPersona}
+                            Valor={InfoTercero?.terTipoPersona == "N" ? "Natural" : "Juridica"}
                         />
                         <Stack direction="row" alignItems="center">
                             <FormControl disabled fullWidth component="fieldset">
                                 <FormControlLabel
                                     control={
-                                        <Switch name="Estado" />
+                                        <Switch
+                                         checked={InfoTercero?.terEstado}
+                                         name="Estado" 
+                                        />
                                     }
                                     label="Activo"
                                 />
@@ -219,12 +227,12 @@ export default function InformacionGeneralDatos(props:any) {
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Télefono:"
-                            Componente={<Chip size='small' label={`${InfoTercero?.terTelefono}`} />}
+                            Componente={<Chip size='small' label={`${InfoTercero?.terTelefono ? InfoTercero?.terTelefono : "Sin información"}`} />}
                         />
 
                         <CampoValorInfoGeneral
                             Campo="Celular:"
-                            Componente={<Chip size='small' label={`${InfoTercero?.terCelular}`} />}
+                            Componente={<Chip size='small' label={`${InfoTercero?.terCelular ? InfoTercero?.terCelular : "Sin información"}`} />}
                         />
                     </Stack>
 
@@ -295,7 +303,7 @@ export default function InformacionGeneralDatos(props:any) {
             <Stack direction="column" gap={3}>
                 {
                     InfoTercero?.terEstudioSeguridad == false && 
-                        <Alert severity="info">
+                        <Alert severity="info" sx={{zIndex: "1"}}>
                             Estudio de seguridad sin diligenciar (SAGRILAFT)
                         </Alert>   
                 }   
@@ -305,7 +313,7 @@ export default function InformacionGeneralDatos(props:any) {
                             Fecha de creación:
                         </Typography>
                         <Typography textAlign={"center"} variant="caption" color="text.primary">
-                            Viviana Contreras Torres - 03/03/2017 08:57:00 a.m.
+                            {InfoTercero?.terUsuarioMod} - {InfoTercero?.terFechaCreacion && moment(InfoTercero.terFechaCreacion).format("DD/MM/yyyy hh:mm:ss A")}
                         </Typography>
                     </Stack>
                     <Stack direction="row" gap={.5}>
@@ -313,7 +321,7 @@ export default function InformacionGeneralDatos(props:any) {
                             Última modificación: 
                         </Typography>
                         <Typography textAlign={"center"} variant="caption" color="text.primary">
-                                Implementación Sincosoft - 03/03/2017 08:57:00 a.m.
+                            {InfoTercero?.terUsuarioMod} - {InfoTercero?.terFechaModificacion && moment(InfoTercero.terFechaCreacion).format("DD/MM/yyyy hh:mm:ss A")}
                         </Typography>
                     </Stack>
                 </Stack>

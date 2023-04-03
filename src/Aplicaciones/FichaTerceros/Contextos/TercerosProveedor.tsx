@@ -18,7 +18,7 @@ export interface PropsTerceroContexto {
     TerceroSeleccionadoLista: TerceroSeleccionadoLista | null, 
     NuevoRegistro: boolean, 
     TituloPageHeader: string
-    CambiarEstadoNuevoRegistro: Function,
+    CambiarEstadoNuevoRegistro: (NuevoEstado: boolean) => void,
     CambiarTituloPageHeader: Function,
     CambiarTerceroSeleccionadoLista: Function,
     CambiarAlertas:(ListaAlertas: Array<JSX.Element>) => void,
@@ -164,7 +164,7 @@ export default function TercerosProveedor(
         <TercerosContexto.Provider value={{propsTercerosContexto}}>
             {children}
             <Fade in={listaAlertas != null && listaAlertas.length > 0} timeout={{enter: 500}}>
-                <Stack  gap={1} sx={{position:"fixed", top:"7%", right:"1%", zIndex:100}} >
+                <Stack border={"1px solid rgba(0,0,0,.2)"} gap={1} sx={{position:"fixed", top:"1%", right:"3%", zIndex:100}} >
                     {
                         listaAlertas
                     }

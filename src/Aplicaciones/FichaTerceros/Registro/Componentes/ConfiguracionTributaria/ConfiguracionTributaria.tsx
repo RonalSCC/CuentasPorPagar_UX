@@ -136,103 +136,105 @@ const ConfiguracionTributaria = () => {
     }
 
     return (
-        <Stack gap={1.5} width="100%" >
-            <Card>
-                <Stack direction={"row"} gap={1} p={2} flexWrap="wrap">
-                    {
-                        ConfiguracionTributaria.filter(
-                            ct=> ct.lista == null && 
-                                 ct.oculto == false && 
-                                 ct.id != "PORICA" &&
-                                 ct.otrasConfiguraciones == false
-                        ).map(ct => {
-                            return <CheckCard key={ct.id} ImpuestoConfig={ct} CambiarValor={CambiarValorConfigTributaria}/>
-                        })
-                    }
-                </Stack>
-            </Card>
-            <Card>
-                <Stack gap={1.5} p={2}>
-                    <Typography variant="h6" color="primary">
-                        Otras Configuraciones
-                    </Typography>
-                    <Stack gap={1.5} direction="row" flexWrap={"wrap"}>
+       <Stack justifyContent={"space-between"}> 
+            <Stack gap={1.5} width="100%" >
+                <Card>
+                    <Stack direction={"row"} gap={1} p={2} flexWrap="wrap">
                         {
                             ConfiguracionTributaria.filter(
-                                ct=> ct.lista != null 
-                            ).map(ct => 
-                                 <TextField
-                                    key={ct.id}
-                                    size="small"
-                                    variant="outlined"
-                                    sx={{width: "23.5%"}}
-                                    id={ct.id}
-                                    label={ct.nombreMostrar}
-                                    defaultValue={ct.valor}
-                                    onChange={(event)=> 
-                                        CambiarValorLista(event, ct.id)
-                                    }
-                                    select
-                                    disabled={BloquearCamposAcceso(ct.idAcceso)}
-                                >
-                                    {
-                                        ct.lista?.map(item => {
-                                            return  <MenuItem key={ct.id} value={item.valor}>{item.nombre}</MenuItem>
-                                        })
-                                    }
-                                </TextField>
-                            )
-                        }   
-                        
-                        {
-                            ConfiguracionTributaria.map((ct,index) => {
-                                if (ct.id == "PORICA") {
-                                    console.log(ct);
-                                    console.log(parseFloat(ct.valor));
-                                    return <TextField
-                                                label={ct.nombreMostrar}
-                                                type={"number"}
-                                                sx={{width: "24.2%"}}
-                                                size="small" 
-                                                variant="outlined"
-                                                placeholder="Digite el porcentaje"
-                                                value={ct.valor ? Number(ct.valor.replace(',', '.')) : ""}
-                                                disabled={BloquearCamposAcceso(ct.id)}
-                                                onChange={(event)=> {
-                                                    ConfiguracionTributaria[index].valor = event.target.value;
-                                                    setConfiguracionTributaria([...ConfiguracionTributaria]);
-                                                    CambiarValorLista(event, ct.id);
-                                                }}
-                                                inputProps={{
-                                                    step:"0.0001"
-                                                }}
-                                                InputProps={{
-                                                    endAdornment: <InputAdornment position="start">
-                                                        <Percent fontSize="small"></Percent>
-                                                    </InputAdornment>
-                                                }}
-                                            />   
-                                }
-                                
+                                ct=> ct.lista == null && 
+                                    ct.oculto == false && 
+                                    ct.id != "PORICA" &&
+                                    ct.otrasConfiguraciones == false
+                            ).map(ct => {
+                                return <CheckCard key={ct.id} ImpuestoConfig={ct} CambiarValor={CambiarValorConfigTributaria}/>
                             })
                         }
-                        
                     </Stack>
-                    <Stack gap={1.5}>
-                        <Stack gap={1.5} direction="row">
+                </Card>
+                <Card>
+                    <Stack gap={1.5} p={2}>
+                        <Typography variant="h6" color="primary">
+                            Otras Configuraciones
+                        </Typography>
+                        <Stack gap={1.5} direction="row" flexWrap={"wrap"}>
                             {
                                 ConfiguracionTributaria.filter(
-                                    ct=> ct.lista == null && 
-                                         ct.oculto == false && 
-                                         ct.otrasConfiguraciones == true
-                                ).map(ct => {
-                                    return <CheckCard key={ct.id} ImpuestoConfig={ct} CambiarValor={CambiarValorConfigTributaria}/>
+                                    ct=> ct.lista != null 
+                                ).map(ct => 
+                                    <TextField
+                                        key={ct.id}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{width: "23.5%"}}
+                                        id={ct.id}
+                                        label={ct.nombreMostrar}
+                                        defaultValue={ct.valor}
+                                        onChange={(event)=> 
+                                            CambiarValorLista(event, ct.id)
+                                        }
+                                        select
+                                        disabled={BloquearCamposAcceso(ct.idAcceso)}
+                                    >
+                                        {
+                                            ct.lista?.map(item => {
+                                                return  <MenuItem key={ct.id} value={item.valor}>{item.nombre}</MenuItem>
+                                            })
+                                        }
+                                    </TextField>
+                                )
+                            }   
+                            
+                            {
+                                ConfiguracionTributaria.map((ct,index) => {
+                                    if (ct.id == "PORICA") {
+                                        console.log(ct);
+                                        console.log(parseFloat(ct.valor));
+                                        return <TextField
+                                                    label={ct.nombreMostrar}
+                                                    type={"number"}
+                                                    sx={{width: "24.2%"}}
+                                                    size="small" 
+                                                    variant="outlined"
+                                                    placeholder="Digite el porcentaje"
+                                                    value={ct.valor ? Number(ct.valor.replace(',', '.')) : ""}
+                                                    disabled={BloquearCamposAcceso(ct.id)}
+                                                    onChange={(event)=> {
+                                                        ConfiguracionTributaria[index].valor = event.target.value;
+                                                        setConfiguracionTributaria([...ConfiguracionTributaria]);
+                                                        CambiarValorLista(event, ct.id);
+                                                    }}
+                                                    inputProps={{
+                                                        step:"0.0001"
+                                                    }}
+                                                    InputProps={{
+                                                        endAdornment: <InputAdornment position="start">
+                                                            <Percent fontSize="small"></Percent>
+                                                        </InputAdornment>
+                                                    }}
+                                                />   
+                                    }
+                                    
                                 })
                             }
+                            
+                        </Stack>
+                        <Stack gap={1.5}>
+                            <Stack gap={1.5} direction="row">
+                                {
+                                    ConfiguracionTributaria.filter(
+                                        ct=> ct.lista == null && 
+                                            ct.oculto == false && 
+                                            ct.otrasConfiguraciones == true
+                                    ).map(ct => {
+                                        return <CheckCard key={ct.id} ImpuestoConfig={ct} CambiarValor={CambiarValorConfigTributaria}/>
+                                    })
+                                }
+                            </Stack>
                         </Stack>
                     </Stack>
-                </Stack>
-            </Card>
+                </Card>
+            </Stack>
 
             <Stack 
                 direction={"row"}
@@ -270,8 +272,8 @@ const ConfiguracionTributaria = () => {
                         Guardar
                     </Button>
                 </Stack>
-            </Stack>         
-        </Stack>
+            </Stack>  
+        </Stack>  
     )
 }
 

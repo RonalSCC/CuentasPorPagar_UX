@@ -30,7 +30,8 @@ export default function ModalEditarSucursales(
 
   const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
   const {
-    CuentaExpandida
+    CuentaExpandida,
+    CambiarEstadoActualizarCuentas
   } = paramsCuentasBancariasContexto;
 
   const [ListaSucursales, setListaSucursales] = useState<Array<ISucursal>>();
@@ -220,7 +221,10 @@ export default function ModalEditarSucursales(
             <Button 
               variant='text'
               color='primary'
-              onClick={()=> CerrarModal(false)}
+              onClick={()=> {
+                CerrarModal(false)
+                CambiarEstadoActualizarCuentas(true);
+              }}
             >
               Cancelar
             </Button>

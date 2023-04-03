@@ -26,7 +26,7 @@ export default function ModalEliminar(ModalEliminarProps:PropsModalEliminar) {
       >
         <Stack  p={3} gap={3} >
           <Stack  alignSelf="center">
-            <Image fit='cover' src={ImageSRC} alt="" />
+            <Image fit='cover' src={ImageSRC} alt="" duration={0}/>
           </Stack>
           <Stack direction="column" gap={1}>
             <Typography textAlign="center" noWrap variant="h6" color="primary">{Titulo}</Typography>

@@ -4,10 +4,10 @@ import React from 'react'
 
 export default function SinCuentas() {
   return (
-    <Stack direction="row" width="100%" bgcolor={"white"}>
+    <Stack direction="row" width="100%" height={"100%"} bgcolor={"white"}>
         <Stack direction="column" width="100%" paddingY={5} paddingX={3} gap={1.5} justifyContent="center" alignItems="center">
             <Stack direction="row" width="100%" justifyContent="center">
-                <Image fit='cover' width="22%" src='Imagenes/Terceros/SinCuentas.svg' />
+                <Image fit='cover' width="22%" src='Imagenes/Terceros/SinCuentas.svg' duration={0}/>
             </Stack>
 
             <Typography variant='h6' color="text.primary">

@@ -1,5 +1,5 @@
 import { Add, Edit, Search } from '@mui/icons-material'
-import { Badge, Button, Divider, FormControl, FormControlLabel, Stack, Switch, Typography } from '@mui/material'
+import { Badge, Button, Divider, FormControl, FormControlLabel, Skeleton, Stack, Switch, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import BuscarTerceroDialog from './BuscarTerceroDialog'
 import Menu from './Menu'
@@ -80,7 +80,7 @@ export default function InformacionGeneral() {
                 }
                 
                 
-                <Stack height="100%" direction="row" paddingY={expandido ? 1.5 : 2} paddingX={1.5}>
+                <Stack height="100%" direction="row" paddingY={expandido ? .5 : 2} paddingX={1.5}>
                     <RoutesMarcoTerceroElement />
                 </Stack>
             </Stack>

@@ -68,7 +68,7 @@ export default function VisorDocumentos(VisorDocumentosProps: IPropsVisorDocumen
 
             {
                 (extension == "png" || extension == "jpg" || extension == "jpeg") &&
-                <Image bgColor={"black"} fit="contain" src={documentoVisor.terRutaDocumento} />
+                <Image bgColor={"black"} fit="contain" src={documentoVisor.terRutaDocumento} duration={0}/>
             }
         </Stack>
       </Dialog>

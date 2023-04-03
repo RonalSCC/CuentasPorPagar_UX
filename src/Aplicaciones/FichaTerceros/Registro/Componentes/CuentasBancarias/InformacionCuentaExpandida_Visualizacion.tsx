@@ -31,10 +31,6 @@ export default function InformacionCuentaExpandida_Visualizacion() {
         CambiarEstadoActualizarCuentas
     } = paramsCuentasBancariasContexto;
 
-    useEffect(() => {
-        // BloquearCamposAcceso(true);
-    }, []);
-    
 
     const EditarCuentaBancaria = (estado:boolean)=>{
         setVerModalEditarCuentaBancaria(estado);
@@ -110,7 +106,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
 
         <Stack direction="column" gap={1.5}>
             <Stack direction="row" gap={3} alignItems="center">
-                <Image width="5%" src='Imagenes/Terceros/ComentarioCuentasPorPagar.svg' fit='cover'/>
+                <Image width="5%" src='Imagenes/Terceros/ComentarioCuentasPorPagar.svg' fit='cover' duration={0}/>
 
                 <Stack direction="column" width="80%" gap={.5}>
                     <Typography variant='body1' color="primary.main">
@@ -168,7 +164,7 @@ export default function InformacionCuentaExpandida_Visualizacion() {
             <Divider />
 
             <Stack direction="row" gap={3} alignItems="center">
-                <Image width="5%" src='Imagenes/Terceros/UbicacionCuentasPorPagar.svg' fit='cover'/>
+                <Image width="5%" src='Imagenes/Terceros/UbicacionCuentasPorPagar.svg' fit='cover' duration={0}/>
 
                 <Stack direction="column" gap={1} width="80%">
 

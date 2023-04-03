@@ -1,12 +1,11 @@
 import { Info } from '@mui/icons-material'
-import { Stack, Card, Alert, TextField, Divider, FormControlLabel, FormGroup, Checkbox, Icon, AlertTitle, Autocomplete, MenuItem, Button, Tooltip } from '@mui/material'
+import { Stack, Card, Alert, TextField, Divider, FormControlLabel, FormGroup, Checkbox, Icon, AlertTitle, Autocomplete, MenuItem, Button, Tooltip, duration } from '@mui/material'
 import Image from 'mui-image'
 import { useContext, useEffect, useState } from 'react';
 import { SendRequest } from '../../../../../../Consumos/Request';
 import { TercerosContexto } from '../../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../../Contextos/TercerosProveedor';
 import { Controller, useForm } from 'react-hook-form'
-import { ITercero } from '../../NuevoRegistro/_FormularioTercero';
 import { DevTool } from '@hookform/devtools';
 
 export interface ITerceroEndoso {
@@ -123,14 +122,18 @@ const EmbargoEndoso = () => {
                 <Card>
                     <Stack p={2} gap={1}>
                         <Stack>
-                            <Alert
+                            <Alert 
                                 icon={<Image
-                                    width={47.78}
-                                    fit='cover'
-                                    src="Imagenes/Terceros/AccountingDocuments.svg" />}
-                                severity="info"
-                                sx={{ alignItems: "center" }}>
-                                Aplica para el endoso de documentos contables
+                                        width={47.78}
+                                        fit='cover'
+                                        src="Imagenes/Terceros/AccountingDocuments.svg" 
+                                        duration={0}
+                                        />
+                                    }
+                                    severity="info"
+                                    sx={{ alignItems: "center", zIndex:"1" }}
+                                >
+                                    Aplica para el endoso de documentos contables
                             </Alert>
                         </Stack>
                         <Stack>

@@ -13,7 +13,8 @@ import { IContacto } from './Contactos';
 import { useNavigate } from 'react-router-dom';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
-import { SendRequest } from '../../../../../Consumos/Request';
+import { SendRequest, SendRequestAxios } from '../../../../../Consumos/Request';
+import IRespuestaGeneral from '../../../../../Consumos/IRespuestaGeneral';
 
 export interface FormularioContactoProps {
    estado: boolean,
@@ -184,7 +185,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
       // data.tcExtension = data.tcExtension && data.tcExtension.toString();
       // data.tcTelefono = data.tcTelefono && data.tcTelefono.toString();
 
-      SendRequest.put({
+      let parametrosEnvio:SendRequestAxios = {
          API: "CUENTASPORPAGAR",
          URLServicio:
             contact ?
@@ -196,28 +197,33 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
             tcTercero: TerceroSeleccionadoLista?.TerID,
             ...data
          }
-      }).then((response) => {
+      };
+
+      let promise:Promise<void | IRespuestaGeneral>;
+      if (contact) {
+         promise = SendRequest.put(parametrosEnvio);
+      }else{
+         promise = SendRequest.post(parametrosEnvio);
+      }
+
+      promise.then((response) => {
          if (response != null) {
             if (response.ok) {
                reset();
 
-               propsTercerosContexto.CambiarAlertas(
-                  [1].map(alert => {
-                     return <>
-                        <Alert
-                           key={1}
-                           severity="success"
-                           onClose={() => propsTercerosContexto.CerrarAlertas()}
-                        >
-                           {(contact) ?
-                              "Los cambios han sido guardados con éxito"
-                              :
-                              "El contacto ha sido creado con éxito"
-                           }
-                        </Alert>
-                     </>
-                  })
-               )
+               propsTercerosContexto.CambiarAlertas([
+                  <Alert
+                     key={1}
+                     severity="success"
+                     onClose={() => propsTercerosContexto.CerrarAlertas()}
+                  >
+                     {(contact) ?
+                        "Los cambios han sido guardados con éxito"
+                        :
+                        "El contacto ha sido creado con éxito"
+                     }
+                  </Alert>
+               ])
                cambiarEstado();
                navigate("/FichaTerceros/MarcoTerceros/Contactos", {
                   state: {
@@ -259,7 +265,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
             fullWidth
          >
             <DialogTitle paddingY={2} paddingX={3}>
-               <Typography>{!!contact ? "Editar Contacto" : "Nuevo Contacto"}</Typography>
+               <Typography variant='h6'>{!!contact ? "Editar Contacto" : "Nuevo Contacto"}</Typography>
             </DialogTitle>
 
             <DialogContent >

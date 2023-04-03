@@ -19,7 +19,7 @@ const EliminarDocumento = ({ eliminarDocTercero, estado, cambiarEstado }: Elimin
             >
                 <Stack p={3} gap={3} maxWidth={444}>
                     <Stack alignSelf="center">
-                        <Image fit='cover' src={"Imagenes/Terceros/EliminarDocumento.svg"} alt="" />
+                        <Image fit='cover' src={"Imagenes/Terceros/EliminarDocumento.svg"} alt="" duration={0}/>
                     </Stack>
                     <Stack direction="column" gap={1}>
                         <Typography textAlign="center" noWrap variant="h6" color="primary">Eliminar Documento</Typography>

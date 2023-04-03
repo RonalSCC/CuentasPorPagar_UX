@@ -353,6 +353,7 @@ export default function EditarInformacionGeneral() {
 
    useEffect(() => {
       if (InfoTercero) {
+         debugger
          setValue('terNatJur', InfoTercero.terTipoPersona || "")
          setValue('terRazonSocial', InfoTercero.terRazonSocial || "")
          setValue('terPrimerNombre', InfoTercero.terPrimerNombre || "")
@@ -416,7 +417,6 @@ export default function EditarInformacionGeneral() {
                                        value={value}
                                        onChange={(e) => onChange(e.target.value)}
                                        row
-                                       aria-labelledby="demo-row-radio-buttons-group-label"
                                        name="terTipoPersona"
                                     >
                                        <FormControlLabel value={'N'} control={<Radio />} label="Natural" />
