@@ -7,13 +7,26 @@ export interface InfoItemPorps {
   color: string
 }
 
-const InfoItem = ({ title, text, showTooltip, color }: InfoItemPorps) => {
+const InfoItem = (InfoItemProps: InfoItemPorps) => {
+  const { 
+    title, 
+    text, 
+    showTooltip, 
+    color 
+  } = InfoItemProps;
+
   return (
     
-    <Stack>
+    <Stack overflow={"hidden"}>
       <Typography color={color} variant="body2">{title}</Typography>
       <Tooltip title={ showTooltip  ? text : ""} placement="top" arrow>
-        <Typography variant='body1' noWrap color={color}>{(text == null || text =="") ? "-":text }</Typography>
+        <Typography 
+          variant='body1' 
+          noWrap
+          color={"text.secondary"}
+          >
+            {text ? text : "-"}
+          </Typography>
       </Tooltip>
     </Stack>
     

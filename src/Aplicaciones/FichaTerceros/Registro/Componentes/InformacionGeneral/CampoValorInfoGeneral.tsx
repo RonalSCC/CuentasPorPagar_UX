@@ -28,7 +28,7 @@ export default function CampoValorInfoGeneral(
             {
                 Componente == null ?
                     <Typography noWrap variant="body2" color="text.primary">
-                        {(Valor != null && Valor != undefined) ? Valor : ""}
+                        {(Valor && Valor != "null") ? Valor : "Sin información"}
                     </Typography>
                 :
                 Componente

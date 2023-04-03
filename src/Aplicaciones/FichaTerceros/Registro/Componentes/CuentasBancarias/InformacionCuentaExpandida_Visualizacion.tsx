@@ -1,6 +1,6 @@
 import { DeleteOutline, EditOutlined } from '@mui/icons-material'
 import { Alert, Button, Checkbox, Divider, FormControlLabel, FormGroup, IconButton, Stack, Switch, Typography } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import CuentaPorSucursal_Visualizacion from './CuentaPorSucursal_Visualizacion'
 import Image from 'mui-image';
 import ModalEditarSucursales from './_ModalEditarSucursales';
@@ -13,25 +13,28 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/CuentasBancarias/IEnvioAPIGuardarEditarCuenta';
 import { ICuentaBancaria } from '../../../Interfaces/Registro/CuentasBancarias/ICuentaBancaria';
-export interface PropsInformacionCuentaExpandida_Visualizacion
-{
-}
-export default function InformacionCuentaExpandida_Visualizacion(
-    {
-    }:PropsInformacionCuentaExpandida_Visualizacion
-) {
+
+export default function InformacionCuentaExpandida_Visualizacion() {
 
     const [VerModalEditarCuentaBancaria, setVerModalEditarCuentaBancaria] = useState(false);
     const [VerModalEditarCuentasSucursales, setVerModalEditarCuentasSucursales] = useState(false);
     const [VerModalEliminarCuenta, setVerModalEliminarCuenta] = useState(false);
 
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {
+        BloquearCamposAcceso
+    } = propsTercerosContexto;
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
     const {
         CuentaExpandida,
         CambiarEstadoModalCrearEditar,
         CambiarEstadoActualizarCuentas
     } = paramsCuentasBancariasContexto;
+
+    useEffect(() => {
+        // BloquearCamposAcceso(true);
+    }, []);
+    
 
     const EditarCuentaBancaria = (estado:boolean)=>{
         setVerModalEditarCuentaBancaria(estado);
@@ -188,6 +191,7 @@ export default function InformacionCuentaExpandida_Visualizacion(
                 </Stack>
 
                 <Button 
+                    disabled={BloquearCamposAcceso("CBAsociarSucursales")}
                     variant='text'
                     startIcon={<EditOutlined />}
                     onClick={()=> EditarCuentasSucursales(true)}
@@ -198,12 +202,21 @@ export default function InformacionCuentaExpandida_Visualizacion(
         </Stack>
 
         <Stack direction="row" padding={1} justifyContent="space-between">
-            <IconButton onClick={()=> CambiarEstadoModalEliminar(true)} size='small'>
-                <DeleteOutline fontSize='small' color='error' />
+            <IconButton disabled={BloquearCamposAcceso("CBEliminarCuenta")} onClick={()=> CambiarEstadoModalEliminar(true)} size='small'>
+                <DeleteOutline fontSize='small' color={!BloquearCamposAcceso("CBEliminarCuenta") ? "error" : 'disabled'} />
             </IconButton>
 
             <FormGroup>
-                <FormControlLabel sx={{mr:"0px"}} control={<Switch onChange={(event,checked)=> CambiarEstadoCuenta(event,checked)} defaultChecked={CuentaExpandida?.tcbActiva} size='small'/>} label="Activa" />
+                <FormControlLabel 
+                    sx={{mr:"0px"}} 
+                    control={
+                        <Switch 
+                            disabled={BloquearCamposAcceso("CBEstado")}
+                            onChange={(event,checked)=> CambiarEstadoCuenta(event,checked)}
+                            defaultChecked={CuentaExpandida?.tcbActiva} 
+                            size='small'
+                        />
+                    } label="Activa" />
             </FormGroup>
         </Stack>
 

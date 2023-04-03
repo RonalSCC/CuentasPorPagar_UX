@@ -1,6 +1,8 @@
 import { Stack, TextField } from '@mui/material'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
 
 export interface I_SeccionContactoTercero {
@@ -9,6 +11,10 @@ export interface I_SeccionContactoTercero {
 
 export default function _SeccionContactoTercero({configs}:I_SeccionContactoTercero) {
     
+    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+    const {
+       BloquearCamposAcceso
+     } = propsTercerosContexto;
     const {control} = useFormContext();
     
     return (
@@ -30,6 +36,7 @@ export default function _SeccionContactoTercero({configs}:I_SeccionContactoTerce
                             label="Nombre"
                             error={!!errors.terContactoPrincipalNombre}
                             helperText={errors.terContactoPrincipalNombre && `${errors.terContactoPrincipalNombre.message}`}
+                            disabled={BloquearCamposAcceso("TerNombreContacto")}
                         />
                     )}
                 />
@@ -49,6 +56,7 @@ export default function _SeccionContactoTercero({configs}:I_SeccionContactoTerce
                             required={configs.PROV_CORREO_CTO?.configValor ? true: false}
                             error={!!errors.terContactoPrincipalEmail}
                             helperText={errors.terContactoPrincipalEmail && `${errors.terContactoPrincipalEmail.message}`}
+                            disabled={BloquearCamposAcceso("TerCorreoContacto")}
                         />
                     )}
                 />

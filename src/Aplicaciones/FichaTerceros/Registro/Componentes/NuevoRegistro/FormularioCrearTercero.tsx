@@ -581,9 +581,8 @@ export default function FormularioCrearTercero() {
                height={"7%"}
                width="100%"
                zIndex={1}
-               sx={{
-                  backgroundColor: "#EDEFF5",
-               }}
+               bgcolor="background.paper"       
+               borderTop={"1px solid rgba(16, 24, 64, 0.23)"}
             >
 
                <Stack direction="row" paddingX={3} gap={1.5}>

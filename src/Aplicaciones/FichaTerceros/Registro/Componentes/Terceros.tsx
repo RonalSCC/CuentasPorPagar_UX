@@ -7,9 +7,14 @@ import { RoutesTercerosElement } from '../../Route';
 import { Add, Search } from '@mui/icons-material';
 import BuscarTerceroDialog from './BuscarTerceroDialog';
 import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
+
 export default function Terceros(props:any) {
+
   const navigate = useNavigate();
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+  const {
+    BloquearCamposAcceso
+  } = propsTercerosContexto
   const [buscarTerceroDialog, setBuscarTerceroDialog] = useState(false);
 
   useEffect(() => {
@@ -30,7 +35,7 @@ export default function Terceros(props:any) {
 
   const CerrarDialogBuscarTercero = ()=>{
     setBuscarTerceroDialog(false);
-}
+  }
   
   return (
     <>
@@ -74,6 +79,7 @@ export default function Terceros(props:any) {
                   sx={{
                     visibility: propsTercerosContexto.TerceroSeleccionadoLista != null && !propsTercerosContexto.NuevoRegistro ? "visible": "hidden"
                   }}
+                  disabled={BloquearCamposAcceso("CrearNuevoTercero")}
               >
                   Crear tercero
               </Button>

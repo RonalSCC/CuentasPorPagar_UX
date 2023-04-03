@@ -8,7 +8,14 @@ export interface IPropsCardInformacionGeneral{
     MetodoEditar: Function,
     propsTypography?: Record<string, string>
 }
-export default function CardInformacionGeneral({Titulo,children,MetodoEditar, propsTypography}:IPropsCardInformacionGeneral) {
+export default function CardInformacionGeneral(CardInformacionGeneralProps:IPropsCardInformacionGeneral) {
+
+    const {
+        Titulo,
+        children,
+        MetodoEditar, 
+        propsTypography
+    } = CardInformacionGeneralProps;
   return (
     <Card sx={{backgroundColor:"white"}}>
         <Stack direction="column" padding={2} gap={1.5}>

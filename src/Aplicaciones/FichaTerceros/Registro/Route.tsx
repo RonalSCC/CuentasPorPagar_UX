@@ -10,6 +10,7 @@ import DocumentosDeTerceros from "./Componentes/ConfiguracionAvanzada/Documentos
 import EmbargoEndoso from "./Componentes/ConfiguracionAvanzada/EmbargoEndoso/EmbargoEndoso";
 import FormularioEdicionTercero from "./Componentes/InformacionGeneral/FormularioEdicionTercero";
 import CuentasBancariasProveedor from "../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor";
+import DescuentosTerceroProveedor from "../Contextos/Registro/Descuentos/DescuentosTercerosProveedor";
 const CambiarTerceroMientras = ()=>{
 
 }
@@ -41,7 +42,9 @@ const RoutesMarcoTerceros:RouteObject[] = [
             },
             {
                 path:"RegistroDeDescuentos",
-                element:<RegistroDeDescuentos />,
+                element:<DescuentosTerceroProveedor>
+                    <RegistroDeDescuentos />
+                </DescuentosTerceroProveedor>
             },
             {
                 path:"DocumentosDeTerceros",

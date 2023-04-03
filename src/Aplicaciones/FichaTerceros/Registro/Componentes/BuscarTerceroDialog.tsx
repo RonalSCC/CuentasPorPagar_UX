@@ -4,17 +4,17 @@ import AutocompleteTerceros from './Generales/AutocompleteTerceros'
 import Image from 'mui-image';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
-export default function BuscarTerceroDialog(
-  {
+export interface IPropsBuscarTerceroDialog {
+  DialogAbierto: boolean,
+    CerrarBuscarTercero : Function
+}
+export default function BuscarTerceroDialog(BuscarTerceroDialogProps:IPropsBuscarTerceroDialog) 
+{
+  const {
     DialogAbierto,
     CerrarBuscarTercero
-  }:
-  {
-    DialogAbierto: boolean,
-    CerrarBuscarTercero : Function
-  }
-) 
-{
+  } = BuscarTerceroDialogProps
+  
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
 
   const CambiarTercero = (seleccion:any) => {

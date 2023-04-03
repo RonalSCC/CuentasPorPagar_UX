@@ -24,9 +24,6 @@ export default function VisualizacionCuentas() {
     } = paramsCuentasBancariasContexto;
 
     const [ListaCuentas, setListaCuentas] = useState<Array<ICuentaBancaria>>([])
-    const CambiarCuentaExpandida = (Cuenta:ICuentaBancaria)=>{
-        CambiarCuentaSeleccionada(Cuenta);
-    }
 
     useEffect(() => {
       ConsultarInformacionCuentas();
@@ -74,8 +71,8 @@ export default function VisualizacionCuentas() {
     
   return (
     <>
-        <Stack direction="column" gap={3} padding={3} width="100%">
-            <Stack direction="column" gap={1.5} >
+        <Stack direction="column" gap={3} paddingY={1.5} width="100%">
+            <Stack direction="column" gap={1} >
                 {
                     ListaCuentas.map(Cuenta => {
                         return <CardCuenta 

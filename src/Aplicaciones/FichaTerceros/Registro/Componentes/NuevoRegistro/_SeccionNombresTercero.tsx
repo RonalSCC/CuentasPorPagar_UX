@@ -1,9 +1,15 @@
 import { Stack, TextField } from '@mui/material'
 import { useFormContext, Controller } from 'react-hook-form'
-import React from 'react'
+import React, { useContext } from 'react'
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 
 export default function _SeccionNombreTercero() {
 
+    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+    const {
+       BloquearCamposAcceso
+     } = propsTercerosContexto;
     const { control } = useFormContext();
 
     return (
@@ -26,6 +32,7 @@ export default function _SeccionNombreTercero() {
                             required
                             error={!!errors.terPrimerNombre}
                             helperText={errors.terPrimerNombre && `${errors.terPrimerNombre.message}`}
+                            disabled={BloquearCamposAcceso("TerNombre")}
                         />
                     )}
                 />
@@ -42,6 +49,7 @@ export default function _SeccionNombreTercero() {
                             id="terSegundoNombre"
                             label="Segundo nombre"
                             placeholder='Segundo Nombre'
+                            disabled={BloquearCamposAcceso("TerNombre")}
                         />
                     )}
                 />
@@ -63,6 +71,7 @@ export default function _SeccionNombreTercero() {
                             required
                             error={!!errors.terPrimerApellido}
                             helperText={errors.terPrimerApellido && `${errors.terPrimerApellido.message}`}
+                            disabled={BloquearCamposAcceso("TerNombre")}
                         />
                     )}
                 />
@@ -78,6 +87,7 @@ export default function _SeccionNombreTercero() {
                             id="terSegundoApellido"
                             label="Segundo apellido"
                             placeholder='Segundo Apellido'
+                            disabled={BloquearCamposAcceso("TerNombre")}
                         />
                     )}
                 />

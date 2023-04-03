@@ -9,23 +9,23 @@ export interface PropsModalEliminar {
     FunCerrarModal: Function,
     FunEliminarRegistro : Function
 }
-export default function ModalEliminar(
-    {
-        Titulo,
-        Texto,
-        ImageSRC,
-        FunCerrarModal, 
-        FunEliminarRegistro
-    }:PropsModalEliminar
-) {
+export default function ModalEliminar(ModalEliminarProps:PropsModalEliminar) {
+  const {
+    Titulo,
+    Texto,
+    ImageSRC,
+    FunCerrarModal, 
+    FunEliminarRegistro
+  } = ModalEliminarProps;
   return (
     <Dialog
         open={true}
         onClose={() => FunCerrarModal()}
         maxWidth="xs"
+        fullWidth
       >
-        <Stack p={3} gap={3} maxWidth={444}>
-          <Stack maxWidth={211} alignSelf="center">
+        <Stack  p={3} gap={3} >
+          <Stack  alignSelf="center">
             <Image fit='cover' src={ImageSRC} alt="" />
           </Stack>
           <Stack direction="column" gap={1}>
