@@ -6,15 +6,16 @@ import { TercerosContexto } from '../../../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../../../Contextos/TercerosProveedor';
 import IDocumentoTercero from '../../../../Interfaces/Registro/ConfiguracionAvanzada/DocumentosTercero/IDocumentoTercero';
 import SinInformacion from '../../Generales/SinInformacion';
-import { DocumentoTerceroCard } from './DocumentoTerceroCard';
-import { FormularioCargarDocumento } from './FormularioCargarDocumento';
-import VisorDocumentos from './VisorDocumentos';
+import { DocumentoTerceroCard } from './_DocumentoTerceroCard';
+import { FormularioCargarDocumento } from './_FormularioCargarDocumento';
+import VisorDocumentos from './_VisorDocumentos';
 
 const DocumentosDeTerceros = () => {
 
   // Contexto tercero
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
   const {
+    BloquearCamposAcceso,
     TerceroSeleccionadoLista
   } = propsTercerosContexto;
 
@@ -26,7 +27,9 @@ const DocumentosDeTerceros = () => {
     ConsultarDocumentosTercero();
   }, []);
   
-  const VerModalCargarDocumentos = () => setverModalCargarDocumento(!verModalCargarDocumento)
+  const VerModalCargarDocumentos = (estado:boolean) => {
+    setverModalCargarDocumento(estado);
+  }
 
   const ConsultarDocumentosTercero = useCallback(()=>{
     SendRequest.get({
@@ -50,7 +53,8 @@ const DocumentosDeTerceros = () => {
     <Stack width={"100%"} height={"100%"} alignItems="flex-start" gap={1.5}>
       <Button
           startIcon={<Add/>}
-          onClick={()=> VerModalCargarDocumentos()}
+          onClick={()=> VerModalCargarDocumentos(true)}
+          disabled={BloquearCamposAcceso("AdminDocumentosTercero")}
       >
           Cargar documento
       </Button>
@@ -60,6 +64,7 @@ const DocumentosDeTerceros = () => {
               documentosTerceros.map(doc => (
                 <DocumentoTerceroCard 
                   CambiarDocumentoVisor={CambiarDocumentoVisor}
+                  reloadDocumentosTercero={ConsultarDocumentosTercero}
                   InfoDocumento={doc}/>
               ))
         }
@@ -74,7 +79,9 @@ const DocumentosDeTerceros = () => {
 
       {
         verModalCargarDocumento == true &&
-        <FormularioCargarDocumento estado={verModalCargarDocumento} cambiarEstado={VerModalCargarDocumentos} title="Cargar Documento" />
+        <FormularioCargarDocumento 
+          cambiarEstado={VerModalCargarDocumentos}
+          consultarDocumentos={ConsultarDocumentosTercero}/>
       }
 
       {

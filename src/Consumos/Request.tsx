@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestHeaders } from 'axios';
+import axios, { AxiosInstance, AxiosRequestHeaders, RawAxiosRequestHeaders } from 'axios';
 import { useState, useEffect } from 'react';
 import { CrearPeticionAxios } from './APIManager';
 import IRespuestaGeneral from './IRespuestaGeneral';
@@ -12,13 +12,14 @@ export interface SendRequestAxios {
     API: "CONFIGURACION"|"CUENTASPORPAGAR",
     URLServicio: string,
     Body?: any,
-    Headers?: AxiosRequestHeaders,
+    Headers?: RawAxiosRequestHeaders,
     ShowLoader?:boolean 
 }
 
 export interface RequestAYF {
     post(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
     get(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
+    getAny(DatosEnvio:SendRequestAxios): Promise<any>,
     delete(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
     put(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
 }
@@ -78,6 +79,37 @@ export const SendRequest: RequestAYF = {
             }
         )
         .then(function({data}:{data:IRespuestaGeneral}){
+            return data;
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+        .finally(function(){
+            if (ShowLoader == true) {
+                VerOcultarLoader(false);
+            }
+        });
+    },
+    async getAny(
+        {
+            API,
+            ShowLoader = true,
+            URLServicio,
+            Body,
+            Headers
+        }
+    ) {
+        const axiosRequest = GetInstanceAxios(API);
+        if (ShowLoader == true) {
+            VerOcultarLoader(true);
+        }
+        return await axiosRequest.get(
+            URLServicio, 
+            {
+                params:Body
+            }
+        )
+        .then(function({data}:{data:any}){
             return data;
         })
         .catch(function(error){

@@ -41,7 +41,6 @@ export default function VisorDocumentos(VisorDocumentosProps: IPropsVisorDocumen
     <Dialog
         open={dialogAbierto}
         keepMounted
-        // onClose={()=> CerrarModal(false)}
         maxWidth="xl"
         fullWidth
         sx={{ '& .MuiPaper-root': { height: "100%"} }}
@@ -64,57 +63,13 @@ export default function VisorDocumentos(VisorDocumentosProps: IPropsVisorDocumen
         <Stack position={"relative"} overflow={"auto"} height={"100%"}>
             {
                 extension == "pdf" &&
-                <iframe src={"https://www.africau.edu/images/default/sample.pdf"} height="100%" width={"100%"} style={{border: "0px"}}></iframe>
+                <iframe src={documentoVisor.terRutaDocumento} height="100%" width={"100%"} style={{border: "0px"}}></iframe>
             }
 
             {
                 (extension == "png" || extension == "jpg" || extension == "jpeg") &&
-                <Image bgColor={"black"} fit="contain" src="https://www.webyempresas.com/wp-content/uploads/2021/02/imagen-publica-700x408.jpg" />
+                <Image bgColor={"black"} fit="contain" src={documentoVisor.terRutaDocumento} />
             }
-
-            {
-                (extension == "xlsx" ) &&
-                <iframe src={`https://view.officeapps.live.com/op/embed.aspx?src=${documentoVisor.terRutaDocumento}`} height="100%" width={"100%"} style={{border: "0px"}}></iframe>
-            }
-            <Stack 
-                position={"absolute"}
-                width="20%"
-                borderRadius={"3px"}
-                right={"50%"}
-                overflow="hidden"
-                bottom={"2%"}
-                boxShadow={"0px 0px 3px rgba(0,0,0,.2)"}
-                padding={.5}
-                zIndex={10}
-                sx={{
-                    background: "linear-gradient(90deg, gainsboro, rgba(255,255,255,.3))"
-                }}
-            >
-                <Stack direction={"row"} alignItems="center" gap={.5}>
-                    <Typography variant='body1' color="text.secondary">
-                        <b>Nombre:</b>
-                    </Typography>
-                    <Typography noWrap variant='body2' color="text.secondary">
-                        {documentoVisor.terImgNombreReal}
-                    </Typography>
-                </Stack>
-                <Stack direction={"row"} alignItems="center" gap={.5}>
-                    <Typography  variant='body1' color="text.secondary">
-                        <b>Tipo:</b>
-                    </Typography>
-                    <Typography noWrap variant='body2' color="text.secondary">
-                        {documentoVisor.terTipoDocDesc}
-                    </Typography>
-                </Stack>
-                <Stack direction={"row"} alignItems="center" gap={.5}>
-                    <Typography  variant='body1' color="text.secondary">
-                        <b>Extensión:</b>
-                    </Typography>
-                    <Typography noWrap variant='body2' color="text.secondary">
-                        {extension}
-                    </Typography>
-                </Stack>
-            </Stack>
         </Stack>
       </Dialog>
   )

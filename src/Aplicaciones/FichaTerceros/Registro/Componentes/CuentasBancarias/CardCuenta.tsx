@@ -1,6 +1,6 @@
 import { ExpandLessOutlined, ExpandMoreOutlined } from '@mui/icons-material'
 import { Alert, Card, CardContent, Chip, Divider, FormControlLabel, FormGroup, IconButton, Stack, Switch, Typography } from '@mui/material'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { GetValueOrDefault } from '../../../../../Utilidades/GetValueOrDefault'
 import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto'
 import { ICuentaBancaria } from '../../../Interfaces/Registro/CuentasBancarias/ICuentaBancaria'
@@ -25,6 +25,9 @@ export default function CardCuenta(CardCuentaProps:PropsCardCuenta) {
     } = CardCuentaProps;
 
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {
+        BloquearCamposAcceso
+    } = propsTercerosContexto;
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
     const {
         CambiarCuentaSeleccionada,
@@ -35,7 +38,7 @@ export default function CardCuenta(CardCuentaProps:PropsCardCuenta) {
     
     let Config_CTB_MATRICULARIESGOS:IConfigInfo = Configs && Configs["CTB_MATRICULARIESGOS"];
     let SucursalPrincipalGeneral = objInfoCuenta.tcbListaSucursales.filter(suc => suc.sucPrincipal == true);
-
+    
     const CambiarEstadoCuenta = async(event: React.ChangeEvent<HTMLInputElement>, checked: boolean)=> {
 
         let dataSend:IEnvioAPIGuardarEditarCuenta ={
@@ -142,7 +145,8 @@ export default function CardCuenta(CardCuentaProps:PropsCardCuenta) {
                             <FormGroup>
                                 <FormControlLabel 
                                     control={
-                                        <Switch 
+                                        <Switch
+                                            disabled={BloquearCamposAcceso("CBEstado")}
                                             onChange={(event,checked)=> CambiarEstadoCuenta(event,checked)} 
                                             defaultChecked={objInfoCuenta.tcbActiva} 
                                         />} 

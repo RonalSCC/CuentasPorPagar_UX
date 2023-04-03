@@ -10,6 +10,7 @@ import { CrearPeticion } from '../../../../../Consumos/APIManager'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { IInfoUsuario } from '../InformacionGeneral/InformacionGeneralDatos'
 import SinInformacion from '../Generales/SinInformacion'
+import { SendRequest } from '../../../../../Consumos/Request'
 
 export interface IContacto {
     conId: number,
@@ -31,49 +32,52 @@ export interface IContacto {
 export default function Contactos() {
 
     const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+    const {
+        BloquearCamposAcceso
+    } = propsTercerosContexto;
     const [verModalNuevoContacto, setverModalNuevoContacto] = useState(false);
     const [contactosList, setContactosList] = useState<Array<IContacto>>([]);
 
     const location = useLocation();
     const navigate = useNavigate();
     const ConsultarListaContactos = async () => {
-        const response = await CrearPeticion({
+
+        SendRequest.get({
             API: "CUENTASPORPAGAR",
-            URLServicio: "/AdministracionTerceros/Consultar_ContactosTerceros",
-            Type: "POST",
+            URLServicio: "/ContactosTercero/Consultar_ContactosTerceros",
             Body: {
                 TerId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID
             }
+        }).then((response) => {
+            if (response) {
+                if (response.ok) {
+                    setContactosList(response.datos)
+                }
+                else if (response.errores && response.errores.length > 0) {
+                    propsTercerosContexto.CambiarAlertas(
+                        response.errores.map(x => {
+                            return <>
+                                <Alert
+                                    key={x.descripcion}
+                                    severity="warning"
+                                    onClose={() => propsTercerosContexto.CerrarAlertas()}
+                                >
+                                    <AlertTitle>Error</AlertTitle>
+                                    {x.descripcion}
+                                </Alert>
+                            </>;
+                        })
+                    );
+                }
+            }
         });
-
-        if (response != null) {
-            if (response.ok) {
-                setContactosList(response.datos)
-            }
-            else if (response.errores && response.errores.length > 0) {
-                propsTercerosContexto.CambiarAlertas(
-                    response.errores.map(x => {
-                        return <>
-                            <Alert
-                                key={x.descripcion}
-                                severity="warning"
-                                onClose={() => propsTercerosContexto.CerrarAlertas()}
-                            >
-                                <AlertTitle>Error</AlertTitle>
-                                {x.descripcion}
-                            </Alert>
-                        </>;
-                    })
-                );
-            }
-        }
     }
 
     const VerModalNuevoContacto = () => {
         setverModalNuevoContacto(!verModalNuevoContacto);
     }
 
-    useEffect(() => {
+    useEffect(() => {   
         ConsultarListaContactos();
     }, [propsTercerosContexto.TerceroSeleccionadoLista])
 
@@ -90,8 +94,10 @@ export default function Contactos() {
                 <Button 
                     variant="text"
                     startIcon={<Add color="primary"></Add>}
-                    onClick={VerModalNuevoContacto}>
-                        Agregar Contacto
+                    onClick={VerModalNuevoContacto}
+                    disabled={BloquearCamposAcceso("DatosContactos")}
+                >
+                    Agregar Contacto
                 </Button>
             </Stack>
             <Stack gap={1} direction="row" flexWrap="wrap">

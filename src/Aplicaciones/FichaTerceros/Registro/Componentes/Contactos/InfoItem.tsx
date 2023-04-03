@@ -17,10 +17,16 @@ const InfoItem = (InfoItemProps: InfoItemPorps) => {
 
   return (
     
-    <Stack>
+    <Stack overflow={"hidden"}>
       <Typography color={color} variant="body2">{title}</Typography>
       <Tooltip title={ showTooltip  ? text : ""} placement="top" arrow>
-        <Typography variant='body1' noWrap color={color}>{(text == null || text =="") ? "-":text }</Typography>
+        <Typography 
+          variant='body1' 
+          noWrap
+          color={"text.secondary"}
+          >
+            {text ? text : "-"}
+          </Typography>
       </Tooltip>
     </Stack>
     

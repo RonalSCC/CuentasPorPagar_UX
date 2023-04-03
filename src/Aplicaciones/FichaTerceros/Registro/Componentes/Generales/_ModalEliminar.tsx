@@ -22,9 +22,10 @@ export default function ModalEliminar(ModalEliminarProps:PropsModalEliminar) {
         open={true}
         onClose={() => FunCerrarModal()}
         maxWidth="xs"
+        fullWidth
       >
-        <Stack p={3} gap={3} maxWidth={444}>
-          <Stack maxWidth={211} alignSelf="center">
+        <Stack  p={3} gap={3} >
+          <Stack  alignSelf="center">
             <Image fit='cover' src={ImageSRC} alt="" />
           </Stack>
           <Stack direction="column" gap={1}>

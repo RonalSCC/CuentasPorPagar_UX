@@ -12,6 +12,8 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { IContacto } from './Contactos';
 import { useNavigate } from 'react-router-dom';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { SendRequest } from '../../../../../Consumos/Request';
 
 export interface FormularioContactoProps {
    estado: boolean,
@@ -21,7 +23,11 @@ export interface FormularioContactoProps {
 
 const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContactoProps) => {
 
-   const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
+   const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+   const {
+      TerceroSeleccionadoLista
+   } = propsTercerosContexto;
+
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
    const [ListaTipoContactos, setListaTipoContactos] = useState<Array<ITipoContactos>>([]);
    const [Configs, setConfigs] = useState<any>()
@@ -173,23 +179,21 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
 
    //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
    const onClickSubmit = async (data: any) => {
-      data.tcCelular = data.tcCelular && data.tcCelular.toString();
-      data.tcExtension = data.tcExtension && data.tcExtension.toString();
-      data.tcTelefono = data.tcTelefono && data.tcTelefono.toString();
+      console.log(data);
+      // data.tcCelular = data.tcCelular && data.tcCelular.toString();
+      // data.tcExtension = data.tcExtension && data.tcExtension.toString();
+      // data.tcTelefono = data.tcTelefono && data.tcTelefono.toString();
 
-      await CrearPeticion({
+      SendRequest.put({
          API: "CUENTASPORPAGAR",
-         Type: "POST",
          URLServicio:
             contact ?
-               "/AdministracionTerceros/ActualizarContactoTercero"
+               "/ContactosTercero/ActualizarContactoTercero"
                :
-               "/AdministracionTerceros/CrearContactoTercero",
+               "/ContactosTercero/CrearContactoTercero",
          Body: {
             tcId: contact?.conId,
-            tcTercero: 5,
-            tcTipoDocumento: "CC",//Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
-            tcNumeroIdentificacion: getRandomInt(10,100000).toString(), //Eliminar cuando se modifique el API en la creación de tercero (Quitar Tipo y numero de doc)
+            tcTercero: TerceroSeleccionadoLista?.TerID,
             ...data
          }
       }).then((response) => {

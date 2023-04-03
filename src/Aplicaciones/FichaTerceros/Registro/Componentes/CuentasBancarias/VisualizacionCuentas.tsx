@@ -71,8 +71,8 @@ export default function VisualizacionCuentas() {
     
   return (
     <>
-        <Stack direction="column" gap={3} padding={3} width="100%">
-            <Stack direction="column" gap={1.5} >
+        <Stack direction="column" gap={3} paddingY={1.5} width="100%">
+            <Stack direction="column" gap={1} >
                 {
                     ListaCuentas.map(Cuenta => {
                         return <CardCuenta 

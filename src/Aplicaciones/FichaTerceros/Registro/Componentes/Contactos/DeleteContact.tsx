@@ -26,7 +26,7 @@ const DeleteContact = (DeleteContactProps: DeleteContactProps) => {
 
     let PorpsDefaultRequest:CrearPeticionAxios = {
       API: 'CUENTASPORPAGAR',
-      URLServicio: '/AdministracionTerceros/EliminarContactoTercero',
+      URLServicio: '/ContactosTercero/EliminarContactoTercero',
       Type: 'DELETE',
       Body: {
         idContacto: id

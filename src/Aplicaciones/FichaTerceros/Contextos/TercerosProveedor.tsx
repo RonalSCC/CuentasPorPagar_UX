@@ -25,7 +25,7 @@ export interface PropsTerceroContexto {
     CerrarAlertas: Function,
     ObjConfigs:any,
     CambiarEstadoLoader: (estado: boolean) => void,
-    AccesosFicha: Array<IAccesosFicha>
+    BloquearCamposAcceso: (ID: string) => boolean
 }
 export default function TercerosProveedor(
     {
@@ -42,6 +42,7 @@ export default function TercerosProveedor(
     const [ObjConfigs, setObjConfigs] = useState<any>({});
     const [Loader, setLoader] = useState(false);
     const [AccesosFicha, setAccesosFicha] = useState<Array<IAccesosFicha>>([]);
+
     useEffect(() => {
         ConsultarConfigs();
         ConsultarAccesosFicha();
@@ -135,6 +136,15 @@ export default function TercerosProveedor(
             }
         }
     }
+    
+    const BloquearCamposAcceso = (ID:string) => {
+        let itemExists = AccesosFicha.filter(ele => ele.caftdElemento == ID);
+        if (itemExists && itemExists.length > 0) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     const propsTercerosContexto:PropsTerceroContexto = {
         TerceroSeleccionadoLista: terceroSeleccionadoLista, 
@@ -147,7 +157,7 @@ export default function TercerosProveedor(
         CerrarAlertas,
         ObjConfigs,
         CambiarEstadoLoader,
-        AccesosFicha
+        BloquearCamposAcceso
     };
 
     return (

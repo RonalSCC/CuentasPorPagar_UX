@@ -31,11 +31,15 @@ import _SeccionContactoTercero from '../NuevoRegistro/_SeccionContactoTercero';
 import { IActividadesEconomicas } from '../../../Interfaces/Generales/IActividadesEconomicas';
 import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+import { SendRequest } from '../../../../../Consumos/Request';
 
 export default function EditarInformacionGeneral() {
 
    const { state: InfoTercero } = useLocation();
    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+   const {
+      BloquearCamposAcceso
+    } = propsTercerosContexto;
    const [verModalDireccion, setVerModalDireccion] = useState(false);
    const [ListaFormaDePago, setListaFormaDePago] = useState<Array<IFormaPago>>([]);
    const [ListaActividadesEconomicas, setListaActividadesEconomicas] = useState<Array<IActividadesEconomicas>>([])
@@ -283,14 +287,9 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
+      SendRequest.post({
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
-         Type: "POST"
-      };
-
-      await CrearPeticion({
-         ...PropsDefaultRequestConfigs,
          Body: {
             usuarioID: 1,
             listaConfigs: [
@@ -322,7 +321,6 @@ export default function EditarInformacionGeneral() {
    }
 
    useEffect(() => {
-      console.log(InfoTercero)
       if (InfoTercero) {
          setValue('terNatJur', InfoTercero.terTipoPersona || "")
          setValue('terRazonSocial', InfoTercero.terRazonSocial || "")
@@ -388,8 +386,8 @@ export default function EditarInformacionGeneral() {
                                        aria-labelledby="demo-row-radio-buttons-group-label"
                                        name="terTipoPersona"
                                     >
-                                       <FormControlLabel value={'N'} control={<Radio />} label="Natural" />
-                                       <FormControlLabel value={'J'} control={<Radio />} label="Jurídica" />
+                                       <FormControlLabel value={'N'} control={<Radio disabled={BloquearCamposAcceso("TerTipoNIT")}/>} label="Natural" />
+                                       <FormControlLabel value={'J'} control={<Radio disabled={BloquearCamposAcceso("TerTipoNIT")}/>} label="Jurídica" />
                                     </RadioGroup>
                                  )}
                               />
@@ -403,7 +401,12 @@ export default function EditarInformacionGeneral() {
                               defaultValue={false}
                               render={({ field: { onChange, value } }) => (
                                  <FormControlLabel
-                                    control={<Switch checked={value} onChange={(e) => onChange(e.target.checked)} />}
+                                    control={
+                                       <Switch 
+                                          checked={value} 
+                                          onChange={(e) => onChange(e.target.checked)} 
+                                          disabled={BloquearCamposAcceso("TerEstado")}
+                                       />}
                                     label="Activo"
                                  />
                               )}
@@ -443,6 +446,7 @@ export default function EditarInformacionGeneral() {
                                        required
                                        error={!!errors.terTipoDocumento}
                                        helperText={errors.terTipoDocumento && `${errors.terTipoDocumento.message}`}
+                                       disabled={BloquearCamposAcceso("TerTipoIdentificacion")}
                                     >
                                        {
                                           ListaTipoDocumento.map(data => {
@@ -466,6 +470,7 @@ export default function EditarInformacionGeneral() {
                                     type="text"
                                     error={!!errors.terNumeroIdentificacion}
                                     helperText={errors.terNumeroIdentificacion && `${errors.terNumeroIdentificacion.message}`}
+                                    disabled={BloquearCamposAcceso("TerNit")}
                                  />
                               )}
                            />
@@ -482,6 +487,7 @@ export default function EditarInformacionGeneral() {
                                     type="text"
                                     error={!!errors.terDigitoV}
                                     helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
+                                    disabled={BloquearCamposAcceso("TerDV")}
                                     sx={{
                                        width: "20%"
                                     }}
@@ -506,6 +512,7 @@ export default function EditarInformacionGeneral() {
                                     required
                                     error={!!errors.terFormaPago}
                                     helperText={errors.terFormaPago && `${errors.terFormaPago.message}`}
+                                    disabled={BloquearCamposAcceso("TerFormaPago")}
                                  >
                                     {
                                        ListaFormaDePago.map(data => {
@@ -540,6 +547,7 @@ export default function EditarInformacionGeneral() {
                                     placeholder='Ciudad'
                                     error={!!errors.terCiudad}
                                     helperText={errors.terCiudad && `${errors.terCiudad.message}`}
+                                    disabled={BloquearCamposAcceso("TerCiudad")}
                                  >
                                     {
                                        ListaCiudades.map(ciudad => {
@@ -565,11 +573,17 @@ export default function EditarInformacionGeneral() {
                                     label="Dirección"
                                     error={!!errors.terDireccion}
                                     helperText={errors.terDireccion && `${errors.terDireccion.message}`}
+                                    disabled={BloquearCamposAcceso("TerDireccion")}
                                  />
                               )}
                            />
 
-                           <IconButton onClick={VerFormularioDirecciones} size='small' sx={{ cursor: "pointer" }} >
+                           <IconButton 
+                              onClick={VerFormularioDirecciones} 
+                              size='small' 
+                              sx={{ cursor: "pointer" }} 
+                              disabled={BloquearCamposAcceso("TerDireccion")}
+                           >
                               <Edit fontSize='small' />
                            </IconButton>
                            {
@@ -601,6 +615,7 @@ export default function EditarInformacionGeneral() {
                                     select
                                     error={!!errors.terTipo}
                                     helperText={errors.terTipo && `${errors.terTipo.message}`}
+                                    disabled={BloquearCamposAcceso("TerTipoTercero")}
 
                                  >
                                     {
@@ -632,6 +647,7 @@ export default function EditarInformacionGeneral() {
                                     select
                                     error={!!errors.terSubTipo}
                                     helperText={errors.terSubTipo && `${errors.terSubTipo.message}`}
+                                    disabled={BloquearCamposAcceso("TerTipoTercero")}
                                  >
                                     {
                                        ListaSubTiposTercero.map(data => {
@@ -662,6 +678,7 @@ export default function EditarInformacionGeneral() {
                                     select
                                     error={!!errors.terActividadEconomica}
                                     helperText={errors.terActividadEconomica && `${errors.terActividadEconomica.message}`}
+                                    disabled={BloquearCamposAcceso("TerActividadEconomica")}
                                  >
 
                                     {
@@ -674,7 +691,7 @@ export default function EditarInformacionGeneral() {
                            />
                         </FormControl>
 
-                        <Controller
+                        {/* <Controller
                            control={control}
                            name="terEmail"
                            render={({ field, formState: { errors } }) => (
@@ -688,9 +705,10 @@ export default function EditarInformacionGeneral() {
                                  label="Email"
                                  error={!!errors.terEmail}
                                  helperText={errors.terEmail && `${errors.terEmail.message}`}
+                                 disabled={BloquearCamposAcceso("TerActividadEconomica")}
                               />
                            )}
-                        />
+                        /> */}
                      </Stack>
 
                      <Stack direction={"row"} gap={.5} >
@@ -710,6 +728,7 @@ export default function EditarInformacionGeneral() {
                                     label='* Teléfono'
                                     error={!!errors.terTelefono}
                                     helperText={errors.terTelefono && `${errors.terTelefono.message}`}
+                                    disabled={BloquearCamposAcceso("TerTelefono")}
                                  />
                               )}
                            />
@@ -737,6 +756,7 @@ export default function EditarInformacionGeneral() {
                                     label='* Teléfono celular'
                                     error={!!errors.terCelular}
                                     helperText={errors.terCelular && `${errors.terCelular.message}`}
+                                    disabled={BloquearCamposAcceso("TerTelefono")}
                                  />
                               )}
                            />
@@ -763,6 +783,7 @@ export default function EditarInformacionGeneral() {
                               label="Observaciones"
                               error={!!errors.terObservaciones}
                               helperText={errors.terObservaciones && `${errors.terObservaciones.message}`}
+                              disabled={BloquearCamposAcceso("TerObservaciones")}
                            />
                         )}
                      />
@@ -809,6 +830,7 @@ export default function EditarInformacionGeneral() {
                                  }}
                                  error={!!errors.terRepresentanteLNombre}
                                  helperText={errors.terRepresentanteLNombre && `${errors.terRepresentanteLNombre.message}`}
+                                 disabled={BloquearCamposAcceso("TerNombreRepLegal")}
                               />
                            )}
                         />
@@ -832,6 +854,7 @@ export default function EditarInformacionGeneral() {
                                        select
                                        error={!!errors.terRepresentanteLTipoIdentificacion}
                                        helperText={errors.terRepresentanteLTipoIdentificacion && `${errors.terRepresentanteLTipoIdentificacion.message}`}
+                                       disabled={BloquearCamposAcceso("TerDocumentoRepLegal")}
                                     >
                                        {
                                           ListaTipoDocumento.map(data => {
@@ -858,6 +881,7 @@ export default function EditarInformacionGeneral() {
                                     required
                                     error={!!errors.terRepresentanteLIdentificacion}
                                     helperText={errors.terRepresentanteLIdentificacion && `${errors.terRepresentanteLIdentificacion.message}`}
+                                    disabled={BloquearCamposAcceso("TerDocumentoRepLegal")}
                                  />
                               )}
                            />
@@ -878,6 +902,7 @@ export default function EditarInformacionGeneral() {
                                  required
                                  error={!!errors.terRepresentanteLExpedicion}
                                  helperText={errors.terRepresentanteLExpedicion && `${errors.terRepresentanteLExpedicion.message}`}
+                                 disabled={BloquearCamposAcceso("TerLugarExpedicionRepLegal")}
                               />
                            )}
                         />
@@ -896,6 +921,7 @@ export default function EditarInformacionGeneral() {
                                  required
                                  error={!!errors.terRepresentanteLEmail}
                                  helperText={errors.terRepresentanteLEmail && `${errors.terRepresentanteLEmail.message}`}
+                                 disabled={BloquearCamposAcceso("TerCorreoRepLegal")}
                               />
                            )}
                         />

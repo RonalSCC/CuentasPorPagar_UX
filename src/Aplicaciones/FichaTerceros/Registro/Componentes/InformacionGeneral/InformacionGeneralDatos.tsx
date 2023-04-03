@@ -19,7 +19,7 @@ export interface IInfoUsuario{
     terSegundoNombre?: null | string,
     terPrimerApellido?: null | string,
     terSegundoApellido?: null | string,
-    terNumeroIndentificaion?: null | string,
+    terNumeroIdentificacion?: null | string,
     terTipoIdentificacion?: null | string,
     terDiv?: null | string,
     terFormaPago?: null | string,
@@ -169,7 +169,7 @@ export default function InformacionGeneralDatos(props:any) {
 
                         <CampoValorInfoGeneral
                             Campo="Número de identificación:"
-                            Valor={`${InfoTercero?.terNumeroIndentificaion}`}
+                            Valor={`${InfoTercero?.terNumeroIdentificacion}`}
                         />
 
                         <CampoValorInfoGeneral
@@ -231,7 +231,7 @@ export default function InformacionGeneralDatos(props:any) {
                     <Stack direction="row" alignItems="center" gap={3}>
                         <CampoValorInfoGeneral
                             Campo="Observaciones:"
-                            Valor="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                            Valor={InfoTercero?.terObservaciones}
                             PropsRow={
                                 {
                                     width:"100%"

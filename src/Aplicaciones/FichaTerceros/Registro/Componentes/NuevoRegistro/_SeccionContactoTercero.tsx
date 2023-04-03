@@ -1,9 +1,15 @@
 import { Stack, TextField } from '@mui/material'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 
 export default function _SeccionContactoTercero() {
     
+    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+    const {
+       BloquearCamposAcceso
+     } = propsTercerosContexto;
     const {control} = useFormContext();
     
     return (
@@ -25,6 +31,7 @@ export default function _SeccionContactoTercero() {
                             label="Nombre"
                             error={!!errors.terContactoPrincipalNombre}
                             helperText={errors.terContactoPrincipalNombre && `${errors.terContactoPrincipalNombre.message}`}
+                            disabled={BloquearCamposAcceso("TerNombreContacto")}
                         />
                     )}
                 />
@@ -43,6 +50,7 @@ export default function _SeccionContactoTercero() {
                             label="Email"
                             error={!!errors.terContactoPrincipalEmail}
                             helperText={errors.terContactoPrincipalEmail && `${errors.terContactoPrincipalEmail.message}`}
+                            disabled={BloquearCamposAcceso("TerCorreoContacto")}
                         />
                     )}
                 />

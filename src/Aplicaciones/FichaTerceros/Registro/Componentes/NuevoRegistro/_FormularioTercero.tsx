@@ -265,7 +265,7 @@ export default function _FormularioTercero() {
          <FormProvider {...metodos}>
             <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"}>
                <Card style={{ backgroundColor: "white", width: "60%" }}>
-                  <Stack padding={3} gap={.5}>
+                  <Stack padding={3} gap={1}>
                      {/* Tipo de persona */}
                      <Stack direction="column">
                         <FormControl>
@@ -299,7 +299,7 @@ export default function _FormularioTercero() {
 
 
                      {/* Tipo Doc, Numero Ident, DV y Tipo */}
-                     <Stack direction="row" gap={.5}>
+                     <Stack direction="row" gap={1}>
                         <Stack width="50%" direction="column">
                            <Stack direction="row" gap={.5}>
                               <FormControl
@@ -517,9 +517,8 @@ export default function _FormularioTercero() {
                height={"7%"}
                width="100%"
                zIndex={1}
-               sx={{
-                  backgroundColor: "#EDEFF5",
-               }}
+               bgcolor="background.paper"       
+               borderTop={"1px solid rgba(16, 24, 64, 0.23)"}
             >
 
                <Stack direction="row" paddingX={3} gap={1.5}>

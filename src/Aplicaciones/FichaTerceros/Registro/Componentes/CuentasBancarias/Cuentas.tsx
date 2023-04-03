@@ -1,13 +1,20 @@
 import { Add } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, Fab, Stack, Typography } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, Fab, Stack, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react'
 import ModalFormNuevaCuenta from './_ModalFormEditarCrearCuenta';
 import SinCuentas from './SinCuentas';
 import VisualizacionCuentas from './VisualizacionCuentas';
 import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto';
 import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 
 export default function Cuentas() {
+
+    const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const { 
+    BloquearCamposAcceso 
+    } = propsTercerosContexto;
 
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
     const {
@@ -28,27 +35,22 @@ export default function Cuentas() {
     }
   return (
     <>
-        {
-            (!ListCuentasBancarias || ListCuentasBancarias.length == 0) ?
-            <VisualizacionCuentas />: 
-            <SinCuentas />
-        }
-
-            <Fab
-                onClick={AbrirDialogNuevaCuenta}
-                variant='extended'
-                size='medium'
-                sx={{
-                    backgroundColor: "secondary.main",
-                    position: "fixed",
-                    bottom: "24px",
-                    right: "24px"
-                }}
-                color="secondary"
+        <Stack alignItems={"flex-start"} width="100%" height={"100%"}>
+            <Button
+                disabled={BloquearCamposAcceso("CBCrearCuenta")}
+                startIcon={<Add/>}
+                onClick={()=> AbrirDialogNuevaCuenta()}
             >
-                <Add sx={{ color: 'secondary.contrast' }} />
                 Nueva cuenta bancaria
-            </Fab>
+            </Button>
+
+            {
+                (!ListCuentasBancarias || ListCuentasBancarias.length == 0) ?
+                <VisualizacionCuentas />: 
+                <SinCuentas />
+            }
+
+        </Stack>
 
         <ModalFormNuevaCuenta />
     </>

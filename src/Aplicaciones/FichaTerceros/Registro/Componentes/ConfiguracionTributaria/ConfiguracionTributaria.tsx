@@ -16,11 +16,16 @@ import CheckCard from './CheckCard'
 
 const ConfiguracionTributaria = () => {
 
-    const [ConfiguracionTributaria, setConfiguracionTributaria] = useState<Array<IImpuestoConfigTributaria>>([]);
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {
+        BloquearCamposAcceso,
+        CambiarAlertas
+    } = propsTercerosContexto;
+
+    const [ConfiguracionTributaria, setConfiguracionTributaria] = useState<Array<IImpuestoConfigTributaria>>([]);
     const {TerceroSeleccionadoLista} = propsTercerosContexto;
     const [ListaCambiosConfiguracion, setListaCambiosConfiguracion] = useState<Array<ICambioConfiguracionTributaria>>([]);
-    
+    const [PorcentICA, setPorcentICA] = useState<Number>(0);
     let {
         handleSubmit,
         control,
@@ -43,15 +48,6 @@ const ConfiguracionTributaria = () => {
         ConsultarConfiguracionTributaria();
     }, [])
 
-    useEffect(() => {
-        const PorcentajeICA = ConfiguracionTributaria.filter(ct => ct.id == "PORICA");
-        if (PorcentajeICA.length > 0 ) {
-            console.log(PorcentajeICA);
-            console.log(parseFloat(PorcentajeICA[0].valor));
-            setValue("PORICA",  parseFloat(PorcentajeICA[0].valor));
-        }
-    }, [ConfiguracionTributaria])
-    
     const ConsultarConfiguracionTributaria = async ()=> {
         SendRequest.get({
             API: "CUENTASPORPAGAR",
@@ -98,19 +94,45 @@ const ConfiguracionTributaria = () => {
     }
 
     const GuardarConfiguracion = () => {
-        SendRequest.put({
-            API: 'CUENTASPORPAGAR',
-            URLServicio: "/ConfiguracionTributariaTercero/Actualizar_ConfiguracionTributariaTercero",
-            Body:{
-                terID: TerceroSeleccionadoLista?.TerID,
-                listaConfiguraciones: ListaCambiosConfiguracion
+        if (ValidarPorcentajeICA()) {
+            let PorICA = ConfiguracionTributaria.filter(f => f.id == "PORICA");
+            if (PorICA && PorICA.length > 0) {
+                ListaCambiosConfiguracion.push({
+                    TCTId : PorICA[0].id,
+                    Valor: PorICA[0].valor
+                });
+            };
+            
+            SendRequest.put({
+                API: 'CUENTASPORPAGAR',
+                URLServicio: "/ConfiguracionTributariaTercero/Actualizar_ConfiguracionTributariaTercero",
+                Body:{
+                    terID: TerceroSeleccionadoLista?.TerID,
+                    listaConfiguraciones: ListaCambiosConfiguracion
+                }
+            }).then((respuesta)=> {
+                if (respuesta != null && respuesta.ok == true) {
+                    propsTercerosContexto.CambiarAlertas([<Alert severity="success">{respuesta.descripcion}</Alert>]);
+                    ConsultarConfiguracionTributaria();
+                }
+            });
+        }
+        
+    }
+
+    const ValidarPorcentajeICA = () =>{
+        let PorICA = ConfiguracionTributaria.filter(f => f.id == "PORICA");
+        if (PorICA && PorICA.length > 0) {
+            let valor = parseFloat(PorICA[0].valor);
+            if(valor > 0 && valor < 100){
+                return true;
+            }else{
+                CambiarAlertas([<Alert severity='warning'>El valor del porcentaje ICA no puede ser igual o menor a 0 ni igual o mayor a 100</Alert>])
+                return false;
             }
-        }).then((respuesta)=> {
-            if (respuesta != null && respuesta.ok == true) {
-                propsTercerosContexto.CambiarAlertas([<Alert severity="success">{respuesta.descripcion}</Alert>]);
-                ConsultarConfiguracionTributaria();
-            }
-        });
+        }else{
+            return true;
+        };
     }
 
     return (
@@ -151,6 +173,7 @@ const ConfiguracionTributaria = () => {
                                         CambiarValorLista(event, ct.id)
                                     }
                                     select
+                                    disabled={BloquearCamposAcceso(ct.idAcceso)}
                                 >
                                     {
                                         ct.lista?.map(item => {
@@ -160,38 +183,40 @@ const ConfiguracionTributaria = () => {
                                 </TextField>
                             )
                         }   
-
-                        <Controller
-                            name={"PORICA"}
-                            control={control}
-                            render={({field: { onChange, value }, fieldState: {error}}) => (
-                                <TextField
-                                    label="Porcentaje ICA" 
-                                    type={"number"}
-                                    sx={{width: "24.2%"}}
-                                    size="small" 
-                                    variant="outlined"
-                                    error={error ? true : false}
-                                    placeholder="Digite el porcentaje"
-                                    helperText={error?.message}
-                                    value={value}
-                                    onChange={(event)=> {
-                                        onChange(event.target.value);
-                                        CambiarValorLista(event, "PORICA");
-                                    }}
-                                    inputProps={{
-                                        step:"0.0001"
-                                    }}
-                                    InputProps={{
-                                        endAdornment: <InputAdornment position="start">
-                                            <Percent fontSize="small"></Percent>
-                                        </InputAdornment>
-                                    }}
-                                />   
-                            )}
-                        />
-
-                                     
+                        
+                        {
+                            ConfiguracionTributaria.map((ct,index) => {
+                                if (ct.id == "PORICA") {
+                                    console.log(ct);
+                                    console.log(parseFloat(ct.valor));
+                                    return <TextField
+                                                label={ct.nombreMostrar}
+                                                type={"number"}
+                                                sx={{width: "24.2%"}}
+                                                size="small" 
+                                                variant="outlined"
+                                                placeholder="Digite el porcentaje"
+                                                value={ct.valor ? Number(ct.valor.replace(',', '.')) : ""}
+                                                disabled={BloquearCamposAcceso(ct.id)}
+                                                onChange={(event)=> {
+                                                    ConfiguracionTributaria[index].valor = event.target.value;
+                                                    setConfiguracionTributaria([...ConfiguracionTributaria]);
+                                                    CambiarValorLista(event, ct.id);
+                                                }}
+                                                inputProps={{
+                                                    step:"0.0001"
+                                                }}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position="start">
+                                                        <Percent fontSize="small"></Percent>
+                                                    </InputAdornment>
+                                                }}
+                                            />   
+                                }
+                                
+                            })
+                        }
+                        
                     </Stack>
                     <Stack gap={1.5}>
                         <Stack gap={1.5} direction="row">
@@ -240,6 +265,7 @@ const ConfiguracionTributaria = () => {
                         size="small"
                         color='primary'
                         onClick={()=> GuardarConfiguracion()}
+                        disabled={BloquearCamposAcceso("CTGuardar")}
                     >
                         Guardar
                     </Button>

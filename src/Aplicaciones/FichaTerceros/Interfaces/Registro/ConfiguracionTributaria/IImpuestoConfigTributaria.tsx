@@ -5,7 +5,8 @@ export default interface IImpuestoConfigTributaria{
     oculto: boolean,
     valor: string,
     otrasConfiguraciones: boolean,
-    lista?: Array<IOpcionListaImpuestoConfig>
+    lista?: Array<IOpcionListaImpuestoConfig>,
+    idAcceso: string
 }
 
 interface IOpcionListaImpuestoConfig {

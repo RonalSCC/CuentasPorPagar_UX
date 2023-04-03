@@ -1,9 +1,16 @@
 import { Stack, TextField } from '@mui/material'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
+import { TercerosContexto } from '../../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 
 export default function _SeccionTipoPersona() {
     
+    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+    const {
+       BloquearCamposAcceso
+     } = propsTercerosContexto;
+
     const { control } = useFormContext();
     
     return (
@@ -21,6 +28,7 @@ export default function _SeccionTipoPersona() {
                         label="Razón Social"
                         error={!!errors.terRazonSocial}
                         helperText={errors.terRazonSocial && `${errors.terRazonSocial.message}`}
+                        disabled={BloquearCamposAcceso("TerNombre")}
                     />
                 )}
             />

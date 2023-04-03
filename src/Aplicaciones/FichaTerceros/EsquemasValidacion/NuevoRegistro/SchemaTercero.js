@@ -30,7 +30,7 @@ export const schemaTercero = ({
             .string(),
         terTipoDocumento: Yup
             .string()
-            .required("Debe seleccionar un tipo de identificación"),
+            .required("Selecciona"),
         terNumeroIdentificacion: Yup
             .number()
             .required("Debe ingresar el NIT del tercero")

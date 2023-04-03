@@ -12,6 +12,9 @@ export default function Terceros(props:any) {
 
   const navigate = useNavigate();
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+  const {
+    BloquearCamposAcceso
+  } = propsTercerosContexto
   const [buscarTerceroDialog, setBuscarTerceroDialog] = useState(false);
 
   useEffect(() => {
@@ -76,6 +79,7 @@ export default function Terceros(props:any) {
                   sx={{
                     visibility: propsTercerosContexto.TerceroSeleccionadoLista != null && !propsTercerosContexto.NuevoRegistro ? "visible": "hidden"
                   }}
+                  disabled={BloquearCamposAcceso("CrearNuevoTercero")}
               >
                   Crear tercero
               </Button>
