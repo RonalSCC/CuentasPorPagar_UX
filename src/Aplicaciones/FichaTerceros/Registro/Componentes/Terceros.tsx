@@ -25,7 +25,7 @@ export default function Terceros(props:any) {
         navigate("SinSeleccion");
       }
     }else{
-      navigate("FormularioRegistro");
+      navigate("FormularioCrearTercero");
     }
   }, [propsTercerosContexto.NuevoRegistro, propsTercerosContexto.TerceroSeleccionadoLista]);
 

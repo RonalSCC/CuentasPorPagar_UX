@@ -1,12 +1,19 @@
-#root, html, body{
+#root,
+html,
+body {
     height: 100%;
 }
 
-body{
+body {
     margin: 0px;
 }
 
-div:has(.UpZIndex){
+div:has(.UpZIndex) {
     z-index: 10000;
 }
 
+.MuiInputLabel-root.Mui-required {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: .2rem;
+}

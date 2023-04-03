@@ -8,7 +8,7 @@ import ConfiguracionTributaria from "./Componentes/ConfiguracionTributaria/Confi
 import RegistroDeDescuentos from './Componentes/RegistroDeDescuentos/RegistroDeDescuentos';
 import DocumentosDeTerceros from "./Componentes/ConfiguracionAvanzada/DocumentosDeTerceros/DocumentosDeTerceros";
 import EmbargoEndoso from "./Componentes/ConfiguracionAvanzada/EmbargoEndoso/EmbargoEndoso";
-import EditarInformacionGeneral from "./Componentes/InformacionGeneral/EditarInformacionGeneral";
+import FormularioEdicionTercero from "./Componentes/InformacionGeneral/FormularioEdicionTercero";
 import CuentasBancariasProveedor from "../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor";
 import DescuentosTerceroProveedor from "../Contextos/Registro/Descuentos/DescuentosTercerosProveedor";
 const CambiarTerceroMientras = ()=>{
@@ -27,7 +27,7 @@ const RoutesMarcoTerceros:RouteObject[] = [
             },
             {
                 path:"EditarInformacionGeneral",
-                element: <EditarInformacionGeneral />,
+                element: <FormularioEdicionTercero />,
                 index:true
             },
             {
