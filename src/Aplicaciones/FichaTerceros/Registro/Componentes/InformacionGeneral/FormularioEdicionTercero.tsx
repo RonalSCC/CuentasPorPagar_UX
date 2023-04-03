@@ -1,5 +1,5 @@
 // Componentes Material UI y react
-import { Alert, AlertTitle, Card, Chip, FormControl, FormControlLabel, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Stack, Switch, TextField, Typography } from '@mui/material'
+import { Alert, AlertTitle, Card, Chip, FormControl, FormControlLabel, FormGroup, IconButton, MenuItem, Radio, RadioGroup, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material'
 import React, { useContext, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useForm, FormProvider, Controller } from 'react-hook-form';
@@ -29,8 +29,9 @@ import _SeccionRazonSocial from '../NuevoRegistro/_SeccionRazonSocial';
 import _SeccionDireccionTercero from '../NuevoRegistro/_SeccionDireccionTercero';
 import _SeccionContactoTercero from '../NuevoRegistro/_SeccionContactoTercero';
 import { IActividadesEconomicas } from '../../../Interfaces/Generales/IActividadesEconomicas';
-import { schemaTercero } from '../../../EsquemasValidacion/NuevoRegistro/SchemaTercero';
+import { EsquemaEditarTercero } from '../../../EsquemasValidacion/CrearEditarTerceroSchema/EsquemaEditarTercero';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+import { SendRequest } from '../../../../../Consumos/Request';
 
 export default function EditarInformacionGeneral() {
 
@@ -47,16 +48,23 @@ export default function EditarInformacionGeneral() {
    const [Configs, setConfigs] = useState<any>()
 
    const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
-   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
    const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
+   const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"];
+   const TER_LONG_DV: IConfigValues = Configs && Configs["TER_LONG_DV"];
+   const TER_CAMBIANATJUR: IConfigValues = Configs && Configs["TER_CAMBIANATJUR"];
+   const TER_EDIT_DIR_TXT: IConfigValues = Configs && Configs["TER_EDIT_DIR_TXT"];
    const PROV_CORREO_CTO: IConfigValues = Configs && Configs["PROV_CORREO_CTO"];
+   const PROV_CORREO_RLEGAL: IConfigValues = Configs && Configs["PROV_CORREO_RLEGAL"]
+   const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
+   const TER_REQ_ACTIVECON: IConfigValues = Configs && Configs["TER_REQ_ACTIVECON"];
+   const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
 
    const metodos = useForm({
       defaultValues: {
          terNatJur: "",
-         terRazonSocial:"",
+         terRazonSocial: "",
          terPrimerNombre: "",
          terSegundoNombre: "",
          terPrimerApellido: "",
@@ -81,25 +89,42 @@ export default function EditarInformacionGeneral() {
          terRepresentanteLIdentificacion: "",
          terRepresentanteLExpedicion: "",
          terRepresentanteLEmail: "",
-         terEstado: false,
+         terEstado:false
       },
-      resolver: yupResolver(schemaTercero({
-         TER_VALIDA_DV,
+      resolver: yupResolver(EsquemaEditarTercero({
          TER_NOCALCULAR_DV,
          PROV_TELEFONO,
          TER_REQ_REPLEGAL,
          TER_FICHA_APIROS,
          PROV_CORREO_CTO,
-         editaTercero: true
-      }
-      )),
+         TER_PERMITECARACTER,
+         TER_CAMBIANATJUR,
+         PROV_CORREO_RLEGAL,
+         TER_REQ_ACTIVECON
+      })),
       mode: 'onSubmit',
    })
 
-   const { control, handleSubmit, watch, setValue } = metodos
+   const { control, handleSubmit, watch, setValue, getValues, trigger } = metodos
    const terNatJur = watch("terNatJur")
+   const terTipoDocumento = watch("terTipoDocumento")
 
    const navigate = useNavigate();
+
+   const PermiteCambiarNaturaleza = () => {
+      const tiposDocumentosPermitidos = TER_CAMBIANATJUR?.configObs.split(',') || []
+      const tipoDocumentoActual = getValues('terTipoDocumento')
+      const tipoPermitido = tiposDocumentosPermitidos.includes(tipoDocumentoActual) ? true : false
+
+      if (!tipoPermitido) {
+         let terNatJurActual = getValues('terNatJur')
+         
+         if(terNatJurActual != 'N')
+            setValue('terNatJur', 'N')
+      }
+
+      return tipoPermitido
+   }
 
    const propsInputs: Record<string, any> = {
       variant: "outlined",
@@ -108,13 +133,15 @@ export default function EditarInformacionGeneral() {
    };
 
    const GuardarInformacion = async (data: any) => {
-      let PropsDefaultRequest:CrearPeticionAxios = {
+      
+      SendRequest.put({
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/EditarTerceroFicha",
-         Type: "POST",
          Body: {
+            ...data,
             terId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID,
             terTipoIdentificacion: data.terTipoDocumento,
+            terNumeroIdentificacion: data.terNumeroIdentificacion.toString(),
             terTipoTercero: data.terTipo,
             terTipoProveedor: data.terSubTipo,
             terCIIU: data.terActividadEconomica,
@@ -122,68 +149,53 @@ export default function EditarInformacionGeneral() {
             terNombreContactoPrincipal: data.terContactoPrincipalNombre,
             terCorreoContactoPrincipal: data.terContactoPrincipalEmail,
             terNombreRepresentanteLegal: data.terRepresentanteLNombre,
-            //terTipoIdentificacionRepresentanteLegal: data.terRepresentanteLIdentificacion,
             terIdentificacionRepresentanteLegal: data.terRepresentanteLIdentificacion,
             terLugarExpedicionRepresentanteLegal: data.terRepresentanteLExpedicion,
             terCorreoRepresentanteLegal: data.terRepresentanteLEmail,
-            ...data,
-
+            terEstado: (data.terEstado) ? 1 : 0,
          }
-      };
+      }).then((respuesta) => {
+         if (respuesta) {
+            if (respuesta.ok) {
+               propsTercerosContexto.CambiarAlertas(
+                  [1].map(alert => {
+                     return <>
+                        <Alert
+                           key={1}
+                           severity="success"
+                           onClose={() => propsTercerosContexto.CerrarAlertas()}
+                        >
+                           <AlertTitle>!Bien hecho!</AlertTitle>
+                           El tercero ha sido actualizado con éxito
+                        </Alert>
+                     </>
+                  })
+               )
+               navigate('InformacionGeneralDatos')
 
-      console.log(PropsDefaultRequest.Body)
-      
-      
-      await CrearPeticion({
-         ...PropsDefaultRequest,   
-      })
-         .then(respuesta => {
-            if (respuesta) {
-               if (respuesta.ok) {
-                  propsTercerosContexto.CambiarAlertas(
-                     [1].map(alert => {
-                        return <>
-                           <Alert
-                              key={1}
-                              severity="success"
-                              onClose={() => propsTercerosContexto.CerrarAlertas()}
-                           >
-                              <AlertTitle>!Bien hecho!</AlertTitle>
-                              El tercero ha sido actualizado con éxito
-                           </Alert>
-                        </>
-                     })
-                  )
-                  navigate('InformacionGeneralDatos')
-
-               }
-               else if (respuesta.errores && respuesta.errores.length > 0) {
-                  propsTercerosContexto.CambiarAlertas(
-                     respuesta.errores.map(x => {
-                        return <>
-                           <Alert
-                              key={x.descripcion}
-                              severity="warning"
-                              onClose={() => propsTercerosContexto.CerrarAlertas()}
-                           >
-                              <AlertTitle>Error</AlertTitle>
-                              {x.descripcion}
-                           </Alert>
-                        </>;
-                     })
-                  );
-               }
             }
-
-         })
+            else if (respuesta.errores && respuesta.errores.length > 0) {
+               propsTercerosContexto.CambiarAlertas(
+                  respuesta.errores.map(x => {
+                     return <>
+                        <Alert
+                           key={x.descripcion}
+                           severity="warning"
+                           onClose={() => propsTercerosContexto.CerrarAlertas()}
+                        >
+                           <AlertTitle>Error</AlertTitle>
+                           {x.descripcion}
+                        </Alert>
+                     </>;
+                  })
+               );
+            }
+         }
+      });
    }
 
    const CancelarEdicion = () => {
       navigate("InformacionGeneralDatos");
-   }
-
-   const CambioNaturaleza = (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(event.target.value);
    }
 
    const VerFormularioDirecciones = () => {
@@ -191,25 +203,24 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarListas = async () => {
-      let PropsDefaultRequest:CrearPeticionAxios = {
+      let PropsDefaultRequest: CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarInformacionListas",
          Type: "GET"
       };
 
-      // ---- Tipos
+      // ---- Tipos Terceros
       await CrearPeticion({
          ...PropsDefaultRequest,
          Body: {
             UsuarioID: 1,
             Clave: 'TipoTerceros'
          }
-      })
-         .then((respuesta) => {
-            if (respuesta != null && respuesta.ok == true) {
-               setListaTipoTercero(respuesta.datos);
-            }
-         });
+      }).then((respuesta) => {
+         if (respuesta != null && respuesta.ok == true) {
+            setListaTipoTercero(respuesta.datos);
+         }
+      });
 
       // ---- Ciudades
       await CrearPeticion({
@@ -218,12 +229,11 @@ export default function EditarInformacionGeneral() {
             UsuarioID: 1,
             Clave: 'Ciudades'
          }
-      })
-         .then((respuesta) => {
-            if (respuesta != null && respuesta.ok == true) {
-               setListaCiudades(respuesta.datos);
-            }
-         });
+      }).then((respuesta) => {
+         if (respuesta != null && respuesta.ok == true) {
+            setListaCiudades(respuesta.datos);
+         }
+      });
       // ---- Tipos Documento
       await CrearPeticion({
          ...PropsDefaultRequest,
@@ -231,12 +241,11 @@ export default function EditarInformacionGeneral() {
             UsuarioID: 1,
             Clave: 'TiposDocumento'
          }
-      })
-         .then((respuesta) => {
-            if (respuesta != null && respuesta.ok == true) {
-               setListaTipoDocumento(respuesta.datos);
-            }
-         });
+      }).then((respuesta) => {
+         if (respuesta != null && respuesta.ok == true) {
+            setListaTipoDocumento(respuesta.datos);
+         }
+      });
 
       // ---- Sub-Tipos
       await CrearPeticion({
@@ -283,7 +292,7 @@ export default function EditarInformacionGeneral() {
    }
 
    const ConsultarConfigs = async () => {
-      let PropsDefaultRequestConfigs:CrearPeticionAxios = {
+      let PropsDefaultRequestConfigs: CrearPeticionAxios = {
          API: "CONFIGURACION",
          URLServicio: "/ConsultasGenerales/ConsultarConfigs",
          Type: "POST"
@@ -311,6 +320,27 @@ export default function EditarInformacionGeneral() {
                },
                {
                   configID: "PROV_CORREO_CTO"
+               },
+               {
+                  configID: "TER_PERMITECARACTER"
+               },
+               {
+                  configID: "TER_LONG_DV"
+               },
+               {
+                  configID: "TER_CAMBIANATJUR"
+               },
+               {
+                  configId: "TER_EDIT_DIR_TXT"
+               },
+               {
+                  configID: "TER_BLOQUEA_DIR"
+               },
+               {
+                  configID: "PROV_CORREO_RLEGAL"
+               },
+               {
+                  configID: "TER_REQ_ACTIVECON"
                }
             ]
          }
@@ -322,16 +352,15 @@ export default function EditarInformacionGeneral() {
    }
 
    useEffect(() => {
-      console.log(InfoTercero)
       if (InfoTercero) {
          setValue('terNatJur', InfoTercero.terTipoPersona || "")
          setValue('terRazonSocial', InfoTercero.terRazonSocial || "")
-         setValue('terPrimerNombre', InfoTercero.terPrimerNombre  || "")
-         setValue('terSegundoNombre', InfoTercero.terSegundoNombre  || "")
-         setValue('terPrimerApellido', InfoTercero.terPrimerApellido  || "")
-         setValue('terSegundoApellido', InfoTercero.terSegundoApellido  || "")
+         setValue('terPrimerNombre', InfoTercero.terPrimerNombre || "")
+         setValue('terSegundoNombre', InfoTercero.terSegundoNombre || "")
+         setValue('terPrimerApellido', InfoTercero.terPrimerApellido || "")
+         setValue('terSegundoApellido', InfoTercero.terSegundoApellido || "")
          setValue('terTipoDocumento', InfoTercero.terTipoIdentificacionId || "")
-         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion  || "")
+         setValue('terNumeroIdentificacion', InfoTercero.terNumeroIdentificacion || "")
          setValue('terDigitoV', InfoTercero.terDiv || undefined)
          setValue('terFormaPago', InfoTercero.terFormaPagoId || "")
          setValue('terCiudad', InfoTercero.terCiudadId || "")
@@ -340,30 +369,33 @@ export default function EditarInformacionGeneral() {
          setValue('terSubTipo', InfoTercero.terSubTipoId || "")
          setValue('terActividadEconomica', InfoTercero.terCIIU || "")
          setValue('terEmail', InfoTercero.terEmail || "")
-         setValue('terTelefono', InfoTercero.terTelefono  || "")
-         setValue('terCelular', InfoTercero.terCelular  || "")
-         setValue('terObservaciones', InfoTercero.terObservaciones  || "")
+         setValue('terTelefono', InfoTercero.terTelefono || "")
+         setValue('terCelular', InfoTercero.terCelular || "")
+         setValue('terObservaciones', InfoTercero.terObservaciones || "")
          setValue('terContactoPrincipalNombre', InfoTercero.terContactoPrincipalNombre || "")
          setValue('terContactoPrincipalEmail', InfoTercero.terContactoPrincipalEmail || "")
          setValue('terRepresentanteLNombre', InfoTercero.terRepresentanteLNombre || "")
          setValue('terRepresentanteLTipoIdentificacion', InfoTercero.terRepresentanteLTipoIdentificacionId || "")
-         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion  || "")
-         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion  || "")
-         setValue('terRepresentanteLEmail', InfoTercero.terRepresentanteLEmail  || "")
-         setValue('terEstado', InfoTercero.terEstado  || false)
+         setValue('terRepresentanteLIdentificacion', InfoTercero.terRepresentanteLIdentificacion || "")
+         setValue('terRepresentanteLExpedicion', InfoTercero.terRepresentanteLExpedicion || "")
+         setValue('terRepresentanteLEmail', InfoTercero.terRepresentanteLEmail || "")
+         setValue('terEstado', InfoTercero.terEstado || false)
       }
    }, []);
-
 
    useEffect(() => {
       ConsultarListas();
       ConsultarConfigs();
    }, [])
 
+   useEffect(() => {
+      PermiteCambiarNaturaleza();
+   }, [terNatJur, terTipoDocumento])
+
    return (
       <>
          <FormProvider {...metodos}>
-            <Stack direction="column" width="100%" gap={1}>
+            <Stack direction="column" width="100%" gap={1} overflow={'scroll'}>
                <Card sx={{ backgroundColor: "white", width: "100%" }}>
                   <Stack direction={"column"} padding={2} gap={1}>
                      <Typography variant='h6' color="text.primary">
@@ -378,18 +410,17 @@ export default function EditarInformacionGeneral() {
                               </Typography>
                               <Controller
                                  control={control}
-                                 defaultValue=""
                                  name="terNatJur"
-                                 render={({ field:{value, onChange} }) => (
+                                 render={({ field: { onChange, value } }) => (
                                     <RadioGroup
-                                       value={value} 
+                                       value={value}
                                        onChange={(e) => onChange(e.target.value)}
                                        row
                                        aria-labelledby="demo-row-radio-buttons-group-label"
                                        name="terTipoPersona"
                                     >
                                        <FormControlLabel value={'N'} control={<Radio />} label="Natural" />
-                                       <FormControlLabel value={'J'} control={<Radio />} label="Jurídica" />
+                                       <FormControlLabel value={'J'} disabled={!PermiteCambiarNaturaleza()} control={<Radio />} label="Jurídica" />
                                     </RadioGroup>
                                  )}
                               />
@@ -412,12 +443,9 @@ export default function EditarInformacionGeneral() {
                      </Stack>
 
                      {
-                        terNatJur == 'N' ?
-                           <Stack direction="row" gap={0.5}>
-                              <_SeccionNombresTercero />
-                           </Stack>
-                           :
-                           <_SeccionRazonSocial />
+                        terNatJur == 'J' ?
+                           <_SeccionRazonSocial /> :
+                           <_SeccionNombresTercero />
                      }
 
                      <Stack direction="row" gap={.5}>
@@ -431,11 +459,14 @@ export default function EditarInformacionGeneral() {
                               <Controller
                                  control={control}
                                  name="terTipoDocumento"
-                                 defaultValue=""
-                                 render={({ field, formState: { errors } }) => (
+                                 render={({ field, formState: { errors, dirtyFields } }) => (
                                     <TextField
                                        {...field}
-                                       id="terTipoDocumento"
+                                       onChange={(e) => field.onChange(
+                                          e.target.value,
+                                          dirtyFields.terTipoDocumento && trigger("terDigitoV")
+                                       )}
+                                       id="TipoTercero"
                                        label="Tipo"
                                        size='small'
                                        placeholder='Seleccione'
@@ -466,6 +497,12 @@ export default function EditarInformacionGeneral() {
                                     type="text"
                                     error={!!errors.terNumeroIdentificacion}
                                     helperText={errors.terNumeroIdentificacion && `${errors.terNumeroIdentificacion.message}`}
+                                    InputProps={{
+                                       readOnly: true
+                                    }}
+                                    inputProps={{
+                                       maxLength: TER_LONG_DV?.configValor
+                                    }}
                                  />
                               )}
                            />
@@ -474,18 +511,25 @@ export default function EditarInformacionGeneral() {
                               control={control}
                               name="terDigitoV"
                               render={({ field, formState: { errors } }) => (
-                                 <TextField
-                                    {...field}
-                                    {...propsInputs}
-                                    id="terDigitoV"
-                                    label="DV"
-                                    type="text"
-                                    error={!!errors.terDigitoV}
-                                    helperText={errors.terDigitoV && `${errors.terDigitoV.message}`}
-                                    sx={{
-                                       width: "20%"
-                                    }}
-                                 />
+                                 <Tooltip title={errors.terDigitoV && `${errors.terDigitoV.message}`} placement="top" arrow>
+                                    <TextField
+                                       {...field}
+                                       {...propsInputs}
+                                       id="terDigitoV"
+                                       label="DV"
+                                       type="text"
+                                       error={!!errors.terDigitoV}
+                                       InputProps={{
+                                          readOnly: (TER_NOCALCULAR_DV?.configValor == 1) ? false : true,
+                                       }}
+                                       inputProps={{
+                                          maxLength: TER_LONG_DV?.configValor
+                                       }}
+                                       sx={{
+                                          width: "20%"
+                                       }}
+                                    />
+                                 </Tooltip>
                               )}
                            />
                         </Stack>
@@ -565,6 +609,9 @@ export default function EditarInformacionGeneral() {
                                     label="Dirección"
                                     error={!!errors.terDireccion}
                                     helperText={errors.terDireccion && `${errors.terDireccion.message}`}
+                                    inputProps={{
+                                       readOnly: TER_EDIT_DIR_TXT?.configValor ? false : true
+                                    }}
                                  />
                               )}
                            />
@@ -574,7 +621,11 @@ export default function EditarInformacionGeneral() {
                            </IconButton>
                            {
                               verModalDireccion == true &&
-                              <_SeccionDireccionTercero estado={verModalDireccion} cambiarEstado={VerFormularioDirecciones} />
+                              <_SeccionDireccionTercero
+                                 estado={verModalDireccion}
+                                 cambiarEstado={VerFormularioDirecciones}
+                                 configs={{ TER_BLOQUEA_DIR }}
+                              />
                            }
 
 
@@ -695,7 +746,6 @@ export default function EditarInformacionGeneral() {
 
                      <Stack direction={"row"} gap={.5} >
                         <Stack direction={"column"} gap={.5} width="50%">
-                           {/* <_SeccionTelefono nombreControl='terTelefono' label='* Teléfono fijo' /> */}
                            <Controller
                               control={control}
                               name='terTelefono'
@@ -707,7 +757,8 @@ export default function EditarInformacionGeneral() {
                                     size="small"
                                     fullWidth
                                     id="terTelefono"
-                                    label='* Teléfono'
+                                    label='Teléfono'
+                                    required={PROV_TELEFONO?.configValor ? true : false}
                                     error={!!errors.terTelefono}
                                     helperText={errors.terTelefono && `${errors.terTelefono.message}`}
                                  />
@@ -722,7 +773,6 @@ export default function EditarInformacionGeneral() {
                         </Stack>
 
                         <Stack direction={"column"} gap={.5} width="50%">
-                           {/* <_SeccionTelefono nombreControl='terCelular' label='* Teléfono celular' /> */}
                            <Controller
                               control={control}
                               name='terCelular'
@@ -734,7 +784,8 @@ export default function EditarInformacionGeneral() {
                                     size="small"
                                     fullWidth
                                     id="terCelular"
-                                    label='* Teléfono celular'
+                                    label="Celular"
+                                    required={PROV_TELEFONO?.configValor ? true: false}
                                     error={!!errors.terCelular}
                                     helperText={errors.terCelular && `${errors.terCelular.message}`}
                                  />
@@ -779,7 +830,7 @@ export default function EditarInformacionGeneral() {
                      <Typography variant='subtitle2' color="primary.light">
                         Contacto principal
                      </Typography>
-                     <_SeccionContactoTercero />
+                     <_SeccionContactoTercero configs={{ PROV_CORREO_CTO }} />
                   </Stack>
                   <ContenedorBotonesEditarInfo
                      MetodoGuardar={handleSubmit(GuardarInformacion)}
@@ -803,7 +854,7 @@ export default function EditarInformacionGeneral() {
                                  {...propsInputs}
                                  id="terRepresentanteLNombre"
                                  label="Nombre"
-                                 required
+                                 required={TER_REQ_REPLEGAL?.configValor ? true : false}
                                  sx={{
                                     width: "50%"
                                  }}
@@ -830,6 +881,7 @@ export default function EditarInformacionGeneral() {
                                        label="Tipo de ID"
                                        size='small'
                                        select
+                                       required={TER_REQ_REPLEGAL?.configValor ? true : false}
                                        error={!!errors.terRepresentanteLTipoIdentificacion}
                                        helperText={errors.terRepresentanteLTipoIdentificacion && `${errors.terRepresentanteLTipoIdentificacion.message}`}
                                     >
@@ -855,7 +907,7 @@ export default function EditarInformacionGeneral() {
                                     id="terRepresentanteLIdentificacion"
                                     label="Número de identificación"
                                     type={"number"}
-                                    required
+                                    required={TER_REQ_REPLEGAL?.configValor ? true : false}
                                     error={!!errors.terRepresentanteLIdentificacion}
                                     helperText={errors.terRepresentanteLIdentificacion && `${errors.terRepresentanteLIdentificacion.message}`}
                                  />
@@ -875,7 +927,7 @@ export default function EditarInformacionGeneral() {
                                  {...field}
                                  id="terRepresentanteLExpedicion"
                                  label="Lugar de expedición"
-                                 required
+                                 required={TER_REQ_REPLEGAL?.configValor ? true : false}
                                  error={!!errors.terRepresentanteLExpedicion}
                                  helperText={errors.terRepresentanteLExpedicion && `${errors.terRepresentanteLExpedicion.message}`}
                               />
@@ -885,7 +937,6 @@ export default function EditarInformacionGeneral() {
                         <Controller
                            control={control}
                            name='terRepresentanteLEmail'
-                           defaultValue=""
                            render={({ field, formState: { errors } }) => (
                               <TextField
                                  {...propsInputs}
@@ -893,7 +944,7 @@ export default function EditarInformacionGeneral() {
                                  id="terRepresentanteLEmail"
                                  label="Correo electrónico"
                                  type='email'
-                                 required
+                                 required={(TER_REQ_REPLEGAL?.configValor || PROV_CORREO_RLEGAL?.configValor) ? true : false}
                                  error={!!errors.terRepresentanteLEmail}
                                  helperText={errors.terRepresentanteLEmail && `${errors.terRepresentanteLEmail.message}`}
                               />

@@ -22,7 +22,7 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
+  //<React.StrictMode>
     <ThemeProvider theme={SincoTheme}>
       <Stack height="100%" width="100%">
         <HashRouter>
@@ -31,5 +31,5 @@ root.render(
       </Stack>
       <Loader/>
     </ThemeProvider>
-  </React.StrictMode>
+  //</React.StrictMode>
 );

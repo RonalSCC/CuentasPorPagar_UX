@@ -203,6 +203,12 @@ export const themeOptions: ThemeOptions = {
             top: 3.5,
           },
         },
+        asterisk: { 
+          color: '#db3131',
+           '&$error': { 
+              color: '#db3131' 
+            },
+        }
       },
     },
     MuiInputLabel: {
