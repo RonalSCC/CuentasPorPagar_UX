@@ -98,7 +98,7 @@ export default function CuentasBancariasProveedor(
 
     const CambiarCuentaSeleccionada = (cuentaExpandida?:ICuentaBancaria|undefined)=> {
         if (cuentaExpandida) {
-            setCuentaExpandida(cuentaExpandida);
+            setCuentaExpandida({...cuentaExpandida});
         }else{
             setCuentaExpandida(undefined);
         }
@@ -111,7 +111,6 @@ export default function CuentasBancariasProveedor(
     const CambiarEstadoActualizarCuentas = (estado:boolean)=> {
         setActualizarCuentas(estado);
         if (estado == true) {
-            CambiarCuentaSeleccionada();
             setTimeout(function(){
                 setActualizarCuentas(false);
             },1000);

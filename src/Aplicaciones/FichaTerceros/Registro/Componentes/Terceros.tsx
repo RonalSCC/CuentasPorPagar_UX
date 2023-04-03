@@ -48,8 +48,9 @@ export default function Terceros(props:any) {
           zIndex={1}
           top={0}
           flexWrap="wrap"
+          height={"8%"}
         >
-          <Stack direction="row" width="100%" paddingY={1.5} paddingX={3} justifyContent="space-between">
+          <Stack direction="row" width="100%" paddingY={1} paddingX={3} justifyContent="space-between">
             <Stack direction="row" alignItems={"center"}>
               <Typography variant="h6" color="text.primary">
                 {propsTercerosContexto.TituloPageHeader}
@@ -87,7 +88,8 @@ export default function Terceros(props:any) {
           </Stack>
           <Divider sx={{width:"100%"}}/>
         </Stack>
-        <Stack  direction="row" width="100%" height="93%">
+        
+        <Stack  direction="row" width="100%" height="92%">
           { <RoutesTercerosElement/>}
         </Stack>
         <BuscarTerceroDialog
