@@ -12,6 +12,7 @@ import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto';
 import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor';
 import { SendRequest } from '../../../../../Consumos/Request';
+import SinInformacion from '../Generales/SinInformacion';
 
 export default function VisualizacionCuentas() {
 
@@ -24,9 +25,6 @@ export default function VisualizacionCuentas() {
     } = paramsCuentasBancariasContexto;
 
     const [ListaCuentas, setListaCuentas] = useState<Array<ICuentaBancaria>>([])
-    const CambiarCuentaExpandida = (Cuenta:ICuentaBancaria)=>{
-        CambiarCuentaSeleccionada(Cuenta);
-    }
 
     useEffect(() => {
       ConsultarInformacionCuentas();
@@ -52,6 +50,12 @@ export default function VisualizacionCuentas() {
             if(respuesta){
                 if (respuesta != null && respuesta.ok == true) {
                     setListaCuentas([...respuesta.datos]);
+                    if (CuentaExpandida) {
+                        let CuentaExpandidaUpd = (respuesta.datos as Array<ICuentaBancaria>).filter(f=> f.tcbId == CuentaExpandida.tcbId);
+                        if (CuentaExpandidaUpd && CuentaExpandidaUpd.length > 0) {
+                            CambiarCuentaSeleccionada(CuentaExpandidaUpd[0]);
+                        }
+                    }
                 }else if (respuesta.errores && respuesta.errores.length > 0) {
                     propsTercerosContexto.CambiarAlertas(
                         respuesta.errores.map(x=> {
@@ -74,19 +78,26 @@ export default function VisualizacionCuentas() {
     
   return (
     <>
-        <Stack direction="column" gap={3} padding={3} width="100%">
-            <Stack direction="column" gap={1.5} >
-                {
-                    ListaCuentas.map(Cuenta => {
-                        return <CardCuenta 
-                                    key={Cuenta.tcbId}
-                                    objInfoCuenta={Cuenta}
-                                    Expandida={CuentaExpandida?.tcbId == Cuenta.tcbId}
-                                />;
-                    })
-                }
-            </Stack>
-        </Stack>
+        {
+            ListaCuentas.length > 0 && 
+                <Stack direction="column" gap={3} paddingY={1} width="100%">
+                    <Stack direction="column" gap={1} >
+                        {
+                            ListaCuentas.map(Cuenta => {
+                                return <CardCuenta 
+                                            key={Cuenta.tcbId}
+                                            objInfoCuenta={Cuenta}
+                                            Expandida={CuentaExpandida?.tcbId == Cuenta.tcbId}
+                                        />;
+                            })
+                        }
+                    </Stack>
+                </Stack>
+        }
+        {
+            ListaCuentas.length == 0 && 
+                <SinInformacion message='Crea una cuenta bancaria para realizar pagos al tercero' />
+        }
     </>
   )
 }

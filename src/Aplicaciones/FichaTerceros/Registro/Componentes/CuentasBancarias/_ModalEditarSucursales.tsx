@@ -3,13 +3,18 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, RadioGroup, 
 import { TransitionProps } from '@mui/material/transitions'
 import React, { useContext, useEffect, useState } from 'react'
 import { CrearPeticion } from '../../../../../Consumos/APIManager'
+import { SendRequest } from '../../../../../Consumos/Request'
 import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto'
 import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor'
 import { ISucursal } from '../../../Interfaces/Generales/ISucursal'
+import ISucursalCuentaBancaria from '../../../Interfaces/Registro/CuentasBancarias/ISucursalCuentaBancaria'
 import AsociacionCuentaSucursal from './_AsociacionCuentaSucursal'
+import ModalEliminar from '../Generales/_ModalEliminar'
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
+import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 
 export interface PropsModalEditarSucursales{
-  CerrarModal: Function
+  CerrarModal: (estado: boolean) => void
 }
 export default function ModalEditarSucursales(
   {
@@ -17,27 +22,44 @@ export default function ModalEditarSucursales(
   }:PropsModalEditarSucursales
 ) {
   
+
+  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+  const { 
+    TerceroSeleccionadoLista 
+  } = propsTercerosContexto;
+
   const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
   const {
     CuentaExpandida,
-    CambiarListaSucursalesCuenta
+    CambiarEstadoActualizarCuentas
   } = paramsCuentasBancariasContexto;
+
   const [ListaSucursales, setListaSucursales] = useState<Array<ISucursal>>();
+  const [ListaSucursalesCuentaBancaria, setListaSucursalesCuentaBancaria] = useState<Array<ISucursalCuentaBancaria>>([]);
   const [SucursalPrincipal, setSucursalPrincipal] = useState(-1);
   const [NuevaSucursal, setNuevaSucursal] = useState(false);
+  const [modalEliminarAsociacion, setModalEliminarAsociacion] = useState(false);
+  const [asociacionCuentaEliminar, setAsociacionCuentaEliminar] = useState<number>();
+
 
   useEffect(() => {
+    ConsultarSucursalesCuenta();
     ConsultarListaSucursales();
+
     if (!CuentaExpandida?.tcbListaSucursales || CuentaExpandida?.tcbListaSucursales.length == 0) {
       setNuevaSucursal(true);
     }else{
-      debugger
       let SucursalPrincipalDefecto = CuentaExpandida.tcbListaSucursales.filter(s=> s.sucPrincipal == true);
       if (SucursalPrincipalDefecto && SucursalPrincipalDefecto.length > 0 ) {
         setSucursalPrincipal(SucursalPrincipalDefecto[0].sucTCBSId);
       }
     }
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    console.log(ListaSucursalesCuentaBancaria);
+  }, [ListaSucursalesCuentaBancaria])
+  
   
   const ConsultarListaSucursales = async ()=> {
     // ---- Bancos
@@ -55,13 +77,90 @@ export default function ModalEditarSucursales(
     });
   }
 
-  const CambiarEstadoNuevaSucursal = (estado:boolean)=> {
-    setNuevaSucursal(estado);
+  const ConsultarSucursalesCuenta = ()=> {
+    SendRequest.get({
+      API: "CUENTASPORPAGAR",
+      URLServicio: "/CuentasBancariasTerceros/Consultar_SucursalesPorCuentaBancaria",
+      Body:{
+        TCBId: CuentaExpandida?.tcbId
+      }
+    }).then((respuesta) => {
+      if (respuesta && respuesta.ok) {
+        setListaSucursalesCuentaBancaria([...respuesta.datos]);
+      }
+    })
   }
 
-  const CambiarSucursalPrincipal = (SucId:number)=> {
-    setSucursalPrincipal(SucId);
+  const AgregarAsociacionTemporal = (estado:boolean)=> {
+    let existe = ListaSucursalesCuentaBancaria.filter(f => f.sucTCBSId == -1);
+    if (!existe || existe.length == 0) {
+      setListaSucursalesCuentaBancaria([...ListaSucursalesCuentaBancaria, {
+        sucTCBSId:-1,
+        sucPrincipal:false,
+        sucPermiteEliminar: true
+      }]);
+    }
+    
   }
+
+  const CambiarAsociacionAPrincipal = (Asociacion:ISucursalCuentaBancaria)=> {
+    Asociacion.sucPrincipal = true;
+    ListaSucursalesCuentaBancaria.map(s=> {
+      if (s.sucId != Asociacion.sucId) {
+        s.sucPrincipal = false;
+      }
+    });
+    ActualizarAsociacionesCuenta();
+  }
+
+  const ActualizarAsociacionesCuenta = () => {
+    setListaSucursalesCuentaBancaria([...ListaSucursalesCuentaBancaria]);
+  }
+
+  const GuardarAsociaciones = () => {
+    SendRequest.post({
+      API: "CUENTASPORPAGAR",
+      URLServicio: "/CuentasBancariasTerceros/Asociar_CuentaBancariaSucursal",
+      Body:{
+        cuentaId: CuentaExpandida?.tcbId,
+        terceroId: TerceroSeleccionadoLista?.TerID,
+        ruta: window.location.href,
+        listaAsociaciones: ListaSucursalesCuentaBancaria.map(a => {
+          return {
+            tcbsId: a.sucTCBSId == -1 ? null : a.sucTCBSId,
+            sucursalId: a.sucId,
+            principal: a.sucPrincipal
+          }
+        })
+      }
+    }).then((respuesta)=> {
+      if (respuesta && respuesta.ok) {
+        ConsultarSucursalesCuenta();
+      }
+    });
+  }
+  /* #region Eliminar asociación */
+  const AbrirModalEliminarAsociacion = (TCBSId: number) => {
+    setModalEliminarAsociacion(true);
+    setAsociacionCuentaEliminar(TCBSId);
+  }
+
+  const EliminarAsociacionSucCuenta = (TCBSId: number) => {
+    SendRequest.delete({
+      API: "CUENTASPORPAGAR",
+      URLServicio: "/CuentasBancariasTerceros/Eliminar_AsociacionSucursalCuenta",
+      Body: {
+        TCBSId: asociacionCuentaEliminar
+      }
+    }).then((respuesta) => {
+      if (respuesta && respuesta.ok) {
+        setModalEliminarAsociacion(false);
+        ConsultarSucursalesCuenta();
+
+      }
+    })
+  }
+  /* #endregion */
 
   return (
     <>
@@ -75,7 +174,7 @@ export default function ModalEditarSucursales(
         <DialogTitle paddingY={2} paddingX={3}>
           <div>
             <Typography variant='h6' color="text.primary">
-              Sucursales
+              Sucursales - Cuenta No. {CuentaExpandida?.tcbNumeroCuenta}
             </Typography>
           </div>
         </DialogTitle>
@@ -84,60 +183,73 @@ export default function ModalEditarSucursales(
             variant='text'
             color='primary'
             startIcon={<Add />}
-            onClick={()=> CambiarEstadoNuevaSucursal(true)}
+            onClick={()=> AgregarAsociacionTemporal(true)}
           >
             Agregar sucursal
           </Button>
 
-          <RadioGroup 
-            value={"Asociacion"+SucursalPrincipal}
-            sx={{width:"100%", gap:1}}
-          >
-            {
+            {/* {
               NuevaSucursal == true && 
               <AsociacionCuentaSucursal 
                 ListaSucursales={ListaSucursales}
                 CambiarSucursalPrincipal={CambiarSucursalPrincipal}
                 Asociacion={{
                   sucTCBSId:-1,
-                  sucPrincipal:false
+                  sucPrincipal:false,
+                  sucPermiteEliminar: true
                 }}
                 CambiarEstadoNuevaSucursal={CambiarEstadoNuevaSucursal}
               />
-            }
+            } */}
           
             {
-              CuentaExpandida?.tcbListaSucursales.map(asc => {
+              ListaSucursalesCuentaBancaria.map(asc => {
                 return <AsociacionCuentaSucursal 
                           key={asc.sucTCBSId}
                           Asociacion={asc}
                           ListaSucursales={ListaSucursales}
-                          CambiarSucursalPrincipal={CambiarSucursalPrincipal}
-                          CambiarEstadoNuevaSucursal={CambiarEstadoNuevaSucursal}
+                          CambiarAsociacionAPrincipal={CambiarAsociacionAPrincipal}
+                          ActualizarAsociacionesCuenta={ActualizarAsociacionesCuenta}
+                          // CambiarEstadoNuevaSucursal={CambiarEstadoNuevaSucursal}
+                          EliminarAsociacion={AbrirModalEliminarAsociacion}
                         />
               })
             }
-          </RadioGroup>
         </Stack>
         <DialogActions>
           <Stack direction={"row"} gap={1} padding={1}>
             <Button 
               variant='text'
               color='primary'
-              onClick={()=> CerrarModal(false)}
+              onClick={()=> {
+                CerrarModal(false)
+                CambiarEstadoActualizarCuentas(true);
+              }}
             >
               Cancelar
             </Button>
             <Button 
               variant='contained'
               color='primary'
-              // onClick={handleClose}
+              onClick={() => GuardarAsociaciones()}
             >
               Guardar
             </Button>
           </Stack>
         </DialogActions>
       </Dialog>
+
+      {
+        modalEliminarAsociacion && 
+          <ModalEliminar 
+            Titulo='Eliminar asociación'
+            Texto='Se eliminará la asociación, está seguro?'
+            ImageSRC='Imagenes/Terceros/EliminarCuenta.svg'
+            FunCerrarModal={() => setModalEliminarAsociacion(false)}
+            FunEliminarRegistro={EliminarAsociacionSucCuenta}
+          />
+      }
+      
     </>
   )
 }

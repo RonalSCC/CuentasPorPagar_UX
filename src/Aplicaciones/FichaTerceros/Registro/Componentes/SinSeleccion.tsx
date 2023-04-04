@@ -11,14 +11,16 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Autocomplete, FormControl, InputAdornment, InputLabel, MenuItem, Select } from '@mui/material';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import {AutocompletarAYF} from '@ayf/generales';
-import { TerceroSeleccionadoLista } from '../../Contextos/TercerosProveedor';
+import { PropsTerceroContexto, TerceroSeleccionadoLista } from '../../Contextos/TercerosProveedor';
 import AutocompleteTerceros from './Generales/AutocompleteTerceros';
 
 
 export default function SinSeleccion() {
     
-    const {propsTercerosContexto}:{propsTercerosContexto:any} = useContext<any>(TercerosContexto);
-
+    const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {
+        BloquearCamposAcceso
+    } = propsTercerosContexto;
     useEffect(() => {
         propsTercerosContexto.CambiarTituloPageHeader("Administración de terceros");
     }, [])
@@ -33,7 +35,7 @@ export default function SinSeleccion() {
     <Stack direction="column" paddingX={3} height="100%" gap={3} width="100%">
         <Stack direction="column" position="relative">
             <Stack height="50%" direction="row" position="absolute" width="100%" style={{backgroundColor:"primary"}}>
-                <Image fit='cover' src={"Imagenes/Terceros/FondoSeleccionarTerceros.png"} alt="" />
+                <Image fit='cover' src={"Imagenes/Terceros/FondoSeleccionarTerceros.png"} alt="" duration={0}/>
             </Stack>
             <Stack paddingTop={7} gap={1.5} zIndex={2} width="100%" direction="row" justifyContent="center">
                 <Card style={{width: "48%", backgroundColor:"#FFFFFF"}}>
@@ -54,12 +56,13 @@ export default function SinSeleccion() {
         </Stack>
             
         <Stack gap={1.5} direction={"column"} display="flex" alignItems={"center"} >
-            <Image src={"Imagenes/Terceros/Ilustracion-SinSeleccion.svg"} width="20%" alt="Nuevo Tercero" />
+            <Image src={"Imagenes/Terceros/Ilustracion-SinSeleccion.svg"} width="13%" alt="Nuevo Tercero" duration={0}/>
             <Button 
                 variant="contained"
                 onClick={ ()=> propsTercerosContexto.CambiarEstadoNuevoRegistro(true)}
+                disabled={BloquearCamposAcceso("CrearNuevoTercero")}
             >
-                Crear nuevo tercero
+                Crear tercero
             </Button>
         </Stack>
     </Stack>

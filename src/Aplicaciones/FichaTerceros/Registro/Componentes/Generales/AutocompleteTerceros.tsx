@@ -8,10 +8,8 @@ export interface AutocompleteTercerosProps {
     SeleccionarTercero:Function
 }
 export default function AutocompleteTerceros({SeleccionarTercero}:AutocompleteTercerosProps) {
-
   return (
     <>
-
     <AutocompletarAYF 
         URLServicio={`${process.env.REACT_APP_URL_API_CONFIGURACION}/ConsultasGenerales/ConsultarInformacionListas`}
         Body={{

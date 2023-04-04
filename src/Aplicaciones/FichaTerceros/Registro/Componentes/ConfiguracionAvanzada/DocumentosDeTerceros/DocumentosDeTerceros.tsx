@@ -1,46 +1,95 @@
 import { Add } from '@mui/icons-material';
-import { Fab, Stack, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Button, Fab, IconButton, Stack, Typography } from '@mui/material'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { SendRequest } from '../../../../../../Consumos/Request';
+import { TercerosContexto } from '../../../../Contextos/TercerosContexto';
+import { PropsTerceroContexto } from '../../../../Contextos/TercerosProveedor';
+import IDocumentoTercero from '../../../../Interfaces/Registro/ConfiguracionAvanzada/DocumentosTercero/IDocumentoTercero';
 import SinInformacion from '../../Generales/SinInformacion';
-import { DocumentoTerceroCard } from './DocumentoTerceroCard';
-import { FormularioCargarDocumento } from './FormularioCargarDocumento';
+import { DocumentoTerceroCard } from './_DocumentoTerceroCard';
+import { FormularioCargarDocumento } from './_FormularioCargarDocumento';
+import VisorDocumentos from './_VisorDocumentos';
 
 const DocumentosDeTerceros = () => {
-  const [documentosTerceros, setdocumentosTerceros] = useState<any[]>([1]);
-  const [verModalCargarDocumento, setverModalCargarDocumento] = useState(false)
 
-  const VerModalCargarDocumentos = () => setverModalCargarDocumento(!verModalCargarDocumento)
+  // Contexto tercero
+  const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+  const {
+    BloquearCamposAcceso,
+    TerceroSeleccionadoLista
+  } = propsTercerosContexto;
+
+  const [documentosTerceros, setDocumentosTerceros] = useState<Array<IDocumentoTercero>>([]);
+  const [verModalCargarDocumento, setverModalCargarDocumento] = useState(false)
+  const [documentoVisor, setDocumentoVisor] = useState<IDocumentoTercero>();
+  const extension = documentoVisor ? documentoVisor.terImgNombreReal.split(".").pop() : "";
+  useEffect(() => {
+    ConsultarDocumentosTercero();
+  }, []);
+  
+  const VerModalCargarDocumentos = (estado:boolean) => {
+    setverModalCargarDocumento(estado);
+  }
+
+  const ConsultarDocumentosTercero = useCallback(()=>{
+    SendRequest.get({
+      API: "CUENTASPORPAGAR",
+      URLServicio: "/DocumentosAdjuntosTercero/ConsultarDocumentosAdjuntosTercero",
+      Body:{
+        TerId: TerceroSeleccionadoLista?.TerID
+      }
+    }).then((resultado)=> {
+      if (resultado && resultado.ok) {
+        setDocumentosTerceros(resultado.datos);
+      }
+    })
+  }, [TerceroSeleccionadoLista?.TerID])
+
+  const CambiarDocumentoVisor = (Documento:IDocumentoTercero|undefined) => {
+    setDocumentoVisor(Documento);
+  }
 
   return (
-    <Stack width={"100%"}>
-      <Stack gap={1} direction="row" flexWrap="wrap">
+    <Stack width={"100%"} height={"100%"} alignItems="flex-start" gap={1.5}>
+      <Button
+          startIcon={<Add/>}
+          onClick={()=> VerModalCargarDocumentos(true)}
+          disabled={BloquearCamposAcceso("AdminDocumentosTercero")}
+      >
+          Cargar documento
+      </Button>
+      <Stack gap={1} width={"100%"} direction="row" flexWrap="wrap" >
         {
-          (documentosTerceros.length > 0) ?
-            [1, 2, 3, 4].map(doc => (
-              <DocumentoTerceroCard />
-            ))
-            :
-            <SinInformacion
-              message="Agrega los documentos que deseas adicionar al tercero"
-            />
+            documentosTerceros.length > 0 &&
+              documentosTerceros.map(doc => (
+                <DocumentoTerceroCard 
+                  CambiarDocumentoVisor={CambiarDocumentoVisor}
+                  reloadDocumentosTercero={ConsultarDocumentosTercero}
+                  InfoDocumento={doc}/>
+              ))
         }
+        
       </Stack>
+      {
+        documentosTerceros.length == 0 &&
+          <SinInformacion
+            message="Agrega los documentos que deseas adicionar al tercero"
+          />
+      }
 
-      <Fab color="secondary" variant="extended" onClick={VerModalCargarDocumentos}
-        sx={{
-          position: "fixed",
-          bottom: (theme) => theme.spacing(3),
-          right: (theme) => theme.spacing(3),
-          backgroundColor: "secondary.main"
-        }} >
-        <Add />
-        <Typography>
-          Cargar Documento
-        </Typography>
-      </Fab>
       {
         verModalCargarDocumento == true &&
-        <FormularioCargarDocumento estado={verModalCargarDocumento} cambiarEstado={VerModalCargarDocumentos} title="Cargar Documento" />
+        <FormularioCargarDocumento 
+          cambiarEstado={VerModalCargarDocumentos}
+          consultarDocumentos={ConsultarDocumentosTercero}/>
+      }
+
+      {
+        documentoVisor &&
+        <VisorDocumentos 
+          documentoVisor={documentoVisor} 
+          CambiarDocumentoVisor={CambiarDocumentoVisor}
+        />
       }
     </Stack>
   )

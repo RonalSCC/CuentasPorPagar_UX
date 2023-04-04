@@ -29,6 +29,7 @@ import _SeccionDireccionTercero from './_SeccionDireccionTercero';
 import _SeccionNombresTercero from './_SeccionNombresTercero';
 import _SeccionContactoTercero from './_SeccionContactoTercero';
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { SendRequest } from '../../../../../Consumos/Request';
 
 export interface ITercero {
    terCelular: string,
@@ -52,7 +53,7 @@ export interface ITercero {
 export default function FormularioCrearTercero() {
 
    const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
-   const {CambiarTerceroSeleccionadoLista} = propsTercerosContexto
+   const {CambiarTerceroSeleccionadoLista, CambiarEstadoNuevoRegistro} = propsTercerosContexto
    const [verModalDireccion, setVerModalDireccion] = useState(false);
    const [ListaTipoTercero, setListaTipoTercero] = useState<Array<ITipoTercero>>([]);
    const [ListaTipoDocumento, setListaTipoDocumento] = useState<Array<ITipoDocumento>>([]);
@@ -92,8 +93,7 @@ export default function FormularioCrearTercero() {
          TER_PERMITECARACTER,
          PROV_TELEFONO,
          PROV_CORREO_CTO,
-      }
-      )),
+      })),
       mode: 'onSubmit',
    })
 
@@ -226,68 +226,54 @@ export default function FormularioCrearTercero() {
 
    const onClickSubmit = async (data: ITercero) => {
 
-      let PropsDefaultRequestConfigs: CrearPeticionAxios = {
-         API: "CUENTASPORPAGAR",
-         URLServicio: "/AdministracionTerceros/CrearTerceroFicha",
-         Type: "POST"
-      };
-
       data.terCelular = data.terCelular && data.terCelular.toString();
       data.terTelefono = data.terCelular && data.terTelefono.toString();
       data.terNumeroIdentificacion = data.terNumeroIdentificacion && data.terNumeroIdentificacion.toString();
 
-      await CrearPeticion({
-         ...PropsDefaultRequestConfigs,
+      SendRequest.post({
+         API: "CUENTASPORPAGAR",
+         URLServicio: "/AdministracionTerceros/CrearTerceroFicha",
          Body: {
             usuarioID: 1,
             terEstado: TER_INACTIVO?.configValor ? false : true,
             ...data
          }
       }).then((response) => {
+         if (response && response.ok) {
+            propsTercerosContexto.CambiarAlertas([
+               <Alert
+                  severity="success"
+                  onClose={() => propsTercerosContexto.CerrarAlertas()}
+               >
+                  <AlertTitle>!Bien hecho!</AlertTitle>
+                  El tercero ha sido creado con éxito
+               </Alert>
+            ]);
 
-         if (response != null) {
-            if (response.ok) {
-               propsTercerosContexto.CambiarAlertas(
-                  [1].map(alert => {
-                     return <>
-                        <Alert
-                           key={1}
-                           severity="success"
-                           onClose={() => propsTercerosContexto.CerrarAlertas()}
-                        >
-                           <AlertTitle>!Bien hecho!</AlertTitle>
-                           El tercero ha sido creado con éxito
-                        </Alert>
-                     </>
-                  })
-               )
-               CambiarTerceroSeleccionadoLista({
-                  TerDVNit:data.terDigitoV,
-                  TerID:response.datos.terID,
-                  TerNit:data.terNumeroIdentificacion,
-                  TerNombre: data.terNatJur == "N" ? `${data.terPrimerNombre} ${data.terSegundoNombre} ${data.terPrimerApellido} ${data.terSegundoApellido}`: data.terRazonSocial,
-                  TerTipoIden: data.terTipoDocumento,
-                  TerNatJur: data.terNatJur
+            CambiarTerceroSeleccionadoLista({
+               TerDVNit:data.terDigitoV,
+               TerID:response.datos.terId,
+               TerNit:data.terNumeroIdentificacion,
+               TerNombre: data.terNatJur == "N" ? `${data.terPrimerNombre} ${data.terSegundoNombre} ${data.terPrimerApellido} ${data.terSegundoApellido}`: data.terRazonSocial,
+               TerTipoIden: data.terTipoDocumento,
+               TerNatJur: data.terNatJur
+            });
+            CambiarEstadoNuevoRegistro(false);
+         }else if (response!.errores && response!.errores.length > 0) {
+            propsTercerosContexto.CambiarAlertas(
+               response!.errores.map(x => {
+                  return <>
+                     <Alert
+                        key={x.descripcion}
+                        severity="warning"
+                        onClose={() => propsTercerosContexto.CerrarAlertas()}
+                     >
+                        <AlertTitle>Error</AlertTitle>
+                        {x.descripcion}
+                     </Alert>
+                  </>;
                })
-               navigate('InformacionGeneralDatos')
-
-            }
-            else if (response.errores && response.errores.length > 0) {
-               propsTercerosContexto.CambiarAlertas(
-                  response.errores.map(x => {
-                     return <>
-                        <Alert
-                           key={x.descripcion}
-                           severity="warning"
-                           onClose={() => propsTercerosContexto.CerrarAlertas()}
-                        >
-                           <AlertTitle>Error</AlertTitle>
-                           {x.descripcion}
-                        </Alert>
-                     </>;
-                  })
-               );
-            }
+            );
          }
       })
    };
@@ -296,7 +282,6 @@ export default function FormularioCrearTercero() {
       propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
       ConsultarListas();
       ConsultarConfigs();
-
    }, [])
 
    useEffect(() => {
@@ -403,7 +388,7 @@ export default function FormularioCrearTercero() {
                                  control={control}
                                  name="terDigitoV"
                                  render={({ field, formState: { errors } }) => (
-                                    <Tooltip title = {errors.terDigitoV && `${errors.terDigitoV.message}`} placement="top" arrow>
+                                    <Tooltip sx={{backgroundColor:"red"}} title = {errors.terDigitoV && `${errors.terDigitoV.message}`} placement="top" arrow>
                                        <TextField
                                           {...field}
                                           {...propsInputs}
@@ -581,9 +566,8 @@ export default function FormularioCrearTercero() {
                height={"7%"}
                width="100%"
                zIndex={1}
-               sx={{
-                  backgroundColor: "#EDEFF5",
-               }}
+               bgcolor="background.paper"       
+               borderTop={"1px solid rgba(16, 24, 64, 0.23)"}
             >
 
                <Stack direction="row" paddingX={3} gap={1.5}>

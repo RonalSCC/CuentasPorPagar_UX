@@ -4,17 +4,17 @@ import AutocompleteTerceros from './Generales/AutocompleteTerceros'
 import Image from 'mui-image';
 import { TercerosContexto } from '../../Contextos/TercerosContexto';
 import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
-export default function BuscarTerceroDialog(
-  {
+export interface IPropsBuscarTerceroDialog {
+  DialogAbierto: boolean,
+    CerrarBuscarTercero : Function
+}
+export default function BuscarTerceroDialog(BuscarTerceroDialogProps:IPropsBuscarTerceroDialog) 
+{
+  const {
     DialogAbierto,
     CerrarBuscarTercero
-  }:
-  {
-    DialogAbierto: boolean,
-    CerrarBuscarTercero : Function
-  }
-) 
-{
+  } = BuscarTerceroDialogProps
+  
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
 
   const CambiarTercero = (seleccion:any) => {
@@ -35,7 +35,7 @@ export default function BuscarTerceroDialog(
           <Card>
             <Stack direction="column" padding={3}>
               <Stack direction="column" padding={2} gap={1.5} alignItems="center">
-                <Image width="20%" fit='cover' src={"Imagenes/Terceros/BuscarTercero.svg"} alt="" />
+                <Image width="20%" fit='cover' src={"Imagenes/Terceros/BuscarTercero.svg"} alt="" duration={0}/>
                 <Stack direction="column" gap={3} alignItems="center" width={"100%"}>
                   <Typography variant="h6" color="primary.main">
                     Selecciona el tercero que deseas consultar

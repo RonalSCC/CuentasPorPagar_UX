@@ -12,6 +12,9 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { IContacto } from './Contactos';
 import { useNavigate } from 'react-router-dom';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
+import { SendRequest, SendRequestAxios } from '../../../../../Consumos/Request';
+import IRespuestaGeneral from '../../../../../Consumos/IRespuestaGeneral';
 
 export interface FormularioContactoProps {
    estado: boolean,
@@ -21,7 +24,11 @@ export interface FormularioContactoProps {
 
 const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContactoProps) => {
 
-   const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
+   const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+   const {
+      TerceroSeleccionadoLista
+   } = propsTercerosContexto;
+
    const [ListaCiudades, setListaCiudades] = useState<Array<ICiudad>>([]);
    const [ListaTipoContactos, setListaTipoContactos] = useState<Array<ITipoContactos>>([]);
    const [Configs, setConfigs] = useState<any>()
@@ -79,7 +86,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
          .nullable(),
       tcContactoPrincipal: Yup
          .boolean()
-   })
+   });
 
    const { control, handleSubmit, reset, setValue } = useForm({
       resolver: yupResolver(schema),
@@ -144,15 +151,14 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
       })
    }
 
-
    const onClickSubmit = async (data: any) => {
-      data.tcCelular = data.tcCelular && data.tcCelular.toString();
-      data.tcExtension = data.tcExtension && data.tcExtension.toString();
-      data.tcTelefono = data.tcTelefono && data.tcTelefono.toString();
+      console.log(data);
+      // data.tcCelular = data.tcCelular && data.tcCelular.toString();
+      // data.tcExtension = data.tcExtension && data.tcExtension.toString();
+      // data.tcTelefono = data.tcTelefono && data.tcTelefono.toString();
 
-      await CrearPeticion({
+      let parametrosEnvio:SendRequestAxios = {
          API: "CUENTASPORPAGAR",
-         Type: "POST",
          URLServicio:
             contact ?
                "/ContactosTercero/ActualizarContactoTercero"
@@ -160,10 +166,19 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
                "/ContactosTercero/CrearContactoTercero",
          Body: {
             tcId: contact?.conId,
-            tcTercero: 5,
+            tcTercero: TerceroSeleccionadoLista?.TerID,
             ...data
          }
-      }).then((response) => {
+      };
+
+      let promise:Promise<void | IRespuestaGeneral>;
+      if (contact) {
+         promise = SendRequest.put(parametrosEnvio);
+      }else{
+         promise = SendRequest.post(parametrosEnvio);
+      }
+
+      promise.then((response) => {
          if (response != null) {
             if (response.ok) {
                reset();
@@ -247,7 +262,7 @@ const FormularioContacto = ({ estado, cambiarEstado, contact }: FormularioContac
             fullWidth
          >
             <DialogTitle paddingY={2} paddingX={3}>
-               <Typography>{!!contact ? "Editar Contacto" : "Nuevo Contacto"}</Typography>
+               <Typography variant='h6'>{!!contact ? "Editar Contacto" : "Nuevo Contacto"}</Typography>
             </DialogTitle>
 
             <DialogContent >

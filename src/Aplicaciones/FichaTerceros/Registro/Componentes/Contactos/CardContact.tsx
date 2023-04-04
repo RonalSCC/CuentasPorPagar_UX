@@ -12,9 +12,9 @@ import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { useNavigate } from 'react-router-dom';
 import { FieldValues } from 'react-hook-form/dist/types';
 import { SendRequest } from '../../../../../Consumos/Request';
+import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 
 export const CardContact = (contact: IContacto) => {
-
 	const {
 		conId,
 		conNombre,
@@ -31,12 +31,16 @@ export const CardContact = (contact: IContacto) => {
 	} = contact
 
 	const [Configs, setConfigs] = useState<any>();
-	const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
+	const { propsTercerosContexto }: { propsTercerosContexto: PropsTerceroContexto } = useContext<any>(TercerosContexto);
+	const {
+		BloquearCamposAcceso
+	} = propsTercerosContexto;
 	const [verModalEditContact, setverModalEditContact] = useState(false);
 	const [verModalDeleteContact, setVerModalDeleteContact] = useState(false);
 	const navigate = useNavigate()
 
 	const OCULTA_CHECK_CPRIN = Configs && Configs["OCULTA_CHECK_CPRIN"] || {};
+	const bloqAccesoContactos = BloquearCamposAcceso("DatosContactos");
 
 	const handleEditContact = () => {
 		setverModalEditContact(!verModalEditContact);
@@ -50,7 +54,7 @@ export const CardContact = (contact: IContacto) => {
 
 		SendRequest.put({
 			API: 'CUENTASPORPAGAR',
-			URLServicio: '/AdministracionTerceros/ActualizarContactoTercero',
+			URLServicio: '/ContactosTercero/ActualizarContactoTercero',
 			Body: {
 				tcId: conId,
 				tcTercero: propsTercerosContexto.TerceroSeleccionadoLista?.TerID,
@@ -134,12 +138,12 @@ export const CardContact = (contact: IContacto) => {
 
 	return (
 		<>
-			<Stack width={444}>
+			<Stack width={"49%"}>
 				<Card>
-					<Stack direction="row" alignItems="start" px={2} py={1.5} justifyContent="space-between">
+					<Stack direction="row" alignItems="start" px={1.5} py={1.5} justifyContent="space-between">
 						<Stack direction="row" alignItems="center">
 							<Stack paddingRight={2}>
-								<Avatar sx={{ width: 32, height: 32 }} >
+								<Avatar sx={{ width: "2rem", height: "2rem" }} >
 									<Person fontSize="small" sx={{ color: '#FFFFFF' }} />
 								</Avatar >
 							</Stack>
@@ -165,35 +169,35 @@ export const CardContact = (contact: IContacto) => {
 							}
 						</Stack>
 					</Stack>
-					<Stack py={1.5} px={2} direction="row" divider={<Divider orientation="vertical" flexItem />} gap={0.5}>
-						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem
-								title="Número documento"
-								text={conNumDocumento}
-								{...propsInfoItem}
-							/>
-							<InfoItem
-								title="Teléfono"
-								text={conTelefono}
-								{...propsInfoItem}
-							/>
-							<InfoItem
-								title="Tipo"
-								text={conTipo}
-								{...propsInfoItem}
-							/>
+					<Stack py={1.5} px={2} direction="column"  gap={0.5}>
+						<Stack direction={"row"} gap={1} divider={<Divider orientation="vertical" flexItem />}>
+							<Stack overflow="hidden" gap={0.5} width="50%">
+								<InfoItem
+									title="Teléfono"
+									text={conTelefono}
+									{...propsInfoItem}
+								/>
+								<InfoItem
+									title="Tipo"
+									text={conTipo}
+									{...propsInfoItem}
+								/>
+							</Stack>
+							<Stack overflow="hidden" gap={0.5} width="50%">
+								<InfoItem
+									title="Celular"
+									text={conCelular}
+									{...propsInfoItem}
+								/>
+								<InfoItem
+									title="Ciudad"
+									text={conCiudad}
+									{...propsInfoItem}
+								/>
+								
+							</Stack>
 						</Stack>
-						<Stack overflow="hidden" gap={0.5} width="50%">
-							<InfoItem
-								title="Celular"
-								text={conCelular}
-								{...propsInfoItem}
-							/>
-							<InfoItem
-								title="Ciudad"
-								text={conCiudad}
-								{...propsInfoItem}
-							/>
+						<Stack direction={"row"}>
 							<InfoItem
 								title="Email"
 								text={conEmail}
@@ -202,11 +206,13 @@ export const CardContact = (contact: IContacto) => {
 							/>
 						</Stack>
 					</Stack>
+					
 					<CardActions sx={{ padding: "0px" }}>
 						<Stack px={2} py={1} direction="row" justifyContent="space-between" alignItems="center" width="100%">
 							<Stack direction="row" gap={1}>
 								<Tooltip title="Editar" placement="top" arrow >
 									<IconButton
+										disabled={bloqAccesoContactos}
 										size="small"
 										color="primary"
 										onClick={handleEditContact}
@@ -218,6 +224,7 @@ export const CardContact = (contact: IContacto) => {
 									(!conPrincipal || (OCULTA_CHECK_CPRIN.configValor == 1)) &&
 									<Tooltip title="Eliminar" placement="top" arrow >
 										<IconButton 
+										disabled={bloqAccesoContactos}
 										size="small" 
 										color="error" 
 										onClick={handleDeleteContact}>
@@ -235,6 +242,7 @@ export const CardContact = (contact: IContacto) => {
 											control=
 											{
 												<Switch
+													disabled={bloqAccesoContactos}
 													size="small"
 													defaultChecked={conEstado}
 													onChange={(e, checked) => CambiarEstadoContacto(checked)}

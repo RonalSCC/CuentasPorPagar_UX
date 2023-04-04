@@ -1,6 +1,6 @@
 import { ExpandLessOutlined, ExpandMoreOutlined } from '@mui/icons-material'
 import { Alert, Card, CardContent, Chip, Divider, FormControlLabel, FormGroup, IconButton, Stack, Switch, Typography } from '@mui/material'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { GetValueOrDefault } from '../../../../../Utilidades/GetValueOrDefault'
 import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto'
 import { ICuentaBancaria } from '../../../Interfaces/Registro/CuentasBancarias/ICuentaBancaria'
@@ -11,19 +11,23 @@ import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/Cuent
 import { CrearPeticion } from '../../../../../Consumos/APIManager'
 import { TercerosContexto } from '../../../Contextos/TercerosContexto'
 import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor'
+import { SendRequest } from '../../../../../Consumos/Request'
 
-export default function CardCuenta(
-    {
+export interface PropsCardCuenta {
+    objInfoCuenta:ICuentaBancaria,
+    Expandida?:boolean 
+}
+export default function CardCuenta(CardCuentaProps:PropsCardCuenta) {
+
+    const  {
         objInfoCuenta,
         Expandida = false
-    }:
-    {
-        objInfoCuenta:ICuentaBancaria,
-        Expandida?:boolean 
-    }
-) {
+    } = CardCuentaProps;
 
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+    const {
+        BloquearCamposAcceso
+    } = propsTercerosContexto;
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
     const {
         CambiarCuentaSeleccionada,
@@ -34,7 +38,7 @@ export default function CardCuenta(
     
     let Config_CTB_MATRICULARIESGOS:IConfigInfo = Configs && Configs["CTB_MATRICULARIESGOS"];
     let SucursalPrincipalGeneral = objInfoCuenta.tcbListaSucursales.filter(suc => suc.sucPrincipal == true);
-
+    
     const CambiarEstadoCuenta = async(event: React.ChangeEvent<HTMLInputElement>, checked: boolean)=> {
 
         let dataSend:IEnvioAPIGuardarEditarCuenta ={
@@ -54,10 +58,9 @@ export default function CardCuenta(
         }
 
         // ---- Registrar cuenta ---- //
-        await CrearPeticion({
+        SendRequest.put({
             API: "CUENTASPORPAGAR",
             URLServicio: "/CuentasBancariasTerceros/Editar_CuentaBancaria",
-            Type:"POST",
             Body:dataSend
         }).then((respuesta)=> {
             if (respuesta != null && respuesta.ok == true) {
@@ -67,6 +70,7 @@ export default function CardCuenta(
             }
         });
     }
+    
   return (
     <>
         <Card>
@@ -141,7 +145,8 @@ export default function CardCuenta(
                             <FormGroup>
                                 <FormControlLabel 
                                     control={
-                                        <Switch 
+                                        <Switch
+                                            disabled={BloquearCamposAcceso("CBEstado")}
                                             onChange={(event,checked)=> CambiarEstadoCuenta(event,checked)} 
                                             defaultChecked={objInfoCuenta.tcbActiva} 
                                         />} 

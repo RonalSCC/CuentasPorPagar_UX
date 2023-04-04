@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestHeaders } from 'axios';
+import axios, { AxiosInstance, AxiosRequestHeaders, RawAxiosRequestHeaders } from 'axios';
 import { useState, useEffect } from 'react';
 import { CrearPeticionAxios } from './APIManager';
 import IRespuestaGeneral from './IRespuestaGeneral';
@@ -6,18 +6,20 @@ import Loader from './Loader';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import * as ReactDOMServer from 'react-dom/server';
+import { Alert } from '@mui/material';
 
 export interface SendRequestAxios {
     API: "CONFIGURACION"|"CUENTASPORPAGAR",
     URLServicio: string,
     Body?: any,
-    Headers?: AxiosRequestHeaders,
+    Headers?: RawAxiosRequestHeaders,
     ShowLoader?:boolean 
 }
 
 export interface RequestAYF {
     post(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
     get(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
+    getAny(DatosEnvio:SendRequestAxios): Promise<any>,
     delete(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
     put(DatosEnvio:SendRequestAxios): Promise<void|IRespuestaGeneral>,
 }
@@ -88,6 +90,37 @@ export const SendRequest: RequestAYF = {
             }
         });
     },
+    async getAny(
+        {
+            API,
+            ShowLoader = true,
+            URLServicio,
+            Body,
+            Headers
+        }
+    ) {
+        const axiosRequest = GetInstanceAxios(API);
+        if (ShowLoader == true) {
+            VerOcultarLoader(true);
+        }
+        return await axiosRequest.get(
+            URLServicio, 
+            {
+                params:Body
+            }
+        )
+        .then(function({data}:{data:any}){
+            return data;
+        })
+        .catch(function(error){
+            console.log(error);
+        })
+        .finally(function(){
+            if (ShowLoader == true) {
+                VerOcultarLoader(false);
+            }
+        });
+    },
     async delete(
         {
             API,
@@ -111,6 +144,7 @@ export const SendRequest: RequestAYF = {
             return data;
         })
         .catch(function(error){
+            // MostrarAlertasError(error.response.data);
             console.log(error);
         })
         .finally(function(){
@@ -139,6 +173,7 @@ export const SendRequest: RequestAYF = {
             return data;
         })
         .catch(function(error){
+            // MostrarAlertasError(error.response.data);
             console.log(error);
         })
         .finally(function(){
@@ -164,6 +199,17 @@ const VerOcultarLoader = (estado:boolean)=>{
             loader.style.display = "flex";
         }else{
             loader.style.display = "none";
+        }
+    }
+}
+
+const MostrarAlertasError = (dataResponse:IRespuestaGeneral) =>{
+    if (dataResponse.errores && dataResponse.errores.length > 0) {
+        let errorAlerts = document.querySelector('[itemid="errorAlerts"]') as HTMLElement;
+        if (errorAlerts) {
+            let pls = ReactDOMServer.renderToStaticMarkup(<Alert severity="success">{"Prueba"}</Alert>);
+            console.log(pls);
+            errorAlerts.innerHTML = pls;
         }
     }
 }

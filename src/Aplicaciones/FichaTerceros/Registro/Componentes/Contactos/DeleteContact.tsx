@@ -11,15 +11,22 @@ export interface DeleteContactProps {
   id: number
 }
 
-const DeleteContact = ({ estado, cambiarEstado, id }: DeleteContactProps) => {
+const DeleteContact = (DeleteContactProps: DeleteContactProps) => {
+  const { 
+    estado, 
+    cambiarEstado, 
+    id 
+  } = DeleteContactProps;
 
   const { propsTercerosContexto }: { propsTercerosContexto: any } = useContext<any>(TercerosContexto);
+  
   const navigate = useNavigate();
+
   const handleDeleteContact = async () => {
 
     let PorpsDefaultRequest:CrearPeticionAxios = {
       API: 'CUENTASPORPAGAR',
-      URLServicio: '/AdministracionTerceros/EliminarContactoTercero',
+      URLServicio: '/ContactosTercero/EliminarContactoTercero',
       Type: 'DELETE',
       Body: {
         idContacto: id
@@ -83,7 +90,7 @@ const DeleteContact = ({ estado, cambiarEstado, id }: DeleteContactProps) => {
       >
         <Stack p={3} gap={3} maxWidth={444}>
           <Stack maxWidth={211} alignSelf="center">
-            <Image fit='cover' src={"Imagenes/Terceros/EliminarContacto.svg"} alt="" />
+            <Image fit='cover' src={"Imagenes/Terceros/EliminarContacto.svg"} alt="" duration={0}/>
           </Stack>
           <Stack direction="column" gap={1}>
             <Typography

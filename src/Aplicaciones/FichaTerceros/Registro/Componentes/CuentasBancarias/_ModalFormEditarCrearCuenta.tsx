@@ -11,13 +11,15 @@ import { PropsTerceroContexto } from '../../../Contextos/TercerosProveedor';
 import { paramsCuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasProveedor';
 import { CuentasBancariasContexto } from '../../../Contextos/Registro/CuentasBancarias/CuentasBancariasContexto';
 import { IEnvioAPIGuardarEditarCuenta } from '../../../Interfaces/Registro/CuentasBancarias/IEnvioAPIGuardarEditarCuenta';
+import { SendRequest, SendRequestAxios } from '../../../../../Consumos/Request';
+import IRespuestaGeneral from '../../../../../Consumos/IRespuestaGeneral';
 
 export default function ModalFormNuevaCuenta() 
 {
-    const [Configs, setConfigs] = useState<any>();
     const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
     const {
-        CambiarEstadoLoader       
+        CambiarEstadoLoader,
+        BloquearCamposAcceso
     } = propsTercerosContexto;
     const {paramsCuentasBancariasContexto}:{paramsCuentasBancariasContexto:paramsCuentasBancariasContexto} = useContext<any>(CuentasBancariasContexto);
     const {
@@ -32,10 +34,16 @@ export default function ModalFormNuevaCuenta()
     let {
         handleSubmit,
         control,
-        setValue
+        setValue,
+        reset
     } = useForm({
         resolver: yupResolver(EsquemaCuentaBancaria)
     });
+
+
+    useEffect(() => {
+        
+    }, []);
 
     useEffect(() => {
         setValue("tcbCuentaNo", CuentaExpandida?.tcbNumeroCuenta);
@@ -47,33 +55,41 @@ export default function ModalFormNuevaCuenta()
         setValue("tcbSwift", CuentaExpandida?.tcbSwift);
         setValue("tcbTipo", CuentaExpandida?.tcbTipoCuentaId);
         setValue("tcbEntidad", CuentaExpandida?.tcbEntidadId);
-    }, [CuentaExpandida?.tcbId])
+    }, [CuentaExpandida]);
+
+
+    
     
     const EnviarFormulario = async(data:any)=>  {
-        var dataSend:IEnvioAPIGuardarEditarCuenta = data;
-        let URLServicio = "/CuentasBancariasTerceros/Guardar_CuentaBancaria";
-        dataSend.tcbTercero =  Number(propsTercerosContexto.TerceroSeleccionadoLista?.TerID);
-        dataSend.ruta =  window.location.href;
 
+        let parametrosEnvio:SendRequestAxios= 
+        {
+            API: "CUENTASPORPAGAR",
+            URLServicio: "/CuentasBancariasTerceros/Guardar_CuentaBancaria",
+            Body:{
+                ...data,
+                tcbTercero: Number(propsTercerosContexto.TerceroSeleccionadoLista?.TerID),
+                ruta:  window.location.href
+            }
+        }
+        let promise: Promise<void | IRespuestaGeneral>;
 
         if (CuentaExpandida && CuentaExpandida.tcbId) {
-            dataSend.tcbId = CuentaExpandida.tcbId;
-            URLServicio = "/CuentasBancariasTerceros/Editar_CuentaBancaria";
+            parametrosEnvio.URLServicio = "/CuentasBancariasTerceros/Editar_CuentaBancaria";
+            parametrosEnvio.Body.tcbId =  CuentaExpandida.tcbId;
+            promise = SendRequest.put(parametrosEnvio);
+        }else{
+            promise = SendRequest.post(parametrosEnvio);
         }
         
-        CambiarEstadoLoader(true);
         // ---- Registrar cuenta ---- //
-        await CrearPeticion({
-            API: "CUENTASPORPAGAR",
-            URLServicio: URLServicio,
-            Type:"POST",
-            Body:dataSend
-        }).then((respuesta)=> {
+        promise.then((respuesta)=> {
             CambiarEstadoLoader(false);
             if (respuesta != null && respuesta.ok == true) {
                 propsTercerosContexto.CambiarAlertas([<Alert severity="success">{respuesta.descripcion}</Alert>]);
                 CambiarEstadoModalCrearEditar(false);
                 CambiarEstadoActualizarCuentas(true);
+                reset();
             }
         });
     }
@@ -83,6 +99,14 @@ export default function ModalFormNuevaCuenta()
         size:'small',
         fullWidth:true,
     };
+
+    const ValidarBloqueoAcceso = (ID:string) => {
+        if (CuentaExpandida) {
+            return BloquearCamposAcceso(ID);
+        }else{
+            return false;
+        }
+    }
   return (
     <>
     <Dialog
@@ -99,7 +123,7 @@ export default function ModalFormNuevaCuenta()
         </DialogTitle>
         <form onSubmit={handleSubmit(EnviarFormulario)}>
             <Stack direction="column" paddingY={1} paddingX={3} gap={1.5}>
-                <Stack direction="row" gap={1.5}>
+                <Stack direction="row" gap={.5}>
                     <FormControl fullWidth size="small" id='EntidadControl'>
                         <Controller
                             name={"tcbEntidad"}
@@ -107,7 +131,6 @@ export default function ModalFormNuevaCuenta()
                             render={({field: { onChange, value }, fieldState: {error}}) => (
                                 <TextField
                                     label="Entidad"
-                                    
                                     size='small'
                                     error={error ? true : false}
                                     helperText={error?.message}
@@ -115,6 +138,7 @@ export default function ModalFormNuevaCuenta()
                                     onChange={onChange}
                                     value={value}
                                     select
+                                    disabled={ValidarBloqueoAcceso("CBEntidad")}
                                     required
                                 >
                                     {
@@ -128,13 +152,12 @@ export default function ModalFormNuevaCuenta()
                     </FormControl>    
                     
 
-                    <FormControl fullWidth size="small">
+                    <FormControl  fullWidth size="small">
                         <Controller
                             name={"tcbTipo"}
                             control={control}
                             render={({field: { onChange, value }, fieldState: {error}}) => (
                                 <TextField
-                                    
                                     id="TipoDeCuenta"
                                     label="Tipo de cuenta"
                                     size='small'
@@ -145,6 +168,7 @@ export default function ModalFormNuevaCuenta()
                                     onChange={onChange}
                                     value={value ? value : ""}
                                     select
+                                    disabled={ValidarBloqueoAcceso("CBTipoCuenta")}
                                     required
                                 >
                                     {
@@ -173,6 +197,7 @@ export default function ModalFormNuevaCuenta()
                                 helperText={error?.message}
                                 id="numeroDeCuenta" 
                                 label="Número de cuenta"
+                                disabled={ValidarBloqueoAcceso("CBNumeroCuenta")}
                                 required
                             />
                         )}
@@ -192,6 +217,7 @@ export default function ModalFormNuevaCuenta()
                                 onChange={onChange}
                                 value={value}
                                 error={error ? true : false}
+                                disabled={ValidarBloqueoAcceso("CBSwift")}
                                 helperText={error?.message}
                             />
                         )}
@@ -209,6 +235,7 @@ export default function ModalFormNuevaCuenta()
                                 onChange={onChange}
                                 value={value}
                                 error={error ? true : false}
+                                disabled={ValidarBloqueoAcceso("CBAbbaIban")}
                                 helperText={error?.message}
                             />
                         )}
@@ -233,6 +260,7 @@ export default function ModalFormNuevaCuenta()
                                 onChange={onChange}
                                 value={value}
                                 error={error ? true : false}
+                                disabled={ValidarBloqueoAcceso("CBCorreoTesoreria")}
                                 helperText={error?.message}
                             />
                         )}
@@ -251,6 +279,7 @@ export default function ModalFormNuevaCuenta()
                                 value={value}
                                 error={error ? true : false}
                                 helperText={error?.message}
+                                disabled={ValidarBloqueoAcceso("CBContactoTesoreria")}
                             />
                             
                         )}
@@ -274,6 +303,7 @@ export default function ModalFormNuevaCuenta()
                                 value={value}
                                 error={error ? true : false}
                                 helperText={error?.message}
+                                disabled={ValidarBloqueoAcceso("CBTelefonoTesoreria")}
                             />
                         )}
                     />
@@ -291,6 +321,7 @@ export default function ModalFormNuevaCuenta()
                                     <FormControlLabel 
                                         control={
                                             <Checkbox 
+                                                disabled={ValidarBloqueoAcceso("CBPagoPorNIT")}
                                                 checked={!!value}
                                                 value={value}
                                                 onChange={onChange}

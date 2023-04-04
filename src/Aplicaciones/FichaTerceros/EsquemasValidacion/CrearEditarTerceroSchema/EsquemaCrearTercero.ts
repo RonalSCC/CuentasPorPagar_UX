@@ -88,7 +88,7 @@ export const EsquemaCrearTercero = ({
         terTelefono: Yup
             .mixed()
             .when({
-                is: (terTelefono: string) => (terTelefono == "" && PROV_TELEFONO?.configValor == 1),
+                is: (terTelefono: string) => (terTelefono == "" && PROV_TELEFONO?.configValor == 0),
                 then: Yup
                     .string()
                     .notRequired(),
@@ -112,7 +112,7 @@ export const EsquemaCrearTercero = ({
         terCelular: Yup
             .mixed()
             .when({
-                is: (terCelular: string) => (terCelular == "" && PROV_TELEFONO?.configValor == 1),
+                is: (terCelular: string) => (terCelular == "" && PROV_TELEFONO?.configValor == 0),
                 then: Yup
                     .string()
                     .notRequired(),

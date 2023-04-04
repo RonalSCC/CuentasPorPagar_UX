@@ -3,10 +3,11 @@ import Image from 'mui-image'
 
 export interface EliminarDocumentoProps {
     estado: boolean,
-    cambiarEstado: Function
+    cambiarEstado: Function,
+    eliminarDocTercero:() => void
 }
 
-const EliminarDocumento = ({ estado, cambiarEstado }: EliminarDocumentoProps) => {
+const EliminarDocumento = ({ eliminarDocTercero, estado, cambiarEstado }: EliminarDocumentoProps) => {
     return (
         <Stack>
             <Dialog
@@ -18,12 +19,12 @@ const EliminarDocumento = ({ estado, cambiarEstado }: EliminarDocumentoProps) =>
             >
                 <Stack p={3} gap={3} maxWidth={444}>
                     <Stack alignSelf="center">
-                        <Image fit='cover' src={"Imagenes/Terceros/EliminarDocumento.svg"} alt="" />
+                        <Image fit='cover' src={"Imagenes/Terceros/EliminarDocumento.svg"} alt="" duration={0}/>
                     </Stack>
                     <Stack direction="column" gap={1}>
                         <Typography textAlign="center" noWrap variant="h6" color="primary">Eliminar Documento</Typography>
                         <Typography textAlign="center" variant="body1" color="text.secondary">
-                        Al eliminar el documento no se podrá rehacer
+                            Al eliminar el documento no se podrá rehacer
                         </Typography>
                     </Stack>
                 </Stack>
@@ -32,7 +33,7 @@ const EliminarDocumento = ({ estado, cambiarEstado }: EliminarDocumentoProps) =>
                         <Button onClick={() => cambiarEstado()}>
                             Cancelar
                         </Button>
-                        <Button variant='outlined' color='error'>
+                        <Button variant='outlined' color='error' onClick={() => eliminarDocTercero()}>
                             Eliminar
                         </Button>
                     </Stack>

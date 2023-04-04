@@ -7,9 +7,14 @@ import { RoutesTercerosElement } from '../../Route';
 import { Add, Search } from '@mui/icons-material';
 import BuscarTerceroDialog from './BuscarTerceroDialog';
 import { PropsTerceroContexto } from '../../Contextos/TercerosProveedor';
+
 export default function Terceros(props:any) {
+
   const navigate = useNavigate();
   const {propsTercerosContexto}:{propsTercerosContexto:PropsTerceroContexto} = useContext<any>(TercerosContexto);
+  const {
+    BloquearCamposAcceso
+  } = propsTercerosContexto
   const [buscarTerceroDialog, setBuscarTerceroDialog] = useState(false);
 
   useEffect(() => {
@@ -30,7 +35,7 @@ export default function Terceros(props:any) {
 
   const CerrarDialogBuscarTercero = ()=>{
     setBuscarTerceroDialog(false);
-}
+  }
   
   return (
     <>
@@ -43,8 +48,9 @@ export default function Terceros(props:any) {
           zIndex={1}
           top={0}
           flexWrap="wrap"
+          height={"8%"}
         >
-          <Stack direction="row" width="100%" paddingY={1.5} paddingX={3} justifyContent="space-between">
+          <Stack direction="row" width="100%" paddingY={1} paddingX={3} justifyContent="space-between">
             <Stack direction="row" alignItems={"center"}>
               <Typography variant="h6" color="text.primary">
                 {propsTercerosContexto.TituloPageHeader}
@@ -74,6 +80,7 @@ export default function Terceros(props:any) {
                   sx={{
                     visibility: propsTercerosContexto.TerceroSeleccionadoLista != null && !propsTercerosContexto.NuevoRegistro ? "visible": "hidden"
                   }}
+                  disabled={BloquearCamposAcceso("CrearNuevoTercero")}
               >
                   Crear tercero
               </Button>
@@ -81,7 +88,8 @@ export default function Terceros(props:any) {
           </Stack>
           <Divider sx={{width:"100%"}}/>
         </Stack>
-        <Stack  direction="row" width="100%" height="93%">
+        
+        <Stack  direction="row" width="100%" height="92%">
           { <RoutesTercerosElement/>}
         </Stack>
         <BuscarTerceroDialog

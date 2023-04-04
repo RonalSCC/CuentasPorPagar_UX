@@ -20,10 +20,7 @@ export interface paramsCuentasBancariasContexto {
     CambiarEstadoModalCrearEditar:(estado: boolean) => void,
     ActualizarCuentas: boolean,
     CambiarEstadoActualizarCuentas: (estado: boolean) => void,
-    Configs: any,
-    CambiarSucursalCuenta: (SucursalCuentaCambio: ISucursalCuentaBancaria) => boolean,
-    CambiarListaSucursalesCuenta: (ListaSucursales: Array<ISucursalCuentaBancaria>) => void,
-    SucursalesCuenta:  Array<ISucursalCuentaBancaria>
+    Configs: any
 }
 export default function CuentasBancariasProveedor(
     {
@@ -37,20 +34,13 @@ export default function CuentasBancariasProveedor(
     const [ListaTiposCuenta, setListaTiposCuenta] = useState<Array<ITipoCuenta>>();
     const [ActualizarCuentas, setActualizarCuentas] = useState(false);
     const [Configs, setConfigs] = useState();
-    const [SucursalesCuenta, setSucursalesCuenta] = useState<Array<ISucursalCuentaBancaria>>([])
+
     useEffect(() => {
       ConsultarListas();
       ConsultarConfigs();
-      if (CuentaExpandida?.tcbListaSucursales && CuentaExpandida?.tcbListaSucursales.length > 0) {
-        setSucursalesCuenta([...CuentaExpandida.tcbListaSucursales]);
-      }
     }, [])
     
-    useEffect(() => {
-        if (CuentaExpandida?.tcbListaSucursales && CuentaExpandida?.tcbListaSucursales.length > 0) {
-            setSucursalesCuenta(CuentaExpandida.tcbListaSucursales);
-        }
-    }, [CuentaExpandida?.tcbListaSucursales])
+
     const ConsultarListas = async ()=> {
       let PropsDefaultRequest:CrearPeticionAxios = {
         API: "CONFIGURACION",
@@ -108,7 +98,7 @@ export default function CuentasBancariasProveedor(
 
     const CambiarCuentaSeleccionada = (cuentaExpandida?:ICuentaBancaria|undefined)=> {
         if (cuentaExpandida) {
-            setCuentaExpandida(cuentaExpandida);
+            setCuentaExpandida({...cuentaExpandida});
         }else{
             setCuentaExpandida(undefined);
         }
@@ -121,53 +111,20 @@ export default function CuentasBancariasProveedor(
     const CambiarEstadoActualizarCuentas = (estado:boolean)=> {
         setActualizarCuentas(estado);
         if (estado == true) {
-            CambiarCuentaSeleccionada();
             setTimeout(function(){
                 setActualizarCuentas(false);
             },1000);
         }
     }
 
-    const CambiarSucursalCuenta = (SucursalCuentaCambio:ISucursalCuentaBancaria) => {
-        if (SucursalCuentaCambio) {
-            if (SucursalCuentaCambio.sucTCBSId) {
-                
-                let ValidacionSucursalExistente = SucursalesCuenta.filter(suc=> suc.sucId == SucursalCuentaCambio.sucId && suc.sucTCBSId != SucursalCuentaCambio.sucTCBSId);
-                if (ValidacionSucursalExistente && ValidacionSucursalExistente.length > 0) {
-                    return false;
-                }
-
-                if (SucursalCuentaCambio.sucPrincipal == true) {
-                    DesactivarPrincipalSucursales(SucursalCuentaCambio.sucTCBSId, SucursalesCuenta);
-                }
-                let SucCuentaFilter = SucursalesCuenta.filter(suc=> suc.sucTCBSId == SucursalCuentaCambio.sucTCBSId);
-                if (SucCuentaFilter && SucCuentaFilter.length > 0) { // Se busca el registro que se editó
-                    SucCuentaFilter[0].sucId = SucursalCuentaCambio.sucId;
-                    SucCuentaFilter[0].sucPrincipal = SucursalCuentaCambio.sucPrincipal;
-                    setSucursalesCuenta([...SucursalesCuenta]);
-                }else{
-                    setSucursalesCuenta([...SucursalesCuenta, { 
-                        sucTCBSId: -1,
-                        sucId: SucursalCuentaCambio.sucId,
-                        sucPrincipal: SucursalCuentaCambio.sucPrincipal
-                    }]);
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
-    const CambiarListaSucursalesCuenta = (ListaSucursales:Array<ISucursalCuentaBancaria>) => {
-        setSucursalesCuenta(ListaSucursales);
-    }
-    const DesactivarPrincipalSucursales = (sucTCBSId:number, Sucursales: ISucursalCuentaBancaria[])=>{
+    const DesactivarPrincipalOtrasSucursales = (sucTCBSId:number, Sucursales: ISucursalCuentaBancaria[])=>{
         Sucursales.map(Suc => {
             if (Suc.sucTCBSId != sucTCBSId) {
                 Suc.sucPrincipal = false;
             }
         })
     }
+
     const paramsCuentasBancariasContexto:paramsCuentasBancariasContexto = {
         CuentaExpandida: CuentaExpandida, 
         CambiarCuentaSeleccionada: CambiarCuentaSeleccionada,
@@ -177,10 +134,7 @@ export default function CuentasBancariasProveedor(
         CambiarEstadoModalCrearEditar: CambiarEstadoModalCrearEditar,
         ActualizarCuentas: ActualizarCuentas,
         CambiarEstadoActualizarCuentas: CambiarEstadoActualizarCuentas,
-        Configs: Configs,
-        CambiarSucursalCuenta: CambiarSucursalCuenta,
-        CambiarListaSucursalesCuenta: CambiarListaSucursalesCuenta,
-        SucursalesCuenta: SucursalesCuenta
+        Configs: Configs
     };
 
   return (
