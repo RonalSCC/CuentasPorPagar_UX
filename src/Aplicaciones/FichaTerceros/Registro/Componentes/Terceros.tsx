@@ -34,7 +34,7 @@ export default function Terceros(props:any) {
   
   return (
     <>
-      <Stack direction="column" alignItems="flex-end" width="100%" height={"100%"} sx={{overflowY: "auto"}}>
+      <Stack direction="column" alignItems="flex-end" width="100%" height={"100%"}>
         <Stack 
           direction="row" 
           width="100%" 

@@ -294,7 +294,6 @@ export default function FormularioCrearTercero() {
 
    useEffect(() => {
       propsTercerosContexto.CambiarTituloPageHeader("Creación de tercero");
-      //setValue("terNatJur", "N")
       ConsultarListas();
       ConsultarConfigs();
 
@@ -308,7 +307,7 @@ export default function FormularioCrearTercero() {
    return (
       <>
          <FormProvider {...metodos}>
-            <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"} overflow={'auto'}>
+            <Stack direction="column" gap={1} paddingY={3} marginBottom={8} alignItems="center" width={"100%"} overflow={'scroll'}>
                <Card style={{ backgroundColor: "white", width: "60%" }}>
                   <Stack padding={3} gap={1}>
                      {/* Tipo de persona */}
@@ -355,7 +354,7 @@ export default function FormularioCrearTercero() {
                                  <Controller
                                     control={control}
                                     name="terTipoDocumento"
-                                    render={({ field, formState: { errors, dirtyFields, touchedFields } }) => (
+                                    render={({ field, formState: { errors, touchedFields } }) => (
                                        <TextField
                                           {...field}
                                           onChange = {(e) => field.onChange(
@@ -520,6 +519,7 @@ export default function FormularioCrearTercero() {
                                  estado={verModalDireccion}
                                  cambiarEstado={VerFormularioDirecciones}
                                  configs={{ TER_BLOQUEA_DIR }}
+                                 SetDireccion={(direccion:string) => setValue("terDireccion",direccion)}
                               />
                            }
                         </Stack>

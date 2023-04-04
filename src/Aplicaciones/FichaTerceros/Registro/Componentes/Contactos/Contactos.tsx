@@ -38,8 +38,8 @@ export default function Contactos() {
     const ConsultarListaContactos = async () => {
         const response = await CrearPeticion({
             API: "CUENTASPORPAGAR",
-            URLServicio: "/AdministracionTerceros/Consultar_ContactosTerceros",
-            Type: "POST",
+            URLServicio: "/ContactosTercero/Consultar_ContactosTerceros/",
+            Type: "GET",
             Body: {
                 TerId: propsTercerosContexto.TerceroSeleccionadoLista?.TerID
             }

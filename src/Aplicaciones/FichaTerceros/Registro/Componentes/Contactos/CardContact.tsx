@@ -11,6 +11,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { TercerosContexto } from '../../../Contextos/TercerosContexto';
 import { useNavigate } from 'react-router-dom';
 import { FieldValues } from 'react-hook-form/dist/types';
+import { SendRequest } from '../../../../../Consumos/Request';
 
 export const CardContact = (contact: IContacto) => {
 
@@ -47,10 +48,9 @@ export const CardContact = (contact: IContacto) => {
 
 	const CambiarEstadoContacto = async (tcEstado: boolean) => {
 
-		await CrearPeticion({
+		SendRequest.put({
 			API: 'CUENTASPORPAGAR',
 			URLServicio: '/AdministracionTerceros/ActualizarContactoTercero',
-			Type: 'POST',
 			Body: {
 				tcId: conId,
 				tcTercero: propsTercerosContexto.TerceroSeleccionadoLista?.TerID,
@@ -129,7 +129,7 @@ export const CardContact = (contact: IContacto) => {
 	}
 
 	const propsInfoItem = {
-		color: (conPrincipal || conEstado) ? "text.primary" : "text.disabled"
+		color: "text.primary"
 	}
 
 	return (
@@ -209,7 +209,6 @@ export const CardContact = (contact: IContacto) => {
 									<IconButton
 										size="small"
 										color="primary"
-										disabled={!(conPrincipal || conEstado)}
 										onClick={handleEditContact}
 									>
 										<EditOutlined fontSize="small" />
@@ -220,8 +219,7 @@ export const CardContact = (contact: IContacto) => {
 									<Tooltip title="Eliminar" placement="top" arrow >
 										<IconButton 
 										size="small" 
-										color="error"
-										disabled={!(conPrincipal || conEstado)} 
+										color="error" 
 										onClick={handleDeleteContact}>
 											<DeleteOutlined fontSize="small" />
 										</IconButton>

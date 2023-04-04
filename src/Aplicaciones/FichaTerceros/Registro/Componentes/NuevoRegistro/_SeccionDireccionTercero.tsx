@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
 import { Divider, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { useFormContext } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { CrearPeticion, CrearPeticionAxios } from '../../../../../Consumos/APIManager';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
@@ -15,6 +15,7 @@ export interface FormularioDireccionesProps {
     estado: boolean,
     cambiarEstado: Function,
     configs: Record<string, IConfigValues>
+    SetDireccion:Function
 }
 
 export interface IVia {
@@ -32,13 +33,13 @@ export interface IUndIdentidad {
     UndIdentidadDesc: string
 }
 
-export default function _SeccionDireccionTercero({ estado, cambiarEstado, configs }: FormularioDireccionesProps) {
+export default function _SeccionDireccionTercero({ estado, cambiarEstado, configs, SetDireccion }: FormularioDireccionesProps) {
 
     const [listaAvenidas, setListaAvenidas] = useState<Array<IVia>>([]);
     const [listaIntersecciones, setListaIntersecciones] = useState<Array<IInterseccion>>([])
     const [listaUndIdentidades, setListaUndIdentidades] = useState<Array<IUndIdentidad>>([])
 
-    const { control, setValue, getValues, trigger, setError, formState: { errors }, resetField, watch } = useFormContext();
+    const { control, getValues, trigger, setError, formState: { errors }, resetField, watch } = useForm();
 
     const propsInputs: Record<string, any> = {
         variant: "outlined",
@@ -46,7 +47,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
         fullWidth: true,
     };
 
-    const handleUpdateAddress = () => {
+    const ActualizarDireccion = () => {
 
         const {
             via,
@@ -112,7 +113,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
         dirCompleta = dirCompleta.trim();
         dirCompleta = dirCompleta.replace(/^\s+|\s+$|\s+(?=\s)/g, "");
 
-        setValue("terDireccion", dirCompleta);
+        SetDireccion(dirCompleta);
         trigger("terDireccion")
         cambiarEstado();
     }
@@ -412,7 +413,7 @@ export default function _SeccionDireccionTercero({ estado, cambiarEstado, config
                         <Button
                             size='medium'
                             variant="contained"
-                            onClick={handleUpdateAddress}
+                            onClick={ActualizarDireccion}
                         >
                             Actualizar
                         </Button>

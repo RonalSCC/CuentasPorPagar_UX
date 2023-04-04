@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import IConfigValues from '../../Interfaces/Generales/IConfig';
-import {EsquemaCrearTercero} from '../CrearEditarTerceroSchema/EsquemaCrearTercero'
+import { EsquemaCrearTercero } from '../CrearEditarTerceroSchema/EsquemaCrearTercero'
 
 export interface IConfigTercero {
     config: IConfigValues
@@ -13,29 +13,30 @@ export const EsquemaEditarTercero = ({
     PROV_CORREO_RLEGAL,
     TER_REQ_REPLEGAL,
     TER_REQ_ACTIVECON,
+    TER_PERMITECARACTRL
 }: Record<string, IConfigValues>) => {
 
     return Yup.object().shape({
         ...EsquemaCrearTercero({
-                TER_PERMITECARACTER,
-                PROV_TELEFONO,
-                PROV_CORREO_CTO,
-            }).fields,
+            TER_PERMITECARACTER,
+            PROV_TELEFONO,
+            PROV_CORREO_CTO,
+        }).fields,
         terSubTipo: Yup
             .string()
             .required("Debe Seleccionar el subtipo del tercero"),
         terActividadEconomica: Yup
-        .mixed()
-        .when({
-            is: (terActividadEconomica: string) =>
-                (terActividadEconomica == "" && TER_REQ_ACTIVECON?.configValor == 0),
-            then: Yup
-                .string()
-                .notRequired(),
-            otherwise: Yup
-                .string()
-                .required("Debe ingresar una actividad económica"),
-        }),
+            .mixed()
+            .when({
+                is: (terActividadEconomica: string) =>
+                    (terActividadEconomica == "" && TER_REQ_ACTIVECON?.configValor == 0),
+                then: Yup
+                    .string()
+                    .notRequired(),
+                otherwise: Yup
+                    .string()
+                    .required("Debe ingresar una actividad económica"),
+            }),
         terEmail: Yup
             .string()
             .email("El campo no corresponde a una dirección de email correcta"),
@@ -52,20 +53,7 @@ export const EsquemaEditarTercero = ({
                     .notRequired(),
                 otherwise: Yup
                     .string()
-                    .email("El campo no corresponde a una dirección email correcta")
                     .required("Debe ingresar el nombre del representante legal"),
-            }),
-        terRepresentanteLIdentificacion: Yup
-            .mixed()
-            .when({
-                is: (terRepresentanteLIdentificacion: string) => (terRepresentanteLIdentificacion == "" && TER_REQ_REPLEGAL?.configValor == 0),
-                then: Yup
-                    .string()
-                    .notRequired(),
-                otherwise: Yup
-                    .string()
-                    .email("El campo no corresponde a una dirección email correcta")
-                    .required("Debe ingresar un número de identificación del representante legal"),
             }),
         terRepresentanteLExpedicion: Yup
             .mixed()
@@ -76,7 +64,6 @@ export const EsquemaEditarTercero = ({
                     .notRequired(),
                 otherwise: Yup
                     .string()
-                    .email("El campo no corresponde a una dirección email correcta")
                     .required("Debe ingresar la fecha de expedición del representante legal"),
             }),
         terRepresentanteLEmail: Yup
@@ -88,12 +75,17 @@ export const EsquemaEditarTercero = ({
                     .string()
                     .notRequired(),
                 otherwise: Yup
-                    .string()
-                    .email("El campo no corresponde a una dirección email correcta")
-                    .required("Debe ingresar el correo electrónico del representante legal"),
+                    .mixed()
+                    .when({
+                        is: () => TER_PERMITECARACTRL?.configValor == 1,
+                        then: Yup
+                            .string()
+                            .email("El campo no corresponde a una dirección email correcta")
+                            .required("Debe ingresar el correo electrónico del representante legal"),
+                    })
             }),
         terEstado: Yup
             .boolean()
 
-    })    
+    })
 }
