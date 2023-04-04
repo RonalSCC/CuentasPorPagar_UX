@@ -32,6 +32,7 @@ import { IActividadesEconomicas } from '../../../Interfaces/Generales/IActividad
 import { EsquemaEditarTercero } from '../../../EsquemasValidacion/CrearEditarTerceroSchema/EsquemaEditarTercero';
 import IConfigValues from '../../../Interfaces/Generales/IConfig';
 import { SendRequest } from '../../../../../Consumos/Request';
+import _SeccionTipoSubtipo from './_SeccionTipoSubtipo';
 
 export default function EditarInformacionGeneral() {
 
@@ -48,7 +49,7 @@ export default function EditarInformacionGeneral() {
    const [Configs, setConfigs] = useState<any>()
 
    const PROV_TELEFONO: IConfigValues = Configs && Configs["PROV_TELEFONO"];
-   const TER_VALIDA_DV: IConfigValues = Configs && Configs["TER_VALIDA_DV"];
+   const TER_TIPO_PROV: IConfigValues = Configs && Configs["TER_TIPO_PROV"];
    const TER_NOCALCULAR_DV: IConfigValues = Configs && Configs["TER_NOCALCULAR_DV"];
    const TER_FICHA_APIROS: IConfigValues = Configs && Configs["TER_FICHA_APIROS"];
    const TER_PERMITECARACTER: IConfigValues = Configs && Configs["TER_PERMITECARACTER"];
@@ -60,6 +61,7 @@ export default function EditarInformacionGeneral() {
    const TER_REQ_REPLEGAL: IConfigValues = Configs && Configs["TER_REQ_REPLEGAL"];
    const TER_REQ_ACTIVECON: IConfigValues = Configs && Configs["TER_REQ_ACTIVECON"];
    const TER_BLOQUEA_DIR: IConfigValues = Configs && Configs["TER_BLOQUEA_DIR"];
+   const TER_PERMITECARACTRL: IConfigValues = Configs && Configs["TER_PERMITECARACTRL"];
 
    const metodos = useForm({
       defaultValues: {
@@ -89,7 +91,7 @@ export default function EditarInformacionGeneral() {
          terRepresentanteLIdentificacion: "",
          terRepresentanteLExpedicion: "",
          terRepresentanteLEmail: "",
-         terEstado:false
+         terEstado: false
       },
       resolver: yupResolver(EsquemaEditarTercero({
          TER_NOCALCULAR_DV,
@@ -100,7 +102,8 @@ export default function EditarInformacionGeneral() {
          TER_PERMITECARACTER,
          TER_CAMBIANATJUR,
          PROV_CORREO_RLEGAL,
-         TER_REQ_ACTIVECON
+         TER_REQ_ACTIVECON,
+         TER_PERMITECARACTRL
       })),
       mode: 'onSubmit',
    })
@@ -118,8 +121,8 @@ export default function EditarInformacionGeneral() {
 
       if (!tipoPermitido) {
          let terNatJurActual = getValues('terNatJur')
-         
-         if(terNatJurActual != 'N')
+
+         if (terNatJurActual != 'N')
             setValue('terNatJur', 'N')
       }
 
@@ -133,7 +136,7 @@ export default function EditarInformacionGeneral() {
    };
 
    const GuardarInformacion = async (data: any) => {
-      
+
       SendRequest.put({
          API: "CUENTASPORPAGAR",
          URLServicio: "/AdministracionTerceros/EditarTerceroFicha",
@@ -247,20 +250,6 @@ export default function EditarInformacionGeneral() {
          }
       });
 
-      // ---- Sub-Tipos
-      await CrearPeticion({
-         ...PropsDefaultRequest,
-         Body: {
-            UsuarioID: 1,
-            Clave: 'SubTiposTercero'
-         }
-      })
-         .then((respuesta) => {
-            if (respuesta != null && respuesta.ok == true) {
-               setListaSubTiposTercero(respuesta.datos);
-            }
-         });
-
       // ---- Forma de Pago
       await CrearPeticion({
          ...PropsDefaultRequest,
@@ -341,6 +330,12 @@ export default function EditarInformacionGeneral() {
                },
                {
                   configID: "TER_REQ_ACTIVECON"
+               },
+               {
+                  configID: "TER_TIPO_PROV"
+               },
+               {
+                  configID: "TER_PERMITECARACTRL"
                }
             ]
          }
@@ -534,32 +529,66 @@ export default function EditarInformacionGeneral() {
                            />
                         </Stack>
 
-                        <FormControl sx={{ width: "50%" }}>
-                           <Controller
-                              control={control}
-                              name="terFormaPago"
-                              defaultValue=""
-                              render={({ field, formState: { errors } }) => (
-                                 <TextField
-                                    {...field}
-                                    id="terFormaPago"
-                                    label="Forma de Pago"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                    select
-                                    required
-                                    error={!!errors.terFormaPago}
-                                    helperText={errors.terFormaPago && `${errors.terFormaPago.message}`}
-                                 >
-                                    {
-                                       ListaFormaDePago.map(data => {
-                                          return <MenuItem key={data.FrPID} value={data.FrPID}>{data.FrPDesc}</MenuItem>
-                                       })
-                                    }
-                                 </TextField>
-                              )}
-                           />
-                        </FormControl>
+                        <Stack direction="row" gap={0.5} width="50%">
+                           <FormControl sx={{ width: "100%" }}>
+                              <Controller
+                                 control={control}
+                                 name="terFormaPago"
+                                 defaultValue=""
+                                 render={({ field, formState: { errors } }) => (
+                                    <TextField
+                                       {...field}
+                                       id="terFormaPago"
+                                       label="Forma de Pago"
+                                       size='small'
+                                       placeholder='Seleccione'
+                                       select
+                                       required
+                                       error={!!errors.terFormaPago}
+                                       helperText={errors.terFormaPago && `${errors.terFormaPago.message}`}
+                                    >
+                                       {
+                                          ListaFormaDePago.map(data => {
+                                             return <MenuItem key={data.FrPID} value={data.FrPID}>{data.FrPDesc}</MenuItem>
+                                          })
+                                       }
+                                    </TextField>
+                                 )}
+                              />
+                           </FormControl>
+
+                           {
+                              (TER_TIPO_PROV?.configValor == 0) &&
+                              <FormControl sx={{ width: "50%" }}>
+                                 <Controller
+                                    control={control}
+                                    name="terTipo"
+                                    defaultValue=""
+                                    render={({ field, formState: { errors } }) => (
+                                       <TextField
+                                          {...field}
+                                          id="TipoTercero"
+                                          label="Tipo"
+                                          size='small'
+                                          placeholder='Seleccione'
+                                          select
+                                          error={!!errors.terTipo}
+                                          helperText={errors.terTipo && `${errors.terTipo.message}`}
+
+                                       >
+                                          {
+                                             ListaTipoTercero.map(data => {
+                                                return <MenuItem key={data.TpTID} value={data.TpTID}>{data.TpTDesc}</MenuItem>
+                                             })
+                                          }
+                                       </TextField>
+                                    )}
+                                 />
+                              </FormControl>
+                           }
+                        </Stack>
+
+
                      </Stack>
 
                      <Stack direction="row" gap={.5}>
@@ -625,75 +654,16 @@ export default function EditarInformacionGeneral() {
                                  estado={verModalDireccion}
                                  cambiarEstado={VerFormularioDirecciones}
                                  configs={{ TER_BLOQUEA_DIR }}
+                                 SetDireccion={(direccion: string) => setValue("terDireccion", direccion)}
                               />
                            }
-
-
                         </Stack>
                      </Stack>
 
-                     <Stack direction={"row"} gap={.5}>
-                        <FormControl
-                           sx={{
-                              width: "50%"
-                           }}
-                        >
-                           <Controller
-                              control={control}
-                              name="terTipo"
-                              defaultValue=""
-                              render={({ field, formState: { errors } }) => (
-                                 <TextField
-                                    {...field}
-                                    id="TipoTercero"
-                                    label="Tipo"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                    select
-                                    error={!!errors.terTipo}
-                                    helperText={errors.terTipo && `${errors.terTipo.message}`}
-
-                                 >
-                                    {
-                                       ListaTipoTercero.map(data => {
-                                          return <MenuItem key={data.TpTID} value={data.TpTID}>{data.TpTDesc}</MenuItem>
-                                       })
-                                    }
-                                 </TextField>
-                              )}
-                           />
-                        </FormControl>
-
-                        <FormControl
-                           sx={{
-                              width: "50%"
-                           }}
-                        >
-                           <Controller
-                              control={control}
-                              name="terSubTipo"
-                              defaultValue=""
-                              render={({ field, formState: { errors } }) => (
-                                 <TextField
-                                    {...field}
-                                    id="terSubTipo"
-                                    label="Sub-tipo"
-                                    size='small'
-                                    placeholder='Seleccione'
-                                    select
-                                    error={!!errors.terSubTipo}
-                                    helperText={errors.terSubTipo && `${errors.terSubTipo.message}`}
-                                 >
-                                    {
-                                       ListaSubTiposTercero.map(data => {
-                                          return <MenuItem key={data.TipoId} value={data.TipoId}>{data.TipoDesc}</MenuItem>
-                                       })
-                                    }
-                                 </TextField>
-                              )}
-                           />
-                        </FormControl>
-                     </Stack>
+                     {
+                        (TER_TIPO_PROV?.configValor == 1) &&
+                        <_SeccionTipoSubtipo />
+                     }
 
                      <Stack direction={"row"} gap={.5}>
                         <FormControl
@@ -785,7 +755,7 @@ export default function EditarInformacionGeneral() {
                                     fullWidth
                                     id="terCelular"
                                     label="Celular"
-                                    required={PROV_TELEFONO?.configValor ? true: false}
+                                    required={PROV_TELEFONO?.configValor ? true : false}
                                     error={!!errors.terCelular}
                                     helperText={errors.terCelular && `${errors.terCelular.message}`}
                                  />
@@ -864,37 +834,8 @@ export default function EditarInformacionGeneral() {
                            )}
                         />
 
-                        <Stack direction={"row"} gap={.5} width="50%">
-                           <FormControl
-                              fullWidth
-                              sx={{
-                                 width: "30%"
-                              }}
-                           >
-                              <Controller
-                                 control={control}
-                                 name='terRepresentanteLTipoIdentificacion'
-                                 render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                       {...field}
-                                       id="terRepresentanteLTipoIdentificacion"
-                                       label="Tipo de ID"
-                                       size='small'
-                                       select
-                                       required={TER_REQ_REPLEGAL?.configValor ? true : false}
-                                       error={!!errors.terRepresentanteLTipoIdentificacion}
-                                       helperText={errors.terRepresentanteLTipoIdentificacion && `${errors.terRepresentanteLTipoIdentificacion.message}`}
-                                    >
-                                       {
-                                          ListaTipoDocumento.map(data => {
-                                             return <MenuItem key={data.TipoID} value={data.TipoID}>{data.TipoID}</MenuItem>
-                                          })
-                                       }
-                                    </TextField>
-                                 )}
-                              />
-                           </FormControl>
-
+                        <Stack width="50%">
+                        
                            <Controller
                               control={control}
                               name='terRepresentanteLIdentificacion'

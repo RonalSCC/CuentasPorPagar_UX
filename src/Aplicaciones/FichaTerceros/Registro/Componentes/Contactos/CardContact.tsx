@@ -226,7 +226,7 @@ export const CardContact = (contact: IContacto) => {
 										<IconButton 
 										disabled={bloqAccesoContactos}
 										size="small" 
-										color="error"
+										color="error" 
 										onClick={handleDeleteContact}>
 											<DeleteOutlined fontSize="small" />
 										</IconButton>

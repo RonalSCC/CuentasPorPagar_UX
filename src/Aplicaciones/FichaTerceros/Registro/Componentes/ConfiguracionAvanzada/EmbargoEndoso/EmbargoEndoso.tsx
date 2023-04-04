@@ -1,5 +1,5 @@
 import { Info } from '@mui/icons-material'
-import { Stack, Card, Alert, TextField, Divider, FormControlLabel, FormGroup, Checkbox, Icon, AlertTitle, Autocomplete, MenuItem, Button, Tooltip, duration } from '@mui/material'
+import { Stack, Card, Alert, TextField, Divider, FormControlLabel, FormGroup, Checkbox, Icon, AlertTitle, Autocomplete, MenuItem, Button, Tooltip, duration, Typography } from '@mui/material'
 import Image from 'mui-image'
 import { useContext, useEffect, useState } from 'react';
 import { SendRequest } from '../../../../../../Consumos/Request';
@@ -121,20 +121,32 @@ const EmbargoEndoso = () => {
             <Stack width={"100%"} height={"100%"} justifyContent="space-between" border={0.8} borderColor="#F1F0EE" borderRadius={0.5}>
                 <Card>
                     <Stack p={2} gap={1}>
-                        <Stack>
-                            <Alert 
+                        <Stack zIndex={1}>
+                            <Alert
                                 icon={<Image
-                                        width={47.78}
-                                        fit='cover'
-                                        src="Imagenes/Terceros/AccountingDocuments.svg" 
-                                        duration={0}
-                                        />
-                                    }
-                                    severity="info"
-                                    sx={{ alignItems: "center", zIndex:"1" }}
-                                >
-                                    Aplica para el endoso de documentos contables
+                                    width={47.78}
+                                    fit='cover'
+                                    src="Imagenes/Terceros/AccountingDocuments.svg"
+                                    duration={0}
+                                />
+                                }
+                                severity="info"
+                                sx={{ alignItems: "center" }}
+                            >
+                                <Typography variant='subtitle2'>
+                                    Configura solo si se requiere el beneficiario de endoso para documentos contables y el beneficiario del cheque si el tercero se encuentra embargado.
+                                </Typography>
                             </Alert>
+                        </Stack>
+                        <Stack direction="row" gap={1}>
+                            <Typography variant='subtitle2'>
+                                Beneficiario Endoso
+                            </Typography>
+                            <Tooltip title="Aplica para endoso de documento contables" arrow placement='top'>
+                                <Icon>
+                                    <Info fontSize="small" color="disabled"></Info>
+                                </Icon>
+                            </Tooltip>
                         </Stack>
                         <Stack>
                             <Controller
@@ -150,24 +162,27 @@ const EmbargoEndoso = () => {
                             />
 
                         </Stack>
-                        <Divider orientation='horizontal' />
-                        <Stack px={1} direction="row" alignItems="center">
-                            <FormGroup>
+                        <Stack paddingLeft={1} direction="row" alignItems="center">
+                            <FormGroup sx={{paddingRight: 0}}>
                                 <Controller
                                     control={control}
                                     name="tdaEmbargado"
 
                                     render={({ field }) => (
                                         <FormControlLabel
-                                            control={<Checkbox {...field} name="tdaEmbargado" size="small" checked={field.value} />}
+                                            control={<Checkbox {...field} 
+                                            name="tdaEmbargado" 
+                                            size="small" 
+                                            checked={field.value} />}
+                                            sx={{marginRight:1}}
                                             label="Tercero Embargado" />
                                     )}
                                 />
                             </FormGroup>
-                            <Tooltip title="Solo aplica para cheque" placement='top' arrow >
-                            <Icon>
-                                <Info fontSize="small" color="disabled"></Info>
-                            </Icon>
+                            <Tooltip title="Aplica para la impresión de cheques" arrow placement='top'>
+                                <Icon>
+                                    <Info fontSize="small" color="disabled"></Info>
+                                </Icon>
                             </Tooltip>
                         </Stack>
 
